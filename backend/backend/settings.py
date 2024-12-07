@@ -33,6 +33,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +48,9 @@ INSTALLED_APPS = [
 
 
     'appusers',
+    'posts',
+    'events',
+    'notifications',
 
 
     'rest_framework_simplejwt.token_blacklist',
@@ -129,7 +135,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+ASGI_APPLICATION = 'backend.asgi.application'
 
 
 # Database
@@ -192,7 +198,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '192.168.1.33'
+    '192.168.1.33',
+    '192.168.1.35',
+    '192.168.1.34'
+    
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -202,6 +211,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:19000",
     "http://192.168.1.33:8081",
     "http://192.168.1.33:8000",
+    "http://192.168.1.35:8081",
+    "http://192.168.1.35:8000",
     "http://10.0.2.2:8081",
     
 ]
@@ -210,3 +221,9 @@ CORS_ALLOW_ALL_ORIGINS: True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
