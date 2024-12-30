@@ -1,46 +1,44 @@
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404
+from django.db.models import F
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from django.contrib.auth import authenticate
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .models import UserProfile, UserRelationships
-from .serializers import UserProfileSerializer, FollowersSerializer, FollowingSerializer
-from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
-from django.db.models import F
+
+from .models import UserProfile
+from .serializers import UserProfileSerializer
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
-    print("1")
     # Extract username,password from request data
     username = request.data.get('username')
     password = request.data.get('password')
 
-    print("2")
     # Check if username already exists
     if User.objects.filter(username=username).exists():
       print('Username already exists')
       return Response({'error':'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
-    print("3")
     # Create user with hashed password
     user = User.objects.create_user(username=username, password=password)
 
+    # Authenticate the user using built-in method
     user = authenticate(username=username, password=password)
 
-    print("4")
-
+    # Get the token pair (access and refresh token)
     token_obtain_pair_view = TokenObtainPairView.as_view()
-    print(token_obtain_pair_view(request._request))
     return token_obtain_pair_view(request._request)
+    
     
     
 @api_view(['POST'])
@@ -134,128 +132,3 @@ def edit_profile(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def follow_user(request, user_id):
-    follower = request.user
-
-    try:
-        following = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-
-    if follower.id == following.id:
-        return Response({"error": "User cannot follow themselves."}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Check if the relationship already exists
-    if UserRelationships.objects.filter(follower=follower, following=following).exists():
-        return Response({"error": "Already following this user."}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Create the relationship
-    user_relationship = UserRelationships.objects.create(follower=follower, following=following)
-    
-    # serializer = UserRelationshipsSerializer(user_relationship)
-    # return Response(serializer.data, status=status.HTTP_201_CREATED)
-    follower_count = UserRelationships.objects.filter(following=following).count()
-    following_count = UserRelationships.objects.filter(follower=following).count()
-    is_following = UserRelationships.objects.filter(follower=follower, following=following).exists()
-    data = {
-        "id": user_id,
-        "user": user_id,
-        "follower_count": follower_count,
-        "following_count": following_count,
-        "is_following": is_following
-    }
-
-    return Response(data, status=status.HTTP_201_CREATED)
-
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def unfollow_user(request, user_id):
-    follower = request.user
-
-    try:
-        following = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-
-    if follower.id == following.id:
-        return Response({"error": "User cannot unfollow themselves."}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # # Check if the relationship already exists
-    # if UserRelationships.objects.filter(follower=follower, following=following).exists():
-    #     return Response({"error": "Already following this user."}, status=status.HTTP_400_BAD_REQUEST)
-    
-
-    relationship = UserRelationships.objects.filter(follower=follower, following=following).first()
-    if relationship:
-        # Delete the relationship
-        relationship.delete()
-
-    follower_count = UserRelationships.objects.filter(following=following).count()
-    following_count = UserRelationships.objects.filter(follower=following).count()
-    is_following = UserRelationships.objects.filter(follower=follower, following=following).exists()
-    data = {
-        "id": user_id,
-        "user": user_id,
-        "follower_count": follower_count,
-        "following_count": following_count,
-        "is_following": is_following
-    }
-
-    return Response(data, status=status.HTTP_201_CREATED)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def followers_following_count(request, user_id):
-    try:
-        user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-    
-    follower_count = UserRelationships.objects.filter(following=user).count()
-    following_count = UserRelationships.objects.filter(follower=user).count()
-    is_following = UserRelationships.objects.filter(follower=request.user, following=user).exists()
-    data = {
-        "id": user_id,
-        "user": user_id,
-        "follower_count": follower_count,
-        "following_count": following_count,
-        "is_following": is_following,
-    }
-    
-    return Response(data, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_followers_list(request):
-    user = request.user
-    
-    user_relationship = UserRelationships.objects.filter(following=user)
-    print(user_relationship)
-    # followers = followers_query.select_related('follower__userdetails')
-    serializer = FollowersSerializer(user_relationship, many=True,context={'request': request})
-    print(serializer.data)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_following_list(request):
-    user = request.user
-    
-    user_relationship = UserRelationships.objects.filter(follower=user)
-    print(user_relationship)
-    # followers = followers_query.select_related('follower__userdetails')
-    serializer = FollowingSerializer(user_relationship, many=True,context={'request': request})
-    print(serializer.data)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def success(request):
-   return JsonResponse('Success',safe=False)

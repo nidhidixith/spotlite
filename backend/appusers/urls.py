@@ -16,12 +16,5 @@ urlpatterns=[
   path('get-other-user-profile/<int:userId>/', views.get_other_user_profile, name='get_other_user_profile'),
   path('edit-profile/', views.edit_profile, name='edit_profile'),
 
-  path('follow/<int:user_id>/', views.follow_user, name='follow_user'),
-  path('unfollow/<int:user_id>/', views.unfollow_user, name='unfollow_user'),
-  
-  path('get-followers-following/<int:user_id>/', views.followers_following_count, name='followers_following_count'),
-  path('get-followers-list/', views.get_followers_list, name='get_followers_list'),
-  path('get-following-list/', views.get_following_list, name='get_following_list'),
-
   path('',views.success,name="success"),
 ]

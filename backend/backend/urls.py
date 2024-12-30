@@ -25,6 +25,8 @@ urlpatterns = [
     path('api/posts/',include('posts.urls')),
     path('api/events/',include('events.urls')),
     path('api/notifications/',include('notifications.urls')),
+    path('api/connections/',include('connections.urls')),
+    path('api/search_service/',include('search_service.urls')),
 ]
 
 if settings.DEBUG:

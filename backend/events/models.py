@@ -31,7 +31,7 @@ class Event(models.Model):
   event_date = models.DateField(null=True, blank=True)
   event_time = models.TimeField(null=True, blank=True)
   
-  event_location = models.URLField(max_length=200,null=True, blank=True)
+  event_location = models.CharField(max_length=200,null=True, blank=True)
   event_link = models.URLField(blank=True, null=True)
 
 #   interested_count = models.IntegerField(default=0, null=True, blank=True)

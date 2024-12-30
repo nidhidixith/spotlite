@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import add_event,get_events, get_user_events,get_other_user_events, interested_in_event, get_event_interests
+from .views import add_event,get_events, get_user_events,get_other_user_events, interested_in_event, get_event_interests, delete_event
 
 urlpatterns = [
     # path('events-posts/', EventListCreateView.as_view(), name='event-list-create'),
@@ -14,5 +14,7 @@ urlpatterns = [
 
     path('interested-in-event/<int:eventId>/',interested_in_event,name="interested-in-event"),
     path('get-event-interests/<int:eventId>/', get_event_interests, name='get-event-interests'),
+
+    path('delete-event/<int:eventId>/',delete_event,name="delete-event"),
 
 ]

@@ -33,8 +33,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
-    'channels',
+    # 'daphne',
+    # 'channels',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'posts',
     'events',
     'notifications',
+    'connections',
+    'search_service',
 
 
     'rest_framework_simplejwt.token_blacklist',
@@ -135,7 +137,8 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = 'backend.asgi.application'
+WSGI_APPLICATION = 'backend.wsgi.application'
+# ASGI_APPLICATION = 'backend.asgi.application'
 
 
 # Database
@@ -222,8 +225,11 @@ CORS_ALLOW_ALL_ORIGINS: True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    }
-}
+SITE_URL = 'http://localhost:8000'  # Replace with your site URL
+
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer",
+#     }
+# }

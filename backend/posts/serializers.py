@@ -95,11 +95,12 @@ class CommentSerializer(serializers.ModelSerializer):
     display_name = serializers.CharField(source='user.userprofile.display_name', read_only=True)
     profile_pic = serializers.SerializerMethodField()
     user_id = serializers.IntegerField(source='user.id', read_only=True)
+    post_owner_id = serializers.IntegerField(source='post.user.id', read_only=True)
     primary_interest = serializers.CharField(source='user.userprofile.primary_interest', read_only=True)
 
     class Meta:
         model = Comments
-        fields = ['id','user_id','user','display_name','post','post_media','profile_pic','text','primary_interest','created_at']
+        fields = ['id','user_id','post_owner_id','user','display_name','post','post_media','profile_pic','text','primary_interest','created_at']
 
     def get_profile_pic(self, obj):
         request = self.context.get('request')

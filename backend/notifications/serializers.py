@@ -11,7 +11,7 @@ class NotificationsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ['id', 'user', 'sender_name','message', 'post', 'event', 'is_read', 'sender_profile_pic',  'created_at' ]
+        fields = ['id', 'user', 'sender_name','message', 'post','follower_id', 'event', 'is_read','type', 'sender_profile_pic',  'created_at' ]
 
 
     def get_sender_profile_pic(self, obj):

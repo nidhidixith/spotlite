@@ -8,15 +8,21 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from .models import Post, Likes, Comments,  PostMedia
+from connections.models import UserRelation
+from notifications.models import Notification
+from notifications.models import PushToken
 from .serializers import PostsSerializer, LikeSerializer, CommentSerializer,  PostMediaSerializer
-
+from .utils import send_push_notification
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_posts(request):
+    current_user = request.user
     # print("Request user:")
     # print(request.user)
-    posts = Post.objects.exclude(user=request.user)
+    followees = UserRelation.objects.filter(follower=current_user).values_list('following', flat=True)
+    posts = Post.objects.filter(user__id__in=followees)
+    # posts = Post.objects.exclude(user=request.user)
     # print(posts)
     serializer = PostsSerializer(posts,many=True,context={'request': request})
     # print("2")
@@ -73,40 +79,6 @@ def add_post(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @api_view(['POST','DELETE'])
-# @permission_classes([IsAuthenticated])
-# def like_post(request, postId):
-#     current_user = request.user
-#     try:
-#         print("1")
-#         post = Post.objects.get(id=postId)
-#         print("2")
-#     except Post.DoesNotExist:
-#         return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-#     if request.method == 'POST':
-#         like_post = Likes.objects.create(user=current_user, post=post)
-#         print("3")
-#         serializer = PostsSerializer(post, context={'request': request})
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     elif request.method == 'DELETE':
-#         like = Likes.objects.filter(user=current_user, post=post).first()
-#         if like:
-#             like.delete()
-#         print("4")
-#         serializer = PostsSerializer(post, context={'request': request})
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)  
-    
-#     print("12")
-#     # print(serializer.data)
-#     print("13")
-#     return Response({"error": "Invalid post type."}, status=status.HTTP_400_BAD_REQUEST)
-
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Post, Likes
-from .serializers import PostsSerializer
 
 @api_view(['POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
@@ -126,6 +98,20 @@ def like_post(request, postId):
         # Create a new like
         Likes.objects.create(user=current_user, post=post)
         serializer = PostsSerializer(post, context={'request': request})
+
+
+        # Create notification only if the user is not the post owner
+        if current_user != post.user:
+            notification = Notification.objects.create(
+                user=post.user,
+                sender=current_user,
+                # message=f"{current_user.userprofile.display_name} liked your post",
+                message="liked your post",
+                type="like",
+                post=post,
+            )
+        
+        
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     elif request.method == 'DELETE':
@@ -191,6 +177,17 @@ def add_comment(request, postId):
                 print("Comment saved")
                 post_serializer = PostsSerializer(post, context={'request': request})
                 print("Post serialized")
+
+                 # Create notification only if the user is not the post owner
+                if current_user != post.user:
+                    notification = Notification.objects.create(
+                        user=post.user,
+                        sender=current_user,
+                        # message=f"{current_user.userprofile.display_name} liked your post",
+                        message="commented on your post",
+                        type="comment",
+                        post=post,
+                    )
                 return Response(post_serializer.data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(f"Error saving comment: {e}")
@@ -226,5 +223,46 @@ def get_comments(request, postId):
 
 
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_post(request, postId):
+    try:
+        # Fetch the post
+        post = Post.objects.get(id=postId)
+    except Post.DoesNotExist:
+        # Return 404 if the post does not exist
+        return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Ensure that the authenticated user is the owner of the post
+    if post.user != request.user:
+        return Response({"error": "You do not have permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
+    
+    # Delete the post
+    post.delete()
+    return Response({"message": "Post deleted successfully."}, status=status.HTTP_200_OK)
 
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_post_comment(request):
+    postId = request.query_params.get('postId')
+    commentId = request.query_params.get('commentId')
+    try:
+        # Fetch the post to ensure it exists
+        post = Post.objects.get(id=postId)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    try:
+        # Fetch the comment to ensure it exists
+        comment = Comments.objects.get(id=commentId, post=post)
+    except Comment.DoesNotExist:
+        return Response({"error": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Ensure the authenticated user is the owner of the comment or the post
+    if comment.user != request.user and post.user != request.user:
+        return Response({"error": "You do not have permission to delete this comment."}, status=status.HTTP_403_FORBIDDEN)
+    
+    # Delete the comment
+    comment.delete()
+    return Response({"message": "Comment deleted successfully."}, status=status.HTTP_200_OK)

@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=30, blank=True)
     display_name = models.CharField(max_length=65, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    location = models.URLField(max_length=200, null=True, blank=True)
+    location = models.CharField(max_length=200, null=True, blank=True)
     primary_interest = models.CharField(max_length=100, blank=True)
     bio = models.TextField(max_length=500, blank=True)
 
@@ -27,7 +27,6 @@ class UserProfile(models.Model):
 
     areas_of_interest = ArrayField(models.CharField(max_length=100), blank=True, default=list)
 
-    # Modify upload_to and default parameters
     profile_pic = models.ImageField(default='def.webp', upload_to='profile_pics', null=True, blank=True)
 
 
@@ -40,9 +39,3 @@ class UserProfile(models.Model):
         super().save(*args, **kwargs)
 
 
-class UserRelationships(models.Model):
-    follower = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
-    following = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
-    follower_count = models.IntegerField(default=0)
-    following_count = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)

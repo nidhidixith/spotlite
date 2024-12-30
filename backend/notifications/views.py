@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Notification
+from .models import Notification, PushToken
 from .serializers import NotificationsSerializer
 
 @api_view(['GET'])
@@ -23,8 +23,39 @@ def get_notifications(request):
     return Response(serializer.data)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def save_push_token(request):
+    token = request.data.get('pushToken')
+    print("Push token: ",token)
+    if token:
+        PushToken.objects.update_or_create(user=request.user, defaults={'expo_token': token})
+        return Response({'message': 'Token saved successfully!'})
+    return Response({'error': 'Token not provided'}, status=400)
 
 
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
+def mark_as_read(request, notificationId):
+    try:
+        notification = Notification.objects.get(id=notificationId, user=request.user)
+    except Notification.DoesNotExist:
+        return Response({'detail': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Update the 'is_read' field
+    notification.is_read = True
+    notification.save()
+
+    return Response({'detail': 'Notification marked as read.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def mark_all_as_read(request):
+    notifications = Notification.objects.filter(user=request.user, is_read=False)
+    notifications.update(is_read=True)
+    
+    return Response({'detail': 'All notifications marked as read.'}, status=status.HTTP_200_OK)
 
 # @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
@@ -44,126 +75,6 @@ def get_notifications(request):
 #             return Response(serializer.data, status=status.HTTP_201_CREATED)
 #         print(serializer.errors)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-@api_view(['POST', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def like_post(request, postId):
-    current_user = request.user
-
-    try:
-        post = Post.objects.get(id=postId)
-    except Post.DoesNotExist:
-        return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'POST':
-        # Check if the user already liked the post
-        if Likes.objects.filter(user=current_user, post=post).exists():
-            return Response({"error": "Post already liked."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Create a new like
-        Likes.objects.create(user=current_user, post=post)
-        serializer = PostsSerializer(post, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    elif request.method == 'DELETE':
-        # Check if the like exists
-        like = Likes.objects.filter(user=current_user, post=post).first()
-        if like:
-            like.delete()
-        else:
-            return Response({"error": "Like not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = PostsSerializer(post, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    return Response({"error": "Invalid request method."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_likes(request, postId):
-    likes = None  # Initialize likes variable
-    
-    try:
-        print("1")
-        post = Post.objects.get(id=postId)
-        print("2")
-    except Post.DoesNotExist:
-        return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-    print("2")
-    likes = Likes.objects.filter(post=post)
-    print("3")
-    
-    if likes is not None:    
-        print("8")
-        serializer = LikeSerializer(likes, many=True ,context={'request': request})
-        print("9")
-        print(serializer.data)
-        print("10")
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    return Response({"error": "Error fetching likes."},status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def add_comment(request, postId):
-    current_user = request.user
-    data=request.data
-    try:
-        print("1")
-        post = Post.objects.get(id=postId)
-        print("2")
-    except Post.DoesNotExist:
-        return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'POST':
-        serializer = CommentSerializer(data=data, partial=True,context={'request': request})
-        print("Serializer initialized")
-        if serializer.is_valid():
-            print("Serializer is valid")
-            try:
-                serializer.save(user=current_user, post=post)
-                print("Comment saved")
-                post_serializer = PostsSerializer(post, context={'request': request})
-                print("Post serialized")
-                return Response(post_serializer.data, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                print(f"Error saving comment: {e}")
-                return Response({"error": "Failed to save comment."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            print("Serializer errors:", serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    return Response({"error": "Invalid request method."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_comments(request, postId):
-    comments = None
-    try:
-        print("1")
-        post = Post.objects.get(id=postId)
-        print("2")
-    except Post.DoesNotExist:
-        return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-    print("2")
-    comments = Comments.objects.filter(post=post)
-    print("3")
-    if comments:    
-        print("4")
-        serializer = CommentSerializer(comments, many=True,context={'request': request})
-        print("5")
-        print(serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    return Response({"error": "Error fetching comments."},status=status.HTTP_400_BAD_REQUEST)
 
 
 
