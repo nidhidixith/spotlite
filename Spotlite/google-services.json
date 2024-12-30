@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "497171361000",
+    "project_id": "spotlite-4c80e",
+    "storage_bucket": "spotlite-4c80e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:497171361000:android:46c7320285d3bfe08fad5d",
+        "android_client_info": {
+          "package_name": "com.spotlitefrontend.Spotlite"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB08NnXpUNfHz8sW7NE90S_2yw5meCzg_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

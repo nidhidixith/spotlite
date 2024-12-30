@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Spotlite",
+    "slug": "Spotlite",
+    "scheme": "Spotlite",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier":"com.spotlitefrontend.Spotlite"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.spotlitefrontend.Spotlite",
+      "googleServicesFile":"./google-services.json"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fe2c0afa-2820-4038-b1f5-8fb306324ed9"
+      }
+    },
+    "owner": "spotlite-frontend",
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store"
+    ]
+  }
+}
