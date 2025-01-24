@@ -5,24 +5,23 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { useSelector, useDispatch } from "react-redux";
+import { router } from "expo-router";
+
 import {
   selectUserProfile,
   editProfile,
 } from "../../../slices/userProfileSlice";
-import { router } from "expo-router";
+
+import AntDesign from "@expo/vector-icons/AntDesign";
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
 const EditDetails = () => {
-  // const initialDisplayName = profile?.[0]?.display_name || "";
-  // const initialPrimaryInterest = profile?.[0]?.primary_interest || "";
-  // const initialLocation = profile?.[0]?.location || "";
-  // const initialDob = profile?.[0]?.date_of_birth || "";
-
   const {
     control,
     handleSubmit,
@@ -54,25 +53,46 @@ const EditDetails = () => {
     return regex.test(url) || "Invalid URL format (must start with https://)";
   };
 
+  const editProfileStatus = useSelector(
+    (state) => state.profile.userProfile.editProfileStatus
+  );
+
+  const editProfileError = useSelector(
+    (state) => state.profile.userProfile.editProfileError
+  );
+
+  if (editProfileStatus === "loading") {
+    return <LoadingIndicator />;
+  }
+
   const onSubmit = async (data) => {
     console.log(data);
     const profileData = new FormData();
 
+    profileData.append("first_name", data.firstName);
+    profileData.append("last_name", data.lastName);
     profileData.append("display_name", data.displayName);
     profileData.append("primary_interest", data.primary_interest);
     profileData.append("location", data.location);
     profileData.append("date_of_birth", data.dob);
 
-    console.log("Profile data from edit details", profileData);
     try {
       const response = await dispatch(editProfile(profileData)).unwrap();
       Alert.alert("Edit Successful");
       router.push("(app)/(tabs)/home");
     } catch (err) {
       console.error("Request failed", err);
-      Alert.alert("Request failed, Please try again later");
+      console.log(err);
+
+      const errorMessage =
+        (typeof err === "string" && err) || // If `err` is a string, use it
+        err?.message || // If `err` has a `message` property
+        JSON.stringify(err) || // Convert `err` to string if it's an object
+        "An unknown error occurred. Try again later"; // Fallback message
+
+      Alert.alert("Edit Failed", errorMessage); // Pass string to Alert.alert
       // Alert.alert(editProfileError);
-      router.push("(app)/(tabs)/home");
+      router.replace("(app)/(edit-profile)/edit-profile");
     }
   };
 
@@ -86,6 +106,60 @@ const EditDetails = () => {
         backgroundColor: "white",
       }}
     >
+      <View className="mb-6">
+        <Text className="text-lg font-bold mb-1">First name *</Text>
+        <Controller
+          control={control}
+          defaultValue={profile[0]?.first_name || ""}
+          rules={{
+            required: "First name is required",
+            maxLength: {
+              value: 10,
+              message: "Maximum 10 characters allowed",
+            },
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              className="border-b-2 border-gray-200"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="firstName"
+        />
+        {errors.firstName && (
+          <Text className="text-red-500 mb-2">{errors.firstName.message}</Text>
+        )}
+      </View>
+
+      <View className="mb-6">
+        <Text className="text-lg font-bold mb-1">Last name *</Text>
+        <Controller
+          control={control}
+          defaultValue={profile[0]?.last_name || ""}
+          rules={{
+            required: "Last name is required",
+            maxLength: {
+              value: 10,
+              message: "Maximum 10 characters allowed",
+            },
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              className="border-b-2 border-gray-200"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="lastName"
+        />
+        {errors.lastName && (
+          <Text className="text-red-500 mb-2">{errors.lastName.message}</Text>
+        )}
+      </View>
+
       <View className="mb-6">
         <Text className="text-lg font-bold mb-1">Display name *</Text>
         <Controller
@@ -117,7 +191,7 @@ const EditDetails = () => {
 
       <View className="mb-6">
         <Text className="text-lg font-bold mb-1">
-          Primary Interest/Profession
+          Primary Interest/Profession *
         </Text>
         <Controller
           control={control}
@@ -125,8 +199,8 @@ const EditDetails = () => {
           rules={{
             required: "This field is required",
             maxLength: {
-              value: 100,
-              message: "Maximum 100 characters allowed",
+              value: 50,
+              message: "Maximum 50 characters allowed",
             },
           }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -152,7 +226,10 @@ const EditDetails = () => {
           control={control}
           defaultValue={profile[0]?.location || ""}
           rules={{
-            validate: isValidUrl,
+            maxLength: {
+              value: 200,
+              message: "Maximum 200 characters allowed",
+            },
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
@@ -177,7 +254,19 @@ const EditDetails = () => {
           name="dob"
           rules={{
             required: "Date of birth is required",
-            // validate: isValidDate,
+            validate: (value) => {
+              const selectedDate = new Date(value);
+              const currentDate = new Date();
+
+              // Reset the time part of both dates to compare only the date
+              currentDate.setHours(0, 0, 0, 0);
+              selectedDate.setHours(0, 0, 0, 0);
+
+              if (selectedDate > currentDate) {
+                return "Date of birth cannot be in the future";
+              }
+              return true; // Validation passed
+            },
           }}
           render={({ field: { onChange, value } }) => (
             <>
@@ -214,11 +303,6 @@ const EditDetails = () => {
 
                     onChange(formattedDate); // Set the formatted date
                   }}
-                  // onChange={(event, selectedDate) => {
-                  //   const currentDate = selectedDate || value;
-                  //   setShowDatePicker(false);
-                  //   onChange(currentDate);
-                  // }}
                 />
               )}
             </>

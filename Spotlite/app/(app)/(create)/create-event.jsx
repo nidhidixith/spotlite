@@ -8,17 +8,19 @@ import {
   ScrollView,
   Button,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import { useForm, Controller } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import AntDesign from "@expo/vector-icons/AntDesign";
 
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useDispatch } from "react-redux";
 import { addNewEvent } from "../../../slices/eventsSlice";
+
+import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const CreateEvent = () => {
   const {
@@ -42,14 +44,6 @@ const CreateEvent = () => {
   const onEventDateChange = (event, selectedEventDate) => {
     const currentEventDate = selectedEventDate || eventDate;
     setShowDatePicker(false);
-    // const formattedEventDate = currentEventDate
-    //   ? `${currentEventDate.getFullYear()}-${(currentEventDate.getMonth() + 1)
-    //       .toString()
-    //       .padStart(2, "0")}-${currentEventDate
-    //       .getDate()
-    //       .toString()
-    //       .padStart(2, "0")}`
-    //   : "";
     setEventDate(selectedEventDate);
   };
 
@@ -57,18 +51,6 @@ const CreateEvent = () => {
   const onEventTimeChange = (event, selectedEventTime) => {
     const currentEventTime = selectedEventTime || eventTime;
     setShowTimePicker(false);
-    // const formattedEventTime = currentEventTime
-    //   ? `${currentEventTime
-    //       .getHours()
-    //       .toString()
-    //       .padStart(2, "0")}:${currentEventTime
-    //       .getMinutes()
-    //       .toString()
-    //       .padStart(2, "0")}:${currentEventTime
-    //       .getSeconds()
-    //       .toString()
-    //       .padStart(2, "0")}`
-    //   : "";
     setEventTime(selectedEventTime);
   };
 
@@ -82,8 +64,22 @@ const CreateEvent = () => {
     setShowTimePicker(true);
   };
 
+  const addEventStatus = useSelector((state) => state.event.addEventStatus);
+
+  // const fetchProfileError = useSelector(
+  //   (state) => state.userProfile.fetchProfileError
+  // );
+
+  if (addEventStatus === "loading") {
+    // Show Activity Indicator while loading
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#0284c7" />
+      </View>
+    );
+  }
+
   const onSubmit = async (data) => {
-    // console.log(data);
     const eventData = new FormData();
 
     eventData.append("event_title", data.event_title);
@@ -127,17 +123,24 @@ const CreateEvent = () => {
         eventData.append("uploaded_files", file);
       });
     }
-    console.log("Event data:", eventData);
 
     try {
       const response = await dispatch(addNewEvent(eventData)).unwrap();
-      // setText("");
-      // setMediaFiles({});
+
       Alert.alert("Event created successfully");
-      router.push("(app)/(tabs)/home");
+      // router.push("(app)/(tabs)/home");
     } catch (err) {
-      console.error("Failed to save the event: ", err);
-      Alert.alert("Failed to create event");
+      // console.error("Failed to save the event: ", err);
+      // Alert.alert("Failed to create event");
+      const errorMessage =
+        (typeof err === "string" && err) || // If `err` is a string, use it
+        err?.message || // If `err` has a `message` property
+        JSON.stringify(err) || // Convert `err` to string if it's an object
+        "An unexpected error occurred.";
+
+      // Add "Please register again" to the error message
+      const finalErrorMessage = `${errorMessage} Please try again.`;
+      Alert.alert("Error", finalErrorMessage);
       router.push("(app)/(tabs)/home");
     }
   };
@@ -210,8 +213,8 @@ const CreateEvent = () => {
               rules={{
                 required: "This field is required",
                 maxLength: {
-                  value: 100,
-                  message: "Maximum 100 characters allowed",
+                  value: 150,
+                  message: "Maximum 150 characters allowed",
                 },
               }}
               render={({ field: { onChange, onBlur, value } }) => (
@@ -272,8 +275,8 @@ const CreateEvent = () => {
               rules={{
                 required: "This field is required",
                 maxLength: {
-                  value: 4000,
-                  message: "Maximum 4000 characters allowed",
+                  value: 5000,
+                  message: "Maximum 5000 characters allowed",
                 },
               }}
               render={({ field: { onChange, onBlur, value } }) => (
@@ -302,7 +305,7 @@ const CreateEvent = () => {
             <Text className="mb-2 font-semibold text-[16px]">Event Date</Text>
             <View className="flex flex-row justify-between gap-4">
               <View className="flex flex-row items-center flex-1">
-                <Text className="text-[14px] mr-2">From</Text>
+                {/* <Text className="text-[14px] mr-2">From</Text> */}
                 <View className="flex-1">
                   <TouchableOpacity
                     className="flex flex-row items-center border border-gray-300 rounded-lg px-2 py-2"
@@ -312,10 +315,6 @@ const CreateEvent = () => {
                       {eventDate
                         ? eventDate.toLocaleDateString()
                         : "Select Date"}
-                      {/*{fromDate ? fromDate.toLocaleDateString() : "Select Date"}*/}
-                      {/* {value
-                        ? new Date(value).toLocaleDateString()
-                        : "Select Date"} */}
                     </Text>
                     <AntDesign name="calendar" size={16} color="black" />
                   </TouchableOpacity>
@@ -329,7 +328,7 @@ const CreateEvent = () => {
 
             <View className="flex flex-row justify-between gap-4">
               <View className="flex flex-row items-center flex-1">
-                <Text className="text-[14px] mr-2">From</Text>
+                {/* <Text className="text-[14px] mr-2">From</Text> */}
                 <View className="flex-1">
                   <TouchableOpacity
                     className="flex flex-row items-center border border-gray-300 rounded-lg px-2 py-2"
@@ -339,7 +338,6 @@ const CreateEvent = () => {
                       {eventTime
                         ? eventTime.toLocaleTimeString()
                         : "Select Time"}
-                      {/* {fromTime ? fromTime.toLocaleTimeString() : "Select Time"} */}
                     </Text>
                     <AntDesign name="clockcircleo" size={16} color="black" />
                   </TouchableOpacity>
@@ -384,6 +382,10 @@ const CreateEvent = () => {
               control={control}
               rules={{
                 validate: isValidUrl,
+                maxLength: {
+                  value: 200,
+                  message: "Maximum 200 characters allowed",
+                },
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
@@ -425,9 +427,6 @@ const CreateEvent = () => {
         {showDatePicker && (
           <DateTimePicker
             testID="datePicker"
-            // value={fromDate || new Date()} // Use a fallback for `null`
-            // value={new Date(fromDate) || new Date()} // Use a fallback for `null`
-            // value={fromDate}
             value={eventDate ? new Date(eventDate) : new Date()}
             mode="date"
             display="default"

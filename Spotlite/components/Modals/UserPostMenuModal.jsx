@@ -7,7 +7,6 @@ import { deletePost } from "../../slices/postsSlice";
 const UserPostMenuModal = ({ postId, bottomSheetRef }) => {
   const dispatch = useDispatch();
   const showAlert = () => {
-    console.log("Bottom sheet ref: ", bottomSheetRef);
     bottomSheetRef?.current?.close();
     Alert.alert(
       "Are you sure?",
@@ -20,7 +19,6 @@ const UserPostMenuModal = ({ postId, bottomSheetRef }) => {
         {
           text: "Delete",
           onPress: () => {
-            console.log("Delete Pressed");
             dispatch(deletePost({ postId }));
           },
         },

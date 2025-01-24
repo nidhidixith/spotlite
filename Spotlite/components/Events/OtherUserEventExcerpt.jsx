@@ -1,25 +1,14 @@
 import { View, Text, Image, Dimensions, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import { useSelector } from "react-redux";
+
 import { selectOtherUserEventById } from "../../slices/eventsSlice";
-import { TimeAgo } from "../TimeAgo";
 
 const OtherUserEventExcerpt = React.memo(({ eventId }) => {
   const event = useSelector((state) =>
     selectOtherUserEventById(state, eventId)
   );
-  // const eventMedia = event?.media_files[0]?.media_file;
-
-  // const isImage =
-  //   eventMedia?.endsWith(".jpg") ||
-  //   eventMedia?.endsWith(".png") ||
-  //   eventMedia?.endsWith(".jpeg") ||
-  //   eventMedia?.endsWith(".webp");
-
-  // console.log("Event media files:", event?.media_files);
-  // console.log("Event media file:", event?.media_files[0]?.media_file);
 
   const eventMediaFiles = event?.media_files;
 
@@ -33,7 +22,6 @@ const OtherUserEventExcerpt = React.memo(({ eventId }) => {
     )?.media_file || null;
 
   const uniqueKey = `otheruserevent-${event?.id}`;
-  const [showMore, setShowMore] = useState(false);
   return (
     <>
       <View className="bg-white px-4 py-2">
@@ -71,7 +59,6 @@ const OtherUserEventExcerpt = React.memo(({ eventId }) => {
             <Text className="font-rregular text-sm">
               {event?.event_date} {event?.event_time}
             </Text>
-            {/* <Text className="font-rregular text-sm text-gray-500">Online</Text> */}
             {event?.interested_count > 0 ? (
               <Text className="font-rregular text-sm text-gray-500">
                 {event?.interested_count} interested

@@ -5,7 +5,6 @@ const AboutPage = () => {
   return (
     <ScrollView className="bg-gray-50 flex-1">
       {/* Header Section */}
-      {/* <View className="bg-indigo-600 py-4 px-3"> */}
       <View className="bg-sky-600 py-3 px-3">
         <Text className="text-white text-xl font-bold text-center">
           About Spotlite
@@ -14,8 +13,6 @@ const AboutPage = () => {
 
       {/* Content Section */}
       <View className="px-4 py-6">
-        {/* Illustration */}
-
         {/* Main Text */}
         <Text className="text-gray-800 text-base leading-relaxed mb-4">
           Welcome to <Text className="font-bold">Spotlite</Text>, the ultimate
@@ -46,13 +43,6 @@ const AboutPage = () => {
           </Text>
         </View>
       </View>
-
-      {/* Footer Section */}
-      {/* <View className="px-4 py-6">
-        <TouchableOpacity className="bg-indigo-600 rounded-full py-3">
-          <Text className="text-center text-white font-bold">Get Started</Text>
-        </TouchableOpacity>
-      </View> */}
     </ScrollView>
   );
 };

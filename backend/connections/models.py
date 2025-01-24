@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 
 class UserRelation(models.Model):
-    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
-    following = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE, db_index=True)
+    following = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

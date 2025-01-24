@@ -1,5 +1,11 @@
-import React, { useEffect, useCallback } from "react";
-import { View, Text, FlatList } from "react-native";
+import React, { useEffect, useCallback, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -7,42 +13,50 @@ import {
   clearUserEvents,
   fetchUserEvents,
   selectAllUserEvents,
-  fetchUserEventsStatus,
 } from "../../slices/eventsSlice";
 
 import UserEventExcerpt from "./UserEventExcerpt";
+import EmptyState from "../Others/EmptyState";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+import LoadingIndicator from "../Others/LoadingIndicator";
 
 const UserEventsList = () => {
   const dispatch = useDispatch();
 
+  const fetchData = async () => {
+    try {
+      await dispatch(fetchUserEvents()).unwrap();
+    } catch (error) {
+      console.error("Failed to fetch events:", error); // Handle fetch errors
+    }
+  };
+
   useEffect(() => {
-    dispatch(fetchUserEvents());
-
-    // dispatch(loadUserFromLocalStorage());
-
-    // return () => {
-    //   dispatch(clearPosts());
-    // };
+    fetchData();
   }, [dispatch]);
 
   const events = useSelector(selectAllUserEvents);
-  console.log("Events:", events);
-  // const fetchPostsStatus = useSelector(
-  //   (state) => state.userProfile.fetchProfileStatus
-  // );
 
-  // const fetchProfileError = useSelector(
-  //   (state) => state.userProfile.fetchProfileError
-  // );
+  const fetchEventsStatus = useSelector(
+    (state) => state.event.userEvents.loading
+  );
+
+  const fetchEventsError = useSelector((state) => state.event.userEvents.error);
+
+  const handleRetry = () => {
+    fetchData(); // Retry fetching events
+  };
+
+  if (fetchEventsStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchEventsError) {
+    <ErrorDisplayComponent onRetry={handleRetry} />;
+  }
 
   const renderItem = ({ item }) => {
-    if (events.length === 0) {
-      return <View>Loading...</View>;
-    } else {
-      return (
-        <UserEventExcerpt key={`userevent-${item.id}`} eventId={item.id} />
-      );
-    }
+    return <UserEventExcerpt key={`userevent-${item.id}`} eventId={item.id} />;
   };
 
   return (
@@ -52,6 +66,15 @@ const UserEventsList = () => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.type}-${item.id}`}
         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
+        ListEmptyComponent={
+          <EmptyState
+            message="No events yet!"
+            details="Create events and engage with the community"
+          />
+        }
+        contentContainerStyle={
+          events.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
+        }
       />
     </SafeAreaView>
   );

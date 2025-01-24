@@ -1,6 +1,8 @@
-import { View, Text } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
+import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 
 import {
   clearEventInterests,
@@ -9,7 +11,8 @@ import {
 } from "../../slices/eventsSlice";
 
 import NameProfilePic from "../NameProfilePic";
-import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import LoadingIndicator from "../Others/LoadingIndicator";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
 
 const InterestedModal = ({ eventId, bottomSheetRef }) => {
   const dispatch = useDispatch();
@@ -24,6 +27,22 @@ const InterestedModal = ({ eventId, bottomSheetRef }) => {
       dispatch(clearEventInterests());
     };
   }, [dispatch, eventId]);
+
+  const fetchInterestedStatus = useSelector(
+    (state) => state.event.eventInterests.loading
+  );
+
+  const fetchInterestedError = useSelector(
+    (state) => state.event.eventInterests.error
+  );
+
+  if (fetchInterestedStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchInterestedError) {
+    return <ErrorDisplayComponent />;
+  }
 
   const renderItem = ({ item }) => {
     return (
@@ -42,9 +61,6 @@ const InterestedModal = ({ eventId, bottomSheetRef }) => {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-
-        // ListHeaderComponent={<Text>{like_count} likes</Text>}
-        // contentContainerStyle={styles.contentContainer}
       />
     </View>
   );

@@ -4,6 +4,7 @@ let socket = null;
 
 export const connectWebSocket = () => {
   // const userId = useSelector((state) => state.users.ids[0]);
+  // const userId = useSelector((state) => state.users.currentUserId);
 
   socket = new WebSocket(`ws://192.168.1.34:8000/ws/nc/`);
   // socket = new WebSocket(`ws://192.168.1.34:8000/ws/nc/?userId=${userId}`);

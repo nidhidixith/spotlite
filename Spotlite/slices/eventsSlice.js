@@ -21,6 +21,8 @@ const otherUserEventsAdapter = createEntityAdapter({
 
 const eventInterestsAdapter = createEntityAdapter();
 
+const specificEventAdapter = createEntityAdapter({});
+
 // Define initial states
 const initialState = {
   events: eventsAdapter.getInitialState({
@@ -40,17 +42,19 @@ const initialState = {
     loading: false,
     error: null,
   }),
+  specificEvent: specificEventAdapter.getInitialState({
+    loading: false,
+    error: null,
+  }),
+  addEventStatus: "idle", // New state for add post status
+  addEventError: null, // New state for add post error
 };
 
 export const fetchEvents = createAsyncThunk(
   "events/fetchEvents",
   async (filter) => {
-    // const response = await instance.get("/events/get-events/");
     const response = await instance.get(`/events/get-events/?filter=${filter}`);
-
-    // console.log("From postSlice:", response.data);
     return response.data;
-    // return { filter, events: response.data };
   }
 );
 
@@ -68,16 +72,14 @@ export const fetchOtherUserEvents = createAsyncThunk(
     const response = await instance.get(
       `/events/get-other-user-events/${userId}/`
     );
-    console.log("From event slice", response.data);
     return response.data;
   }
 );
 
 export const addNewEvent = createAsyncThunk(
   "events/addNewEvent",
-  async (eventData) => {
+  async (eventData, { rejectWithValue }) => {
     try {
-      console.log("Formdata is: ", eventData);
       const response = await instance.post("/events/add-event/", eventData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -86,10 +88,7 @@ export const addNewEvent = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      if (!error.response) {
-        throw error;
-      }
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -108,7 +107,6 @@ export const addInterestInEvent = createAsyncThunk(
         }
       );
 
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -133,7 +131,6 @@ export const removeInterestInEvent = createAsyncThunk(
         }
       );
 
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -151,8 +148,19 @@ export const fetchInterests = createAsyncThunk(
       `/events/get-event-interests/${eventId}/`,
       {}
     );
-    console.log(response.data);
     return response.data;
+  }
+);
+
+export const fetchSpecificEvent = createAsyncThunk(
+  "specificEvent/fetchSpecificEvent",
+  async ({ eventId }, { rejectWithValue }) => {
+    try {
+      const response = await instance.get(`/events/get-event/${eventId}/`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
   }
 );
 
@@ -169,7 +177,6 @@ export const deleteEvent = createAsyncThunk(
         }
       );
 
-      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -199,6 +206,9 @@ const eventsSlice = createSlice({
     clearEventInterests: (state) => {
       eventInterestsAdapter.removeAll(state.eventInterests);
     },
+    clearSpecificEvent: (state) => {
+      specificEventAdapter.removeAll(state.specificEvent);
+    },
   },
   extraReducers(builder) {
     builder
@@ -208,10 +218,7 @@ const eventsSlice = createSlice({
       })
       .addCase(fetchEvents.fulfilled, (state, action) => {
         state.events.loading = false;
-        // eventsAdapter.upsertMany(state.events, action.payload);
         eventsAdapter.setAll(state.events, action.payload);
-        // state.events.currentFilter = action.payload.filter; // Store the filter
-        // eventsAdapter.upsertMany(state.events, action.payload.events);
       })
       .addCase(fetchEvents.rejected, (state, action) => {
         state.events.loading = false;
@@ -225,7 +232,7 @@ const eventsSlice = createSlice({
       })
       .addCase(fetchUserEvents.fulfilled, (state, action) => {
         state.userEvents.loading = false;
-        userEventsAdapter.upsertMany(state.userEvents, action.payload);
+        userEventsAdapter.setAll(state.userEvents, action.payload);
       })
       .addCase(fetchUserEvents.rejected, (state, action) => {
         state.userEvents.loading = false;
@@ -239,10 +246,7 @@ const eventsSlice = createSlice({
       })
       .addCase(fetchOtherUserEvents.fulfilled, (state, action) => {
         state.otherUserEvents.loading = false;
-        otherUserEventsAdapter.upsertMany(
-          state.otherUserEvents,
-          action.payload
-        );
+        otherUserEventsAdapter.setAll(state.otherUserEvents, action.payload);
       })
       .addCase(fetchOtherUserEvents.rejected, (state, action) => {
         state.otherUserEvents.loading = false;
@@ -258,22 +262,10 @@ const eventsSlice = createSlice({
         // state.otherUserPosts.loading = false;
         // otherUserPostsAdapter.upsertOne(state.otherUserPosts, action.payload);
 
-        // const event = state.events.find((e) => e.id === action.payload.id);
-
-        console.log("Action payload:", action.payload);
-
         const fullEvent = state.events.entities[action.payload.id];
         const fullUserEvent = state.userEvents.entities[action.payload.id];
         const fullOtherUserEvent =
           state.otherUserEvents.entities[action.payload.id];
-
-        console.log("Event IDs:", state.events.ids);
-        console.log("User Event IDs:", state.userEvents.ids);
-        console.log("Other User Event IDs:", state.otherUserEvents.ids);
-
-        console.log("Full Event:", fullEvent);
-        console.log("Full User Event:", fullUserEvent);
-        console.log("Full Other User Event:", fullOtherUserEvent);
 
         if (fullEvent) {
           fullEvent.is_interested = true;
@@ -307,13 +299,9 @@ const eventsSlice = createSlice({
         const fullOtherUserEvent =
           state.otherUserEvents.entities[action.payload.id];
 
-        console.log("Event IDs:", state.events.ids);
-        console.log("User Event IDs:", state.userEvents.ids);
-        console.log("Other User Event IDs:", state.otherUserEvents.ids);
-
-        console.log("Full Event:", fullEvent);
-        console.log("Full User Event:", fullUserEvent);
-        console.log("Full Other User Event:", fullOtherUserEvent);
+        // console.log("Event IDs:", state.events.ids);
+        // console.log("User Event IDs:", state.userEvents.ids);
+        // console.log("Other User Event IDs:", state.otherUserEvents.ids);
 
         if (fullEvent) {
           fullEvent.is_interested = false;
@@ -334,20 +322,46 @@ const eventsSlice = createSlice({
         // state.otherUserPosts.error = action.error.message;
       })
 
-      // For AddNewPost
+      .addCase(addNewEvent.pending, (state) => {
+        state.addEventStatus = "loading";
+        state.addEventError = null;
+      })
       .addCase(addNewEvent.fulfilled, (state, action) => {
-        // state.posts.loading = false;
-        // Add the new post directly to state.posts
-        eventsAdapter.addOne(state.events, action.payload);
+        state.addEventStatus = "succeeded";
+        userEventsAdapter.addOne(state.userEvents, action.payload);
+      })
+      .addCase(addNewEvent.rejected, (state, action) => {
+        state.addEventStatus = "failed";
+
+        state.addEventError =
+          action.payload ||
+          action.payload.detail ||
+          action.error.message ||
+          "Failed to create event";
+      })
+
+      // For specific event
+      .addCase(fetchSpecificEvent.pending, (state) => {
+        state.specificEvent.loading = true;
+        state.specificEvent.error = null;
+      })
+      .addCase(fetchSpecificEvent.fulfilled, (state, action) => {
+        state.specificEvent.loading = false;
+        // postsAdapter.setAll(state.posts, action.payload);
+        specificEventAdapter.setOne(state.specificEvent, action.payload);
+      })
+      .addCase(fetchSpecificEvent.rejected, (state, action) => {
+        state.specificEvent.loading = false;
+        state.specificEvent.error =
+          action.payload.error || "Error fetching event";
       })
 
       // For DeleteEvent
       .addCase(deleteEvent.fulfilled, (state, action) => {
         // state.posts.loading = false;
         const eventId = action.meta.arg.eventId; // Extract postId
-        console.log("EventId to Remove:", eventId);
         userEventsAdapter.removeOne(state.userEvents, eventId); // Use the actual ID
-        console.log("Existing Event IDs after Removal:", state.userEvents.ids);
+        // console.log("Existing Event IDs after Removal:", state.userEvents.ids);
       })
 
       // For FetchInterests
@@ -357,7 +371,7 @@ const eventsSlice = createSlice({
       })
       .addCase(fetchInterests.fulfilled, (state, action) => {
         state.eventInterests.loading = false;
-        eventInterestsAdapter.upsertMany(state.eventInterests, action.payload);
+        eventInterestsAdapter.setAll(state.eventInterests, action.payload);
       })
       .addCase(fetchInterests.rejected, (state, action) => {
         state.eventInterests.loading = false;
@@ -372,6 +386,7 @@ export const {
   clearUserEvents,
   clearOtherUserEvents,
   clearEventInterests,
+  clearSpecificEvent,
 } = eventsSlice.actions;
 
 export default eventsSlice.reducer;
@@ -400,6 +415,12 @@ export const {
   selectIds: selectEventInterestsIds,
 } = eventInterestsAdapter.getSelectors((state) => state.event.eventInterests);
 
+export const {
+  selectAll: selectAllSpecificEvents,
+  selectById: selectSpecificEventById,
+  selectIds: selectSpecificEventIds,
+} = specificEventAdapter.getSelectors((state) => state.event.specificEvent);
+
 export const selectInterestsByEvent = createSelector(
   [selectAllEventInterests, (state, eventId) => eventId],
   (interests, eventId) =>
@@ -410,8 +431,3 @@ export const selectEventsByUser = createSelector(
   [selectAllOtherUserEvents, (state, userId) => userId],
   (events, userId) => events.filter((event) => event.user === userId)
 );
-
-// export const selectEventsByFilter = createSelector(
-//   [selectAllEvents, (state, filter) => filter],
-//   (events, filter) => events.filter((event) => event.currentFilter === filter)
-// );

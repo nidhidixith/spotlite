@@ -1,9 +1,16 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import { Controller, set, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  TextInput,
+  TouchableOpacity,
+  View,
+  Text,
+  ActivityIndicator,
+} from "react-native";
+import { Controller, useForm } from "react-hook-form";
 
 import { addComment } from "../../slices/postsSlice";
-import { TextInput, TouchableOpacity, View, Text } from "react-native";
 
 const CommentBox = ({ postId, postComments, setPostComments }) => {
   const dispatch = useDispatch();
@@ -14,6 +21,21 @@ const CommentBox = ({ postId, postComments, setPostComments }) => {
     reset,
     formState: { errors, isDirty },
   } = useForm();
+
+  const addCommentStatus = useSelector((state) => state.post.addCommentStatus);
+
+  // const fetchProfileError = useSelector(
+  //   (state) => state.userProfile.fetchProfileError
+  // );
+
+  if (addCommentStatus === "loading") {
+    // Show Activity Indicator while loading
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#0284c7" />
+      </View>
+    );
+  }
 
   const onSubmit = (data) => {
     const commentData = new FormData();

@@ -1,20 +1,21 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import React, { useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { likePost, unLikePost, selectPostById } from "../../slices/postsSlice";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+
 import CustomBottomSheetModal from "../Modals/CustomBottomSheetModal";
 import LikesModal from "../Modals/LikesModal";
 import CommentsModal from "../Modals/CommentsModal";
 import CommentBox from "./CommentBox";
 
-const PostButtons = ({ postId }) => {
+import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+
+const PostButtons = ({ post }) => {
   const dispatch = useDispatch();
 
-  const post = useSelector((state) => selectPostById(state, postId));
+  // const post = useSelector((state) => selectPostById(state, postId));
   let [postLikes, setPostLikes] = useState(post?.like_count);
   let [postComments, setPostComments] = useState(post?.comment_count);
   let [isPostLiked, setIsPostLiked] = useState(post?.is_liked);
@@ -42,14 +43,14 @@ const PostButtons = ({ postId }) => {
 
   const handleGetLikes = () => {
     setModalContent(
-      <LikesModal postId={postId} bottomSheetRef={bottomSheetRef} />
+      <LikesModal postId={post?.id} bottomSheetRef={bottomSheetRef} />
     );
     bottomSheetRef.current?.present();
   };
 
   const handleGetComments = () => {
     setModalContent(
-      <CommentsModal postId={postId} bottomSheetRef={bottomSheetRef} />
+      <CommentsModal postId={post?.id} bottomSheetRef={bottomSheetRef} />
     );
     bottomSheetRef.current?.present();
   };
@@ -95,7 +96,7 @@ const PostButtons = ({ postId }) => {
 
       {showCommentBox && (
         <CommentBox
-          postId={postId}
+          postId={post.id}
           postComments={postComments}
           setPostComments={setPostComments}
         />

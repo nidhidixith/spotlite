@@ -34,16 +34,16 @@ class PostsSerializer(serializers.ModelSerializer):
 
     display_name = serializers.CharField(source='user.userprofile.display_name', read_only=True)
     profile_pic = serializers.SerializerMethodField()
-    # profile_pic = serializers.ImageField(source='user.userprofile.profile_pic', read_only=True)
     user_id = serializers.IntegerField(source='user.id', read_only=True)
 
     like_count = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'user_id', 'display_name', 'profile_pic', 'text', 'created_at', 'media_files', 'uploaded_files','like_count','is_liked','comment_count']
+        fields = ['id', 'user', 'user_id', 'display_name', 'profile_pic', 'text', 'created_at', 'media_files', 'uploaded_files','like_count','is_liked','comment_count','content_type']
 
 
     def get_profile_pic(self, obj):
@@ -63,6 +63,9 @@ class PostsSerializer(serializers.ModelSerializer):
 
     def get_comment_count(self, obj):
         return Comments.objects.filter(post=obj).count()
+
+    def get_content_type(self, obj):
+        return "post"
 
 
     def create(self, validated_data):

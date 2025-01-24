@@ -1,13 +1,14 @@
 import { View, Text, Alert, TouchableOpacity } from "react-native";
 import React from "react";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useDispatch } from "react-redux";
+
 import { deleteEvent } from "../../slices/eventsSlice";
+
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const UserEventMenuModal = ({ eventId, bottomSheetRef }) => {
   const dispatch = useDispatch();
   const showAlert = () => {
-    console.log("Bottom sheet ref: ", bottomSheetRef);
     bottomSheetRef?.current?.close();
     Alert.alert(
       "Are you sure?",
@@ -20,7 +21,6 @@ const UserEventMenuModal = ({ eventId, bottomSheetRef }) => {
         {
           text: "Delete",
           onPress: () => {
-            console.log("Delete Pressed");
             dispatch(deleteEvent({ eventId }));
           },
         },

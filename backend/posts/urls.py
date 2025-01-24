@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns=[
   path('get-posts/',views.get_posts,name="get-posts"),
+  path('get-post/<int:postId>/',views.get_post,name="get-post"),
   path('get-user-posts/',views.get_user_posts,name="get-user-posts"),
   path('get-other-user-posts/<int:userId>/',views.get_other_user_posts,name="get-other-user-posts"),
 
@@ -15,5 +16,7 @@ urlpatterns=[
   path('get-likes/<int:postId>/', views.get_likes, name='get-likes'),
   path('get-comments/<int:postId>/', views.get_comments, name='get-comments'),
   path('delete-post-comment/', views.delete_post_comment, name='delete_post_comment'),
+
+  
 
 ]

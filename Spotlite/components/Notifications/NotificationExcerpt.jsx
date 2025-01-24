@@ -2,33 +2,40 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   markAsRead,
   selectNotificationById,
 } from "../../slices/notificationsSlice";
-import { fetchUserPosts } from "../../slices/postsSlice";
-import { TimeAgo } from "../TimeAgo";
+
+import { fetchSpecificPost, fetchUserPosts } from "../../slices/postsSlice";
 import { fetchUserEvents } from "../../slices/eventsSlice";
 import { fetchOtherUserProfile } from "../../slices/userProfileSlice";
 
+import { TimeAgo } from "../TimeAgo";
+
 const NotificationExcerpt = React.memo(({ notificationId }) => {
   const dispatch = useDispatch();
+
   const notification = useSelector((state) =>
     selectNotificationById(state, notificationId)
   );
 
+  // console.log("Notification from excerpt: ", notification);
   const uniqueKey = `notification-${notification?.id}`;
 
   const [isRead, setisRead] = useState(notification?.is_read);
+
   const bgColor = isRead ? "bg-white" : "bg-gray-100";
-  console.log("Notification:", notification);
-  console.log("Notification type:", notification?.type);
-  console.log("Notification typeof:", typeof notification?.type);
+
   const handleNotificationClick = () => {
     if (notification?.type === "like" || notification?.type === "comment") {
-      dispatch(fetchUserPosts());
+      // dispatch(fetchSpecificPost({ postId: notification?.post }));
       setisRead(true);
-      dispatch(markAsRead({ notificationId: notification.id }));
+      if (!notification?.is_read) {
+        dispatch(markAsRead({ notificationId: notification.id }));
+      }
+
       router.push({
         pathname: "(app)/post/[id]",
         params: {
@@ -38,7 +45,9 @@ const NotificationExcerpt = React.memo(({ notificationId }) => {
     } else if (notification?.type === "interested") {
       dispatch(fetchUserEvents());
       setisRead(true);
-      dispatch(markAsRead({ notificationId: notification.id }));
+      if (!notification?.is_read) {
+        dispatch(markAsRead({ notificationId: notification.id }));
+      }
       router.push({
         pathname: "(app)/event/[id]",
         params: {
@@ -49,7 +58,9 @@ const NotificationExcerpt = React.memo(({ notificationId }) => {
       console.log("Follow type notification");
       dispatch(fetchOtherUserProfile(notification.follower_id));
       setisRead(true);
-      dispatch(markAsRead({ notificationId: notification.id }));
+      if (!notification?.is_read) {
+        dispatch(markAsRead({ notificationId: notification.id }));
+      }
       router.push({
         pathname: "(app)/display-profile/[userId]",
         params: {

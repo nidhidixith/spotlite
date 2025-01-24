@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 const Welcome = () => {
   return (
@@ -31,7 +32,10 @@ const Welcome = () => {
             journey, and grow your audience effortlessly.
           </Text>
 
-          <TouchableOpacity className="border border-white py-2 rounded-xl self-center w-full">
+          <TouchableOpacity
+            className="border border-white py-2 rounded-xl self-center w-full"
+            onPress={() => router.replace("(auth)/login")}
+          >
             <Text className="font-rregular text-white text-xl font-bold self-center">
               Get Started
             </Text>

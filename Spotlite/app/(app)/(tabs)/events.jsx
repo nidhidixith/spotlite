@@ -7,8 +7,8 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import Toolbar from "../../../components/Toolbar";
-import EventExcerpt from "../../../components/Events/EventExcerpt";
 import EventsList from "../../../components/Events/EventsList";
 
 const Events = () => {

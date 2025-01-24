@@ -4,162 +4,135 @@ import {
   Text,
   TextInput,
   FlatList,
-  Image,
   TouchableOpacity,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
-import { Link, router } from "expo-router";
 
-const Step5 = ({ handlePrevStep, handleNextStep }) => {
+const Step5 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setError,
+    clearErrors,
   } = useForm();
 
-  const [tags, setTags] = useState([]);
-  const maxInterests = 10;
-  const [error, setError] = useState(null);
-  const availableInterests = [
-    "painting",
-    "singing",
-    "dance",
-    "acting",
-    "writing",
-    "poetry",
-    "blogging",
-    "design",
-    "vlogging",
-    "photography",
-    "cinematography",
-    "travel",
-    "animation",
-    "health",
-    "fashion",
-    "fitness",
-    "cooking",
-    "podcasting",
-    "sports",
-    "gaming",
-  ];
+  const maxLength = 200; // Define the maximum length constraint
 
-  const [tagInput, setTagInput] = useState("");
+  const [links, setLinks] = useState([]);
+  const [linkInput, setLinkInput] = useState("");
 
-  const addTagFromInput = () => {
-    if (!tagInput.trim()) return;
-
-    if (!tags.includes(tagInput.toLowerCase())) {
-      setTags([...tags, tagInput.toLowerCase()]);
-    }
-    setTagInput("");
+  // Function to check valid URLs
+  const isValidUrl = (url) => {
+    if (!url) return true; // Allow empty input
+    const regex = /^https:\/\/[^\s/$.?#].[^\s]*$/i;
+    return regex.test(url) || "Invalid URL format (must start with https://)";
   };
 
-  function addTag(interest) {
-    if (tags.length < maxInterests && !tags.includes(interest)) {
-      setTags([...tags, interest.toLowerCase()]);
+  // Add link function
+  const addLink = () => {
+    if (!linkInput.trim()) return;
+
+    // Check if the link exceeds the maximum length
+    if (linkInput.length > maxLength) {
+      setError("linkInput", {
+        type: "manual",
+        message: `Link must be less than ${maxLength} characters.`,
+      });
+      return; // Stop further processing if the length is exceeded
     }
-  }
 
-  function removeTag(index) {
-    setTags(tags.filter((_, i) => i !== index));
-  }
+    const validationResult = isValidUrl(linkInput);
+    if (validationResult === true) {
+      if (!links.includes(linkInput)) {
+        setLinks([...links, linkInput]);
+        clearErrors("linkInput"); // Clear any existing error once a valid link is added
+      }
+    } else {
+      setError("linkInput", {
+        type: "manual",
+        message: validationResult, // Set error if link is invalid
+      });
+    }
+    setLinkInput(""); // Clear input after adding
+  };
 
+  // Remove link function
+  const removeLink = (index) => {
+    setLinks(links.filter((_, i) => i !== index));
+  };
+
+  // On form submit
   const onSubmit = () => {
-    if (tags.length === 0) {
-      setError("Please select/add at least one interest.");
-      return;
-    }
-    if (tags.length > maxInterests) {
-      setError("Maximum 10 interests allowed.");
-      return;
-    }
-    console.log("Tags:", tags);
-    // router.push("/step6");
-    const obj = { tags: tags };
-    handleNextStep(obj);
+    console.log("Links:", links);
+
+    const obj = { additionalLinks: links };
+    handleNextStep(obj); // Go to the next step
   };
 
   return (
     <>
-      <Text className="text-xl font-semibold text-center mb-5">
-        Add Areas of Interest
-      </Text>
-      <Text className="italic mb-3 text-sky-600 ml-1">
-        Select atleast one. Maximum 10.
+      <Text className="text-2xl font-semibold text-center mb-5">
+        Add Websites
       </Text>
 
-      <View className="flex flex-row flex-wrap justify-between items-center mb-5">
-        {availableInterests.map((interest) => (
-          <TouchableOpacity
-            key={interest}
-            className="flex flex-row bg-gray-100 border border-gray-200 p-1 m-1 justify-center items-center rounded-lg"
-            onPress={() => addTag(interest)}
-          >
-            <Text className="text-black">
-              {interest.charAt(0).toUpperCase() + interest.slice(1)}
-            </Text>
-            {/* <SecondaryButton
-              containerStyles="bg-white border p-1 ml-1 mr-1"
-              textStyles="text-black"
-              title={interest.charAt(0).toUpperCase() + interest.slice(1)}
-              handlePress={() => addTag(interest)}
-            ></SecondaryButton> */}
-          </TouchableOpacity>
-        ))}
-      </View>
+      <TouchableOpacity onPress={handleSkip}>
+        <Text className="self-end text-end text-sky-600 text-[16px]">Skip</Text>
+      </TouchableOpacity>
 
-      {error && <Text className="text-red-500 mb-1">{error}</Text>}
-
-      <View className="flex flex-row flex-wrap items-center">
-        <Controller
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
+      <View className="mb-5">
+        <View className="mb-3">
+          <Text className="mb-2 font-semibold text-[16px]">Websites</Text>
+          <Controller
+            control={control}
+            rules={{
+              validate: isValidUrl,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className="rounded-sm bg-gray-100 px-2 py-2 flex-1"
+                className="rounded-xl border border-gray-200 px-2 py-2"
                 onBlur={onBlur}
                 onChangeText={(text) => {
                   onChange(text);
-                  setTagInput(text);
+                  setLinkInput(text);
                 }}
-                value={tagInput}
-                placeholder="Type your interests"
+                value={linkInput}
+                placeholder="Add links to your websites"
               />
-            </>
+            )}
+            name="linkInput"
+          />
+          {/* Display error if invalid link is added */}
+          {errors.linkInput && (
+            <Text className="text-red-500 mb-2">
+              {errors.linkInput.message}
+            </Text>
           )}
-          name="tags"
-        />
+        </View>
+
+        {/* Render the list of added links */}
+        {links.map((item, index) => (
+          <View
+            key={index}
+            className="flex flex-row items-center p-1 flex-wrap rounded-sm bg-gray-100 px-2 py-2 mb-1"
+          >
+            <Text className="flex-1">{item}</Text>
+
+            <TouchableOpacity
+              className="bg-red-500 p-1 rounded-lg"
+              onPress={() => removeLink(index)}
+            >
+              <Text className="text-white">Remove</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
 
         <TouchableOpacity
-          className="ml-2 bg-sky-100 px-2 py-3 rounded-lg"
-          onPress={addTagFromInput}
+          className="bg-gray-300 p-2 rounded-lg mt-5 self-end"
+          onPress={addLink}
         >
-          <Text>Add</Text>
+          <Text className="">Add link</Text>
         </TouchableOpacity>
-      </View>
-      {/* {errors.additionalLinks && (
-              <Text className="text-red-500 mb-2">
-                {errors.additionalLinks.message}
-              </Text>
-            )} */}
-
-      <View className="py-1 flex flex-row flex-wrap justify-between items-center mb-5 mt-2  rounded-lg">
-        {tags.map((tag, index) => (
-          <TouchableOpacity
-            activeOpacity={0.5}
-            key={index}
-            onPress={() => removeTag(index)}
-            className="flex flex-row justify-between items-center rounded-lg bg-sky-50 border border-sky-100 flex-wrap m-1 px-2 py-1"
-          >
-            <Text className="text-sky-600">
-              {tag.charAt(0).toUpperCase() + tag.slice(1)}
-            </Text>
-
-            <Text className="text-red-500 ml-1">x</Text>
-          </TouchableOpacity>
-        ))}
       </View>
 
       <View className="flex flex-row justify-between gap-x-4 mt-5">

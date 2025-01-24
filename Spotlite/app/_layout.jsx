@@ -22,30 +22,30 @@ import { Provider } from "react-redux";
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
-  const [loaded, error] = useFonts({
-    rthin: Roboto_100Thin,
-    // Roboto_100Thin_Italic,
-    rlight: Roboto_300Light,
-    // Roboto_300Light_Italic,
-    rregular: Roboto_400Regular,
-    // Roboto_400Regular_Italic,
-    rmedium: Roboto_500Medium,
-    // Roboto_500Medium_Italic,
-    rbold: Roboto_700Bold,
-    // Roboto_700Bold_Italic,
-    rblack: Roboto_900Black,
-    // Roboto_900Black_Italic,
-  });
+  // const [loaded, error] = useFonts({
+  //   rthin: Roboto_100Thin,
+  //   // Roboto_100Thin_Italic,
+  //   rlight: Roboto_300Light,
+  //   // Roboto_300Light_Italic,
+  //   rregular: Roboto_400Regular,
+  //   // Roboto_400Regular_Italic,
+  //   rmedium: Roboto_500Medium,
+  //   // Roboto_500Medium_Italic,
+  //   rbold: Roboto_700Bold,
+  //   // Roboto_700Bold_Italic,
+  //   rblack: Roboto_900Black,
+  //   // Roboto_900Black_Italic,
+  // });
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
+  // useEffect(() => {
+  //   if (loaded || error) {
+  //     SplashScreen.hideAsync();
+  //   }
+  // }, [loaded, error]);
 
-  if (!loaded && !error) {
-    return null;
-  }
+  // if (!loaded && !error) {
+  //   return null;
+  // }
   return (
     <Provider store={store}>
       <Stack>

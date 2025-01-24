@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  Button,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 
 import { router } from "expo-router";
 
@@ -22,13 +15,6 @@ const Toolbar = () => {
     <View className="bg-white flex flex-row items-center justify-between px-2 py-3 mb-2">
       <AppName />
       <View className="flex flex-row justify-between items-center relative">
-        {/* <TouchableOpacity
-          className="px-3"
-          // onPress={() => router.push("/success")}
-        >
-          <FontAwesome name="search" size={22} color="black" />
-        </TouchableOpacity> */}
-
         <TouchableOpacity
           className="px-3"
           onPress={() => {
@@ -101,8 +87,8 @@ const styles = StyleSheet.create({
   },
   content: {
     position: "absolute",
-    top: 50, // Position below the toolbar
-    right: 40, // Adjust as necessary
+    top: 50,
+    right: 40,
     backgroundColor: "white",
     paddingVertical: 5,
     paddingHorizontal: 10,

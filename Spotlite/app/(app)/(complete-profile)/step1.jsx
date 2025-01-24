@@ -1,9 +1,5 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
-import { Link, router } from "expo-router";
 
 const Step1 = ({ handleNextStep }) => {
   return (

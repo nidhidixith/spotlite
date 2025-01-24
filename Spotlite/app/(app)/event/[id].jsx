@@ -1,24 +1,59 @@
+import { ActivityIndicator, View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
-import { router, useLocalSearchParams, useRouter } from "expo-router";
-import { View, Text } from "react-native";
-import UserEventExcerpt from "../../../components/Events/UserEventExcerpt";
+import { useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
-  fetchUserEvents,
-  selectAllUserEvents,
-  selectUserEventById,
+  clearSpecificEvent,
+  fetchSpecificEvent,
+  selectAllSpecificEvents,
 } from "../../../slices/eventsSlice";
-import DisplayNotificationEvent from "../../../components/Events/DisplayNotificationEvent";
+import GeneralEventDetail from "../../../components/Events/GeneralEventDetail";
+import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
 const EventDetails = () => {
   let { eventId } = useLocalSearchParams();
   eventId = Number(eventId);
-  console.log("eventId is: ", eventId);
 
-  const events = useSelector(selectAllUserEvents);
-  console.log("All user events: ", events);
+  const dispatch = useDispatch();
 
-  return <DisplayNotificationEvent eventId={eventId} />;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Start loading
+      try {
+        await dispatch(fetchSpecificEvent({ eventId: eventId })).unwrap(); // Fetch data and unwrap the result
+      } catch (error) {
+        console.error("Failed to fetch event:", error); // Handle error
+      } finally {
+        setLoading(false); // End loading
+      }
+    };
+
+    fetchData();
+    return () => {
+      dispatch(clearSpecificEvent());
+    };
+  }, [dispatch, eventId]);
+
+  let userEvent = useSelector(selectAllSpecificEvents);
+  console.log("Specific event: ", userEvent);
+  userEvent = userEvent[0];
+  const fetchEventError = useSelector(
+    (state) => state.event.specificEvent.error
+  );
+
+  if (loading) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchEventError) {
+    return <ErrorDisplayComponent />;
+  }
+
+  return <GeneralEventDetail event={userEvent} />;
 };
 
 export default EventDetails;

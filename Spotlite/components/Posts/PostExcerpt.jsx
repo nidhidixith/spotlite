@@ -1,20 +1,24 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import PostButtons from "../Buttons/PostButtons";
-import PostCarousel from "./PostCarousel";
-import Entypo from "@expo/vector-icons/Entypo";
 import { Link } from "expo-router";
 import React, { useState, useRef, useMemo } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
+
 import { selectPostById } from "../../slices/postsSlice";
+
+import PostButtons from "../Buttons/PostButtons";
+import PostCarousel from "./PostCarousel";
 import { TimeAgo } from "../TimeAgo";
 
 const PostExcerpt = React.memo(({ postId }) => {
   const userPost = useSelector((state) => selectPostById(state, postId));
   const uniqueKey = `post-${userPost?.id}`;
+
   const [showMore, setShowMore] = useState(false);
 
-  const userPostUserId = userPost?.user_id;
+  const handleShowMoreLessButtonClick = () => {
+    setShowMore(!showMore);
+  };
+
   return (
     <View key={uniqueKey}>
       <View className="bg-white px-4 py-2">
@@ -23,7 +27,6 @@ const PostExcerpt = React.memo(({ postId }) => {
             <Image
               className="w-[50px] h-[50px] rounded-full mr-4"
               source={{ uri: userPost?.profile_pic }}
-              // source={require("../../assets/images/pic1.jpg")}
               resizeMode="cover"
             />
           )}
@@ -32,16 +35,13 @@ const PostExcerpt = React.memo(({ postId }) => {
             <Link
               href={{
                 pathname: "/display-profile/[userId]",
-                // params: { userId: 2 },
                 params: { userId: userPost?.user_id },
               }}
               onPress={() => console.log("Link pressed")}
             >
-              {/* <TouchableOpacity onPress={handlePress}> */}
               <Text className="font-bold text-lg">
                 {userPost?.display_name}
               </Text>
-              {/* </TouchableOpacity> */}
             </Link>
 
             <Text className="text-[12px] italic">
@@ -74,7 +74,7 @@ const PostExcerpt = React.memo(({ postId }) => {
         )}
       </View>
       <PostCarousel mediaFiles={userPost?.media_files} />
-      <PostButtons postId={postId} />
+      <PostButtons post={userPost} />
     </View>
   );
 });

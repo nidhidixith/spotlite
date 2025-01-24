@@ -1,12 +1,11 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useState, useRef, useMemo } from "react";
+import { useSelector } from "react-redux";
+
+import { selectOtherUserPostById } from "../../slices/postsSlice";
+
 import PostButtons from "../Buttons/PostButtons";
 import PostCarousel from "./PostCarousel";
-import Entypo from "@expo/vector-icons/Entypo";
-import { Link } from "expo-router";
-import React, { useState, useRef, useMemo } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSelector } from "react-redux";
-import { selectOtherUserPostById } from "../../slices/postsSlice";
 import { TimeAgo } from "../TimeAgo";
 
 const OtherUserPostExcerpt = React.memo(({ postId }) => {
@@ -17,6 +16,10 @@ const OtherUserPostExcerpt = React.memo(({ postId }) => {
   const uniqueKey = `post-${userPost?.id}`;
   const [showMore, setShowMore] = useState(false);
 
+  const handleShowMoreLessButtonClick = () => {
+    setShowMore(!showMore);
+  };
+
   return (
     <View key={uniqueKey}>
       <View className="bg-white px-4 py-2">
@@ -25,7 +28,6 @@ const OtherUserPostExcerpt = React.memo(({ postId }) => {
             <Image
               className="w-[50px] h-[50px] rounded-full mr-4"
               source={{ uri: userPost?.profile_pic }}
-              // source={require("../../assets/images/pic1.jpg")}
               resizeMode="cover"
             />
           )}
@@ -37,9 +39,6 @@ const OtherUserPostExcerpt = React.memo(({ postId }) => {
               <TimeAgo timestamp={userPost?.created_at} />
             </Text>
           </View>
-          {/* <View className="ml-auto">
-            <Entypo name="dots-three-vertical" size={22} color="black" />
-          </View> */}
         </View>
 
         {/* Post text */}
@@ -63,7 +62,7 @@ const OtherUserPostExcerpt = React.memo(({ postId }) => {
         )}
       </View>
       <PostCarousel mediaFiles={userPost?.media_files} />
-      <PostButtons postId={postId} />
+      <PostButtons post={userPost} />
     </View>
   );
 });

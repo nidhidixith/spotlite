@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -10,6 +10,8 @@ import {
 
 import NameProfilePic from "../NameProfilePic";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import LoadingIndicator from "../Others/LoadingIndicator";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
 
 const LikesModal = ({ postId, bottomSheetRef }) => {
   const dispatch = useDispatch();
@@ -24,6 +26,17 @@ const LikesModal = ({ postId, bottomSheetRef }) => {
       dispatch(clearPostLikes());
     };
   }, [dispatch, postId]);
+
+  const fetchLikesStatus = useSelector((state) => state.post.postLikes.loading);
+  const fetchLikesError = useSelector((state) => state.post.postLikes.error);
+
+  if (fetchLikesStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchLikesError) {
+    return <ErrorDisplayComponent />;
+  }
 
   const renderItem = ({ item }) => {
     return (
@@ -42,9 +55,6 @@ const LikesModal = ({ postId, bottomSheetRef }) => {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-
-        // ListHeaderComponent={<Text>{like_count} likes</Text>}
-        // contentContainerStyle={styles.contentContainer}
       />
     </View>
   );

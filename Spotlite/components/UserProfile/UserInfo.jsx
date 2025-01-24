@@ -1,11 +1,6 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
-
-const profile = {
-  username: "testuser1@company.com",
-  location: "Chikkamagaluru",
-  date_of_birth: "15-05-1997",
-};
+import { router } from "expo-router";
 
 const UserInfo = ({ profile }) => {
   return (
@@ -18,16 +13,30 @@ const UserInfo = ({ profile }) => {
         <Text className="text-sm">{profile?.username}</Text>
       </View>
 
-      {profile?.location && (
-        <View className="flex flex-row flex-wrap  mb-1">
-          <Text className="font-semibold text-sm">Location: </Text>
+      <View className="flex flex-row flex-wrap  mb-1">
+        <Text className="font-semibold text-sm">Location: </Text>
+        {profile?.location ? (
           <Text className="text-sm">{profile?.location}</Text>
-        </View>
-      )}
+        ) : (
+          <TouchableOpacity
+            onPress={() => router.push("(app)/(edit-profile)/edit-details")}
+          >
+            <Text className="text-sm text-sky-600">Add your location</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       <View className="flex flex-row flex-wrap  mb-1">
         <Text className="font-semibold text-sm">Date of birth: </Text>
-        <Text className="text-sm">{profile?.date_of_birth}</Text>
+        {profile?.date_of_birth ? (
+          <Text className="text-sm">{profile?.date_of_birth}</Text>
+        ) : (
+          <TouchableOpacity
+            onPress={() => router.push("(app)/(edit-profile)/edit-details")}
+          >
+            <Text className="text-sm text-sky-600">Add your date of birth</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

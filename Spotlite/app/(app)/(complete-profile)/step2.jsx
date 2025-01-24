@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
-import { Link, router } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
@@ -76,7 +73,6 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
 
   const onSubmit = (data) => {
     console.log(data);
-    // router.push("/step3");
     handleNextStep(data);
   };
 
@@ -176,7 +172,20 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           name="dob"
           rules={{
             required: "Date of birth is required",
-            // validate: isValidDate,
+
+            validate: (value) => {
+              const selectedDate = new Date(value);
+              const currentDate = new Date();
+
+              // Reset the time part of both dates to compare only the date
+              currentDate.setHours(0, 0, 0, 0);
+              selectedDate.setHours(0, 0, 0, 0);
+
+              if (selectedDate > currentDate) {
+                return "Date of birth cannot be in the future";
+              }
+              return true; // Validation passed
+            },
           }}
           render={({ field: { onChange, value } }) => (
             <>
@@ -195,11 +204,6 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
                   value={value ? new Date(value) : new Date()}
                   mode="date"
                   display="default"
-                  // onChange={(event, selectedDate) => {
-                  //   const currentDate = selectedDate || value;
-                  //   setShowDatePicker(false);
-                  //   onChange(currentDate);
-                  // }}
                   onChange={(event, selectedDate) => {
                     const currentDate = selectedDate || value;
                     setShowDatePicker(false);
@@ -265,13 +269,12 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           rules={{
             required: "This field is required",
             maxLength: {
-              value: 100,
-              message: "Maximum 100 characters allowed",
+              value: 50,
+              message: "Maximum 50 characters allowed",
             },
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              // autoComplete="name"
               className="rounded-xl border border-gray-200 px-2 py-2"
               onBlur={onBlur}
               onChangeText={onChange}

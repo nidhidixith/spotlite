@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  ImageBackground,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
@@ -12,7 +11,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { Video, ResizeMode, Audio } from "expo-av";
-// import Icon from "react-native-vector-icons/FontAwesome";
+
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 const PostFullView = () => {
@@ -29,16 +28,11 @@ const PostFullView = () => {
   const [isPlaying, setIsPlaying] = useState(false); // Track playing status
 
   const playSound = async (uri) => {
-    // console.log("Loading Sound");
-    // const { sound } = await Audio.Sound.createAsync(
-    //   require("../../../assets/audios/audio.mp3")
-    // );
     const { sound } = await Audio.Sound.createAsync(
       { uri } // Using the dynamic URI for the audio file
     );
     setSound(sound);
 
-    // console.log("Playing Sound");
     await sound.playAsync();
     setIsPlaying(true);
   };
@@ -46,7 +40,6 @@ const PostFullView = () => {
   useEffect(() => {
     return sound
       ? () => {
-          // console.log("Unloading Sound");
           sound.unloadAsync();
           setIsPlaying(false);
         }
@@ -88,7 +81,6 @@ const PostFullView = () => {
               activeOpacity={0.7}
               onPress={async () => {
                 if (isPlaying) {
-                  // console.log("Stopping Sound");
                   await sound.stopAsync();
                   setIsPlaying(false);
                 } else {
@@ -147,12 +139,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
-    // justifyContent: "space-between", // Ensures header is at the top and footer is at the bottom
-    // position: "relative",
   },
   imageBackground: {
     flex: 1,
-    // position: "relative",
   },
 });
 

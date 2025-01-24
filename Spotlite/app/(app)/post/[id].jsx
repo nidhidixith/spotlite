@@ -1,26 +1,58 @@
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, Text } from "react-native";
-import UserPostExcerpt from "../../../components/Posts/UserPostExcerpt";
+import { View, Text, ActivityIndicator } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserPosts, selectAllUserPosts } from "../../../slices/postsSlice";
+
+import {
+  clearSpecificPost,
+  fetchSpecificPost,
+  selectAllSpecificPosts,
+} from "../../../slices/postsSlice";
+
+import GeneralPostExcerpt from "../../../components/Posts/GeneralPostExcerpt";
+import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
 const PostDetails = () => {
   let { postId } = useLocalSearchParams();
   postId = Number(postId);
-  console.log("PostId is: ", postId);
-  const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(fetchUserPosts());
-  // }, [dispatch]);
+  const [loading, setLoading] = useState(true);
 
-  const posts = useSelector(selectAllUserPosts);
-  console.log("All user posts: ", posts);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Start loading
+      try {
+        await dispatch(fetchSpecificPost({ postId: postId })).unwrap(); // Fetch data and unwrap the result
+      } catch (error) {
+        console.error("Failed to fetch post:", error); // Handle error
+      } finally {
+        setLoading(false); // End loading
+      }
+    };
+    fetchData();
 
-  return <UserPostExcerpt key={`userpost-${postId}`} postId={postId} />;
+    return () => {
+      dispatch(clearSpecificPost());
+    };
+  }, [dispatch, postId]);
+
+  let userPost = useSelector(selectAllSpecificPosts);
+  console.log("Specific post: ", userPost);
+  userPost = userPost[0];
+  const fetchPostError = useSelector((state) => state.post.specificPost.error);
+
+  if (loading) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchPostError) {
+    return <ErrorDisplayComponent />;
+  }
+
+  return <GeneralPostExcerpt post={userPost} />;
 };
 
 export default PostDetails;

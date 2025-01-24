@@ -1,23 +1,12 @@
 import { View, Text, Image, Dimensions, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import { useSelector } from "react-redux";
+
 import { selectEventById } from "../../slices/eventsSlice";
-import { TimeAgo } from "../TimeAgo";
 
 const EventExcerpt = React.memo(({ eventId }) => {
   const event = useSelector((state) => selectEventById(state, eventId));
-  // const eventMedia = event?.media_files[0]?.media_file;
-
-  // const isImage =
-  //   eventMedia?.endsWith(".jpg") ||
-  //   eventMedia?.endsWith(".png") ||
-  //   eventMedia?.endsWith(".jpeg") ||
-  //   eventMedia?.endsWith(".webp");
-
-  // console.log("Event media files:", event?.media_files);
-  // console.log("Event media file:", event?.media_files[0]?.media_file);
 
   const eventMediaFiles = event?.media_files;
 
@@ -31,7 +20,6 @@ const EventExcerpt = React.memo(({ eventId }) => {
     )?.media_file || null;
 
   const uniqueKey = `event-${event?.id}`;
-  const [showMore, setShowMore] = useState(false);
   return (
     <>
       <View className="bg-white px-4 py-2">
@@ -40,7 +28,6 @@ const EventExcerpt = React.memo(({ eventId }) => {
           onPress={() => {
             router.push({
               pathname: "/display-event/[eventId]",
-              // params: { eventId: event?.id },
               params: { event: JSON.stringify(event) },
             });
           }}

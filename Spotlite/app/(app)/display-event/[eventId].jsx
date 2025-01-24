@@ -1,19 +1,18 @@
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React, { useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Link, useLocalSearchParams } from "expo-router";
 
 import {
   addInterestInEvent,
   removeInterestInEvent,
+  selectEventById,
 } from "../../../slices/eventsSlice";
-import { useLocalSearchParams } from "expo-router";
-import { Link } from "expo-router";
-import { selectEventById } from "../../../slices/eventsSlice";
+
 import EventCarousel from "../../../components/Events/EventCarousel";
+
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
@@ -51,13 +50,6 @@ const DisplayEvent = () => {
     dispatch(removeInterestInEvent({ eventId: event?.id }));
   };
 
-  // const handleGetInterests = () => {
-  //   setModalContent(
-  //     <InterestedModal eventId={event?.id} bottomSheetRef={bottomSheetRef} />
-  //   );
-  //   bottomSheetRef.current?.present();
-  // };
-
   return (
     <ScrollView
       contentContainerStyle={{
@@ -76,7 +68,6 @@ const DisplayEvent = () => {
           <Link
             href={{
               pathname: "/display-profile/[userId]",
-              // params: { userId: 2 },
               params: { userId: event?.user_id },
             }}
             onPress={() => console.log("Link pressed")}
@@ -137,14 +128,6 @@ const DisplayEvent = () => {
             </View>
           )}
         </View>
-
-        {/* <TouchableOpacity
-          className="bg-gray-300 py-1 flex flex-row items-center justify-center rounded-full mb-6"
-        >
-          <AntDesign name="hearto" size={16} color="#374151" marginRight={10} />
-          <AntDesign name="heart" size={16} color="red" marginRight={10} />
-          <Text className="text-lg font-bold">Interested</Text>
-        </TouchableOpacity> */}
 
         {isInterested ? (
           <TouchableOpacity

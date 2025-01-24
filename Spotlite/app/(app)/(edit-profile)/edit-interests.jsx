@@ -5,15 +5,20 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
+import { router } from "expo-router";
+
 import {
   selectUserProfile,
   editProfile,
 } from "../../../slices/userProfileSlice";
-import { router } from "expo-router";
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
+
+import { availableInterests } from "../../../utilities/interests";
 
 const EditInterests = () => {
   const {
@@ -37,51 +42,85 @@ const EditInterests = () => {
   const maxInterests = 10;
   const [modified, setModified] = useState(false);
   const [error, setError] = useState(null);
-  const availableInterests = [
-    "painting",
-    "singing",
-    "dance",
-    "acting",
-    "writing",
-    "poetry",
-    "blogging",
-    "design",
-    "vlogging",
-    "photography",
-    "cinematography",
-    "travel",
-    "animation",
-    "health",
-    "fashion",
-    "fitness",
-    "cooking",
-    "podcasting",
-    "sports",
-    "gaming",
-  ];
+
+  // const availableInterests = [
+  //   "painting",
+  //   "singing",
+  //   "dance",
+  //   "acting",
+  //   "writing",
+  //   "poetry",
+  //   "blogging",
+  //   "design",
+  //   "vlogging",
+  //   "photography",
+  //   "cinematography",
+  //   "travel",
+  //   "animation",
+  //   "health",
+  //   "fashion",
+  //   "fitness",
+  //   "cooking",
+  //   "podcasting",
+  //   "sports",
+  //   "gaming",
+  // ];
 
   const [tagInput, setTagInput] = useState("");
+  const [selectedInterest, setSelectedInterest] = useState(null);
+
+  const maxLength = 100;
 
   const addTagFromInput = () => {
     if (!tagInput.trim()) return;
 
+    if (tagInput.length > maxLength) {
+      setError(`Input must be less than ${maxLength} characters`);
+      return;
+    }
+
+    if (tags.length >= maxInterests) {
+      setError(`Maximum ${maxInterests}  interests allowed`);
+      return;
+    }
+
     if (!tags.includes(tagInput.toLowerCase())) {
       setTags([...tags, tagInput.toLowerCase()]);
       setModified(true);
+      setError(null);
     }
     setTagInput("");
   };
 
   function addTag(interest) {
+    if (tags.length >= maxInterests) {
+      setError(`Maximum ${maxInterests}  interests allowed`);
+      return;
+    }
+
     if (tags.length < maxInterests && !tags.includes(interest)) {
       setTags([...tags, interest.toLowerCase()]);
       setModified(true);
+      setError(null);
     }
+    setSelectedInterest(interest);
   }
 
   function removeTag(index) {
     setTags(tags.filter((_, i) => i !== index));
     setModified(true);
+  }
+
+  const editProfileStatus = useSelector(
+    (state) => state.profile.userProfile.editProfileStatus
+  );
+
+  const editProfileError = useSelector(
+    (state) => state.profile.userProfile.editProfileError
+  );
+
+  if (editProfileStatus === "loading") {
+    return <LoadingIndicator />;
   }
 
   const onSubmit = async () => {
@@ -90,18 +129,14 @@ const EditInterests = () => {
       return;
     }
     if (tags.length > maxInterests) {
-      setError("Maximum 10 interests allowed.");
+      setError(`Maximum ${maxInterests}  interests allowed`);
       return;
     }
-    console.log("Tags:", tags);
 
-    // const obj = { tags: tags };
-    // console.log("Data:", obj);
     const profileData = new FormData();
 
     profileData.append("areas_of_interest", tags);
 
-    console.log("Profile data from edit links", profileData);
     try {
       const response = await dispatch(editProfile(profileData)).unwrap();
       Alert.alert("Edit Successful");
@@ -109,11 +144,24 @@ const EditInterests = () => {
       router.push("(app)/(tabs)/home");
     } catch (err) {
       console.error("Request failed", err);
-      Alert.alert("Request failed, Please try again later");
+      console.log(err);
+
+      const errorMessage =
+        (typeof err === "string" && err) || // If `err` is a string, use it
+        err?.message || // If `err` has a `message` property
+        JSON.stringify(err) || // Convert `err` to string if it's an object
+        "An unknown error occurred. Try again later"; // Fallback message
+
+      Alert.alert("Edit Failed", errorMessage); // Pass string to Alert.alert
       // Alert.alert(editProfileError);
-      router.push("(app)/(tabs)/home");
+      router.replace("(app)/(edit-profile)/edit-profile");
     }
   };
+
+  const relatedInterests =
+    selectedInterest && availableInterests[selectedInterest]
+      ? availableInterests[selectedInterest]
+      : [];
   return (
     <ScrollView
       contentContainerStyle={{
@@ -130,11 +178,16 @@ const EditInterests = () => {
         Select atleast one. Maximum 10.
       </Text>
 
-      <View className="flex flex-row flex-wrap justify-between items-center mb-5">
-        {availableInterests.map((interest) => (
+      <View className="flex flex-row flex-wrap justify-between items-center mb-3">
+        {Object.entries(availableInterests).map(([interest]) => (
           <TouchableOpacity
             key={interest}
-            className="flex flex-row bg-gray-100 border border-gray-200 p-1 m-1 justify-center items-center rounded-lg"
+            // className="flex flex-row bg-gray-100 border border-gray-200 p-1 m-1 justify-center items-center rounded-lg"
+            className={`flex flex-row p-1 m-1 justify-center items-center rounded-lg ${
+              tags.includes(interest)
+                ? "bg-sky-50 border border-sky-200"
+                : "bg-gray-100  border-gray-200"
+            }`}
             onPress={() => addTag(interest)}
           >
             <Text className="text-black">
@@ -144,7 +197,26 @@ const EditInterests = () => {
         ))}
       </View>
 
-      {error && <Text className="text-red-500 mb-1">{error}</Text>}
+      {error && <Text className="text-red-500 mb-3">{error}</Text>}
+
+      {selectedInterest && relatedInterests.length > 0 && (
+        <>
+          <Text className="text-sm text-sky-600 mb-2">Suggestions</Text>
+          <View className="flex flex-row flex-wrap  items-center mb-4">
+            {relatedInterests.map((related, index) => (
+              <TouchableOpacity
+                key={index}
+                className="flex flex-row bg-gray-100 border border-gray-200 p-1 m-1 justify-center items-center rounded-lg"
+                onPress={() => addTag(related)}
+              >
+                <Text className="text-black">
+                  {related.charAt(0).toUpperCase() + related.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </>
+      )}
 
       <View className="flex flex-row flex-wrap items-center">
         <Controller
@@ -173,11 +245,6 @@ const EditInterests = () => {
           <Text>Add</Text>
         </TouchableOpacity>
       </View>
-      {/* {errors.additionalLinks && (
-              <Text className="text-red-500 mb-2">
-                {errors.additionalLinks.message}
-              </Text>
-            )} */}
 
       <View className="py-1 flex flex-row flex-wrap justify-between items-center mb-5 mt-2  rounded-lg">
         {tags.map((tag, index) => (

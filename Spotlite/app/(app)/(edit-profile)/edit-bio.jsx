@@ -5,23 +5,21 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
+import { router } from "expo-router";
+
 import {
   selectUserProfile,
   editProfile,
 } from "../../../slices/userProfileSlice";
-import { useForm, Controller } from "react-hook-form";
-import { router } from "expo-router";
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
 const EditBio = () => {
   const profile = useSelector(selectUserProfile);
-  const { editProfileError } = useSelector(
-    (state) => state.profile.userProfile
-  );
-  // const initialBio = profile[0]?.bio || "";
-  console.log("User profile from edit bio:", profile[0]?.bio);
 
   const {
     control,
@@ -31,22 +29,40 @@ const EditBio = () => {
 
   const dispatch = useDispatch();
 
+  const editProfileStatus = useSelector(
+    (state) => state.profile.userProfile.editProfileStatus
+  );
+
+  const editProfileError = useSelector(
+    (state) => state.profile.userProfile.editProfileError
+  );
+
+  if (editProfileStatus === "loading") {
+    return <LoadingIndicator />;
+  }
+
   const onSubmit = async (data) => {
-    console.log(data);
     const profileData = new FormData();
     if (data.bio) {
       profileData.append("bio", data.bio);
     }
-    console.log("Profile data from edit bio", profileData);
     try {
       const response = await dispatch(editProfile(profileData)).unwrap();
       Alert.alert("Edit Successful");
       router.push("(app)/(tabs)/home");
     } catch (err) {
       console.error("Request failed", err);
-      Alert.alert("Request failed, Please try again later");
+      console.log(err);
+
+      const errorMessage =
+        (typeof err === "string" && err) || // If `err` is a string, use it
+        err?.message || // If `err` has a `message` property
+        JSON.stringify(err) || // Convert `err` to string if it's an object
+        "An unknown error occurred. Try again later"; // Fallback message
+
+      Alert.alert("Edit Failed", errorMessage); // Pass string to Alert.alert
       // Alert.alert(editProfileError);
-      router.push("(app)/(tabs)/home");
+      router.replace("(app)/(edit-profile)/edit-profile");
     }
   };
 
@@ -89,10 +105,6 @@ const EditBio = () => {
         )}
       </View>
 
-      {/* <TouchableOpacity
-        className="bg-sky-600 py-1 rounded-lg mt-6"
-        onPress={handleSubmit(onSubmit)}
-      > */}
       <TouchableOpacity
         className={`bg-sky-600 py-1 rounded-lg mt-6 ${
           isDirty ? "" : "opacity-50"

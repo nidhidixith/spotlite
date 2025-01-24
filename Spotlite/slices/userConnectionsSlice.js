@@ -44,8 +44,6 @@ export const fetchUserFollowersList = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await instance.get(`/connections/get-followers-list/`);
-      console.log(response.data);
-      console.log("Fetched followers data", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -58,7 +56,6 @@ export const fetchUserFollowingList = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await instance.get(`/connections/get-following-list/`);
-      console.log("Following List from slice:", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -73,8 +70,7 @@ export const fetchOtherUserFollowersList = createAsyncThunk(
       const response = await instance.get(
         `/connections/get-others-followers-list/${userId}/`
       );
-      console.log(response.data);
-      console.log("Fetched followers data", response.data);
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -89,7 +85,6 @@ export const fetchOtherUserFollowingList = createAsyncThunk(
       const response = await instance.get(
         `/connections/get-others-following-list/${userId}/`
       );
-      console.log("Following List from slice:", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -100,7 +95,6 @@ export const fetchOtherUserFollowingList = createAsyncThunk(
 export const follow = createAsyncThunk(
   "userConnections/follow",
   async ({ userId }, { rejectWithValue }) => {
-    console.log("I am here in follow");
     try {
       const response = await instance.post(
         `/connections/follow/${userId}/`,
@@ -112,7 +106,6 @@ export const follow = createAsyncThunk(
         }
       );
 
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -126,8 +119,6 @@ export const follow = createAsyncThunk(
 export const unfollow = createAsyncThunk(
   "userConnections/unfollow",
   async ({ userId }, { rejectWithValue }) => {
-    console.log("I am here in unfollow");
-
     try {
       const response = await instance.delete(
         `/connections/unfollow/${userId}/`,
@@ -139,7 +130,6 @@ export const unfollow = createAsyncThunk(
         }
       );
 
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -178,25 +168,6 @@ const userConnectionsSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      // .addCase(fetchFollowersFollowing.pending, (state, action) => {
-      //   state.fetchFollowersFollowingStatus = "loading";
-      // })
-      // .addCase(fetchFollowersFollowing.fulfilled, (state, action) => {
-      //   state.fetchFollowersFollowingStatus = "succeeded";
-      //   console.log("Action Payload:", action.payload); // Check the actual data returned
-      //   userConnectionsAdapter.upsertOne(state, action.payload);
-      //   console.log("i am in slice");
-      //   console.log(
-      //     "Connections from adapter:",
-      //     userConnectionsAdapter.getSelectors().selectAll(state)
-      //   );
-      //   state.fetchFollowersFollowingError = null;
-      // })
-      // .addCase(fetchFollowersFollowing.rejected, (state, action) => {
-      //   state.fetchFollowersFollowingStatus = "failed";
-      //   state.fetchFollowersFollowingError = action.error.message;
-      //   console.log("Fetch Error:", state.fetchFollowersFollowingError);
-      // })
 
       .addCase(follow.pending, (state, action) => {
         // state.followStatus = "loading";
@@ -209,7 +180,6 @@ const userConnectionsSlice = createSlice({
       .addCase(follow.rejected, (state, action) => {
         // state.followStatus = "failed";
         // state.followError = action.error.message;
-        // console.log("Follow Error:", state.followError);
       })
 
       .addCase(unfollow.pending, (state, action) => {
@@ -237,7 +207,7 @@ const userConnectionsSlice = createSlice({
       })
       .addCase(fetchUserFollowersList.fulfilled, (state, action) => {
         state.userFollowers.loading = false;
-        userFollowersAdapter.upsertMany(state.userFollowers, action.payload);
+        userFollowersAdapter.setAll(state.userFollowers, action.payload);
       })
       .addCase(fetchUserFollowersList.rejected, (state, action) => {
         state.userFollowers.loading = false;
@@ -250,7 +220,7 @@ const userConnectionsSlice = createSlice({
       })
       .addCase(fetchUserFollowingList.fulfilled, (state, action) => {
         state.userFollowing.loading = false;
-        userFollowingAdapter.upsertMany(state.userFollowing, action.payload);
+        userFollowingAdapter.setAll(state.userFollowing, action.payload);
       })
       .addCase(fetchUserFollowingList.rejected, (state, action) => {
         state.userFollowing.loading = false;
@@ -279,7 +249,7 @@ const userConnectionsSlice = createSlice({
         state.otherUserFollowing.error = null;
       })
       .addCase(fetchOtherUserFollowingList.fulfilled, (state, action) => {
-        state.userFollowing.loading = false;
+        state.otherUserFollowing.loading = false;
         otherUserFollowingAdapter.setAll(
           state.otherUserFollowing,
           action.payload
@@ -348,6 +318,7 @@ export const selectConnectionsByUser = createSelector(
   (connections, userId) =>
     connections.filter((connection) => connection.user_id === userId)
 );
+
 export const selectFollowersByUser = createSelector(
   [selectAllOtherUserFollowers, (state, userId) => userId],
   (followers, userId) =>

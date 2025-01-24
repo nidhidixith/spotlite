@@ -6,22 +6,22 @@ import {
   Platform,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
-import defaultImage from "../../../assets/images/def.webp"; // Import default image
+import { router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 
 import {
-  fetchUserProfile,
-  clearUserProfile,
   selectUserProfile,
   editProfile,
 } from "../../../slices/userProfileSlice";
 
-import { router } from "expo-router";
-import * as ImagePicker from "expo-image-picker";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
+import defaultImage from "../../../assets/images/def.webp"; // Import default image
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
 const EditProfilePicture = () => {
   const { handleSubmit } = useForm();
@@ -70,13 +70,17 @@ const EditProfilePicture = () => {
     }
   };
 
-  // const handleRemoveProfilePic = () => {
-  //   const profileData = new FormData();
-  //   profileData.append("remove_profile_pic", true);
-  //   dispatch(editProfile(profileData));
-  //   setImage(defaultImage);
-  // };
+  const editProfileStatus = useSelector(
+    (state) => state.profile.userProfile.editProfileStatus
+  );
 
+  const editProfileError = useSelector(
+    (state) => state.profile.userProfile.editProfileError
+  );
+
+  if (editProfileStatus === "loading") {
+    return <LoadingIndicator />;
+  }
   const onSubmit = async () => {
     const profileData = new FormData();
     if (image !== defaultImage) {
@@ -95,9 +99,17 @@ const EditProfilePicture = () => {
       router.push("(app)/(tabs)/home");
     } catch (err) {
       console.error("Request failed", err);
-      Alert.alert("Request failed, Please try again later");
+      console.log(err);
+
+      const errorMessage =
+        (typeof err === "string" && err) || // If `err` is a string, use it
+        err?.message || // If `err` has a `message` property
+        JSON.stringify(err) || // Convert `err` to string if it's an object
+        "An unknown error occurred. Try again later"; // Fallback message
+
+      Alert.alert("Edit Failed", errorMessage); // Pass string to Alert.alert
       // Alert.alert(editProfileError);
-      router.push("(app)/(tabs)/home");
+      router.replace("(app)/(edit-profile)/edit-profile");
     }
   };
 

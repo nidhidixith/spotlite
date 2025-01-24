@@ -1,4 +1,4 @@
-import React, { Children, useState } from "react";
+import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -142,7 +142,7 @@ const AccordionItem = ({ question, answer }) => {
 const FAQsPage = () => {
   return (
     <ScrollView className="flex-1 bg-white px-4 py-2">
-      <Text className="text-2xl mt-2 mb-6 text-sky-800 font-bold self-center">
+      <Text className="text-2xl mt-2 mb-6 text-sky-800 font-bold">
         Frequently asked questions
       </Text>
 

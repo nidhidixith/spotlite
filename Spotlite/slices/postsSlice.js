@@ -8,31 +8,39 @@ import {
 import instance from "../api";
 
 const postsAdapter = createEntityAdapter({
-  sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
+  // sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
 });
 
 const userPostsAdapter = createEntityAdapter({
-  sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
+  // sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
 });
 
 const otherUserPostsAdapter = createEntityAdapter({
-  sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
+  // sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
 });
 
 const postLikesAdapter = createEntityAdapter();
 
 const postCommentsAdapter = createEntityAdapter();
 
+const specificPostAdapter = createEntityAdapter({});
+
 // Define initial states
 const initialState = {
-  posts: postsAdapter.getInitialState({ loading: false, error: null }),
+  posts: postsAdapter.getInitialState({
+    loading: false,
+    error: null,
+    nextPage: null,
+  }),
   userPosts: userPostsAdapter.getInitialState({
     loading: false,
     error: null,
+    nextPage: null,
   }),
   otherUserPosts: otherUserPostsAdapter.getInitialState({
     loading: false,
     error: null,
+    nextPage: null,
   }),
   postLikes: postLikesAdapter.getInitialState({
     loading: false,
@@ -42,83 +50,65 @@ const initialState = {
     loading: false,
     error: null,
   }),
+
+  specificPost: specificPostAdapter.getInitialState({
+    loading: false,
+    error: null,
+  }),
+
+  addPostStatus: "idle", // New state for add post status
+  addPostError: null, // New state for add post error
+
+  addCommentStatus: "idle", // New state for add post status
+  addCommentError: null, // New state for add post error
 };
 
-// const initialState = postsAdapter.getInitialState({
-//   fetchPostsStatus: "idle",
-//   fetchPostsError: null,
+// export const fetchPosts = createAsyncThunk(
+//   "posts/fetchPosts",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await instance.get("/posts/get-posts/");
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data || error.message);
+//     }
+//   }
+// );
 
-//   fetchUserPostsStatus: "idle",
-//   fetchUserPostsError: null,
-
-//   fetchOtherUserPostsStatus: "idle",
-//   fetchOtherUserPostsError: null,
-
-//   likePostStatus: "idle",
-//   likePostError: null,
-
-//   unLikePostStatus: "idle",
-//   unLikePostError: null,
-
-//   fetchLikesStatus: "idle",
-//   fetchLikesError: null,
-
-//   addCommentStatus: "idle",
-//   addCommentError: null,
-
-//   fetchCommentsStatus: "idle",
-//   fetchCommentsError: null,
-
-//   addNewPostStatus: "idle",
-//   addNewPostError: null,
-
-//   likes: likesAdapter.getInitialState(),
-//   comments: commentsAdapter.getInitialState(),
-//   reposts: repostsAdapter.getInitialState(),
-//   mediaReposts: mediaRepostsAdapter.getInitialState(),
-//   taggedPosts: taggedPostsAdapter.getInitialState(),
-// });
-
-export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  const response = await instance.get("/posts/get-posts/");
-  // console.log("From postSlice:", response.data);
-  return response.data;
-});
+export const fetchPosts = createAsyncThunk(
+  "posts/fetchPosts",
+  async ({ page = 1 }, { rejectWithValue }) => {
+    try {
+      const response = await instance.get(`/posts/get-posts/?page=${page}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 export const fetchUserPosts = createAsyncThunk(
   "userPosts/fetchUserPosts",
-  async () => {
-    const response = await instance.get("/posts/get-user-posts/");
+  async ({ page = 1 }, { rejectWithValue }) => {
+    const response = await instance.get(`/posts/get-user-posts/?page=${page}`);
     return response.data;
   }
 );
 
 export const fetchOtherUserPosts = createAsyncThunk(
   "otherUserPosts/fetchOtherUserPosts",
-  async (userId, { rejectWithValue }) => {
+  async ({ userId, page = 1 }, { rejectWithValue }) => {
     const response = await instance.get(
-      `/posts/get-other-user-posts/${userId}/`
+      `/posts/get-other-user-posts/${userId}/?page=${page}`
     );
-    console.log("From slice", response.data);
     return response.data;
   }
 );
 
 export const addNewPost = createAsyncThunk(
-  "posts/addNewPost",
-  async (initialPost) => {
+  "userPosts/addNewPost",
+  async (formData, { rejectWithValue }) => {
     try {
-      const { text, mediaFiles } = initialPost;
-
-      const formData = new FormData();
-      formData.append("text", text);
-      // Append mediaFiles under the key 'uploaded_files'
-      if (Object.keys(mediaFiles).length > 0) {
-        mediaFiles.forEach((file) => {
-          formData.append("uploaded_files", file);
-        });
-      }
-      console.log("Formdata is: ", formData);
       const response = await instance.post("/posts/add-post/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -127,10 +117,7 @@ export const addNewPost = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      if (!error.response) {
-        throw error;
-      }
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -149,7 +136,6 @@ export const likePost = createAsyncThunk(
         }
       );
 
-      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -174,7 +160,6 @@ export const unLikePost = createAsyncThunk(
         }
       );
 
-      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -189,7 +174,6 @@ export const fetchLikes = createAsyncThunk(
   "postLikes/fetchLikes",
   async ({ postId }, { rejectWithValue }) => {
     const response = await instance.get(`/posts/get-likes/${postId}/`, {});
-    console.log(response.data);
     return response.data;
   }
 );
@@ -197,12 +181,10 @@ export const fetchLikes = createAsyncThunk(
 export const addComment = createAsyncThunk(
   "postComments/addComment",
   async ({ postId, commentData }, { rejectWithValue }) => {
-    console.log("Comment data from postslice:", commentData);
     try {
       const response = await instance.post(
         `/posts/add-comment/${postId}/`,
         commentData,
-
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -210,7 +192,6 @@ export const addComment = createAsyncThunk(
         }
       );
 
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -225,8 +206,19 @@ export const fetchComments = createAsyncThunk(
   "postComments/fetchComments",
   async ({ postId }, { rejectWithValue }) => {
     const response = await instance.get(`/posts/get-comments/${postId}/`, {});
-    console.log(response.data);
     return response.data;
+  }
+);
+
+export const fetchSpecificPost = createAsyncThunk(
+  "specificPost/fetchSpecificPost",
+  async ({ postId }, { rejectWithValue }) => {
+    try {
+      const response = await instance.get(`/posts/get-post/${postId}/`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
   }
 );
 
@@ -240,7 +232,6 @@ export const deletePost = createAsyncThunk(
         },
       });
 
-      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -265,7 +256,6 @@ export const deletePostComment = createAsyncThunk(
         },
       });
 
-      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -298,13 +288,9 @@ const postsSlice = createSlice({
     clearPostComments: (state) => {
       postCommentsAdapter.removeAll(state.postComments);
     },
-
-    // clearPostLikes(state) {
-    //   likesAdapter.removeAll(state.likes);
-    // },
-    // clearPostComments(state) {
-    //   commentsAdapter.removeAll(state.comments);
-    // },
+    clearSpecificPost: (state) => {
+      specificPostAdapter.removeAll(state.specificPost);
+    },
   },
   extraReducers(builder) {
     builder
@@ -312,13 +298,22 @@ const postsSlice = createSlice({
         state.posts.loading = true;
         state.posts.error = null;
       })
+      // .addCase(fetchPosts.fulfilled, (state, action) => {
+      //   state.posts.loading = false;
+      //   // postsAdapter.setAll(state.posts, action.payload);
+      //   postsAdapter.setAll(state.posts, action.payload.results);
+      // })
       .addCase(fetchPosts.fulfilled, (state, action) => {
         state.posts.loading = false;
-        postsAdapter.setAll(state.posts, action.payload);
+        const { results, next } = action.payload;
+
+        // Append new posts to the existing ones
+        postsAdapter.addMany(state.posts, results);
+        state.posts.nextPage = next; // Save the `next` URL or null if no more pages
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.posts.loading = false;
-        state.posts.error = action.error.message;
+        state.posts.error = action.payload.error || "Error fetching posts";
       })
 
       // For userPosts
@@ -326,9 +321,17 @@ const postsSlice = createSlice({
         state.userPosts.loading = true;
         state.userPosts.error = null;
       })
+      // .addCase(fetchUserPosts.fulfilled, (state, action) => {
+      //   state.userPosts.loading = false;
+      //   userPostsAdapter.setAll(state.userPosts, action.payload);
+      // })
       .addCase(fetchUserPosts.fulfilled, (state, action) => {
         state.userPosts.loading = false;
-        userPostsAdapter.setAll(state.userPosts, action.payload);
+        const { results, next } = action.payload;
+
+        // Append new posts to the existing ones
+        userPostsAdapter.addMany(state.userPosts, results);
+        state.userPosts.nextPage = next; // Save the `next` URL or null if no more pages
       })
       .addCase(fetchUserPosts.rejected, (state, action) => {
         state.userPosts.loading = false;
@@ -340,9 +343,17 @@ const postsSlice = createSlice({
         state.otherUserPosts.loading = true;
         state.otherUserPosts.error = null;
       })
+      // .addCase(fetchOtherUserPosts.fulfilled, (state, action) => {
+      //   state.otherUserPosts.loading = false;
+      //   otherUserPostsAdapter.setAll(state.otherUserPosts, action.payload);
+      // })
       .addCase(fetchOtherUserPosts.fulfilled, (state, action) => {
         state.otherUserPosts.loading = false;
-        otherUserPostsAdapter.setAll(state.otherUserPosts, action.payload);
+        const { results, next } = action.payload;
+
+        // Append new posts to the existing ones
+        otherUserPostsAdapter.addMany(state.otherUserPosts, results);
+        state.otherUserPosts.nextPage = next; // Save the `next` URL or null if no more pages
       })
       .addCase(fetchOtherUserPosts.rejected, (state, action) => {
         state.otherUserPosts.loading = false;
@@ -379,45 +390,70 @@ const postsSlice = createSlice({
 
       // For AddComment
       .addCase(addComment.pending, (state) => {
-        // state.otherUserPosts.loading = true;
-        // state.otherUserPosts.error = null;
+        state.addCommentStatus = "loading";
+        state.addCommentError = null;
       })
       .addCase(addComment.fulfilled, (state, action) => {
-        // state.otherUserPosts.loading = false;
+        state.addCommentStatus = "succeeded";
         // otherUserPostsAdapter.upsertMany(state.otherUserPosts, action.payload);
         // postCommentsAdapter.addOne(state.postComments, action.payload);
       })
       .addCase(addComment.rejected, (state, action) => {
-        // state.otherUserPosts.loading = false;
-        // state.otherUserPosts.error = action.error.message;
+        state.addCommentStatus = "failed";
+        state.addCommentError = action.error.message;
       })
 
-      // For AddNewPost
+      // Add new post
+      .addCase(addNewPost.pending, (state) => {
+        state.addPostStatus = "loading";
+        state.addPostError = null;
+      })
       .addCase(addNewPost.fulfilled, (state, action) => {
-        // state.posts.loading = false;
-        // Add the new post directly to state.posts
+        state.addPostStatus = "succeeded";
         userPostsAdapter.addOne(state.userPosts, action.payload);
+      })
+      .addCase(addNewPost.rejected, (state, action) => {
+        state.addPostStatus = "failed";
+        state.addPostError =
+          action.payload ||
+          action.payload.detail ||
+          action.error.message ||
+          "Failed to create post";
+        console.log("Add post error: ", state.addPostError);
+      })
+
+      // For specific post
+      .addCase(fetchSpecificPost.pending, (state) => {
+        state.specificPost.loading = true;
+        state.specificPost.error = null;
+      })
+      .addCase(fetchSpecificPost.fulfilled, (state, action) => {
+        state.specificPost.loading = false;
+        specificPostAdapter.setOne(state.specificPost, action.payload);
+      })
+      .addCase(fetchSpecificPost.rejected, (state, action) => {
+        state.specificPost.loading = false;
+        state.specificPost.error =
+          action.payload.error || "Error fetching post";
       })
 
       // For DeletePost
       .addCase(deletePost.fulfilled, (state, action) => {
         // state.posts.loading = false;
         const postId = action.meta.arg.postId; // Extract postId
-        console.log("PostId to Remove:", postId);
         userPostsAdapter.removeOne(state.userPosts, postId); // Use the actual ID
-        console.log("Existing Post IDs after Removal:", state.userPosts.ids);
+        // console.log("Existing Post IDs after Removal:", state.userPosts.ids);
       })
 
       // For DeletePostCOmment
       .addCase(deletePostComment.fulfilled, (state, action) => {
         // state.posts.loading = false;
         const commentId = action.meta.arg.commentId; // Extract postId
-        console.log("CommentId to Remove:", commentId);
         postCommentsAdapter.removeOne(state.postComments, commentId); // Use the actual ID
-        console.log(
-          "Existing Comment IDs after Removal:",
-          state.postComments.ids
-        );
+        // console.log(
+        //   "Existing Comment IDs after Removal:",
+        //   state.postComments.ids
+        // );
       })
 
       // For FetchLikes
@@ -447,22 +483,6 @@ const postsSlice = createSlice({
         state.postComments.loading = false;
         state.postComments.error = action.error.message;
       });
-
-    // .addCase(addNewPost.pending, (state, action) => {
-    //   state.addNewPostStatus = "loading";
-    // })
-    // .addCase(addNewPost.fulfilled, (state, action) => {
-    //   state.addNewPostStatus = "succeeded";
-    //   // Add any fetched posts to the array
-    //   // postsAdapter.upsertMany(state, action.payload);
-    // })
-    // .addCase(addNewPost.rejected, (state, action) => {
-    //   state.addNewPostStatus = "failed";
-    //   state.addNewPostError = action.error.message;
-    // });
-
-    // .addCase(addNewPost.fulfilled, postsAdapter.addOne)
-    // .addCase(addRepost.fulfilled, postsAdapter.addOne);
   },
 });
 
@@ -473,6 +493,7 @@ export const {
   clearOtherUserPosts,
   clearPostLikes,
   clearPostComments,
+  clearSpecificPost,
 } = postsSlice.actions;
 
 export default postsSlice.reducer;
@@ -506,6 +527,12 @@ export const {
   selectById: selectPostCommentsById,
   selectIds: selectPostCommentsIds,
 } = postCommentsAdapter.getSelectors((state) => state.post.postComments);
+
+export const {
+  selectAll: selectAllSpecificPosts,
+  selectById: selectSpecificPostById,
+  selectIds: selectSpecificPostIds,
+} = specificPostAdapter.getSelectors((state) => state.post.specificPost);
 
 export const selectLikesByPost = createSelector(
   [selectAllPostLikes, (state, postId) => postId],

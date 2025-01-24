@@ -1,10 +1,15 @@
-import { View, Text, Image, Alert } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Alert,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import React, { useEffect } from "react";
-// import { comments } from "../../backend/likes";
-import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { TimeAgo } from "../TimeAgo";
 import { Link, router } from "expo-router";
 import { useSelector, useDispatch } from "react-redux";
+
 import {
   clearPostComments,
   deletePostComment,
@@ -12,25 +17,20 @@ import {
   selectAllComments,
   selectCommentsByPost,
 } from "../../slices/postsSlice";
-import { TouchableOpacity } from "react-native-gesture-handler";
+
+import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import { TimeAgo } from "../TimeAgo";
+
+import LoadingIndicator from "../Others/LoadingIndicator";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+
 import Entypo from "@expo/vector-icons/Entypo";
 
 const CommentsModal = ({ postId, bottomSheetRef }) => {
   const dispatch = useDispatch();
 
-  console.log("Bottomsheet ref:", bottomSheetRef);
-
-  const handlePress = () => {
-    router.replace({
-      pathname: "(app)/display-profile/[userId]",
-      params: {
-        userId: userPost?.user_id,
-      },
-    });
-  };
-
-  const userId = useSelector((state) => state.users.ids[0]);
-  console.log("userId: ", userId);
+  // const userId = useSelector((state) => state.users.ids[0]);
+  const userId = useSelector((state) => state.users.currentUserId);
 
   let comments = useSelector((state) => selectCommentsByPost(state, postId));
 
@@ -45,7 +45,6 @@ const CommentsModal = ({ postId, bottomSheetRef }) => {
   }, [dispatch, postId]);
 
   const showAlert = (commentId) => {
-    // bottomSheetRef?.current?.close();
     Alert.alert(
       "Are you sure?",
       "You cannot restore the comments that have been deleted",
@@ -68,6 +67,22 @@ const CommentsModal = ({ postId, bottomSheetRef }) => {
       }
     );
   };
+
+  const fetchCommentsStatus = useSelector(
+    (state) => state.post.postComments.loading
+  );
+
+  const fetchCommentsError = useSelector(
+    (state) => state.post.postComments.error
+  );
+
+  if (fetchCommentsStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchCommentsError) {
+    return <ErrorDisplayComponent />;
+  }
 
   const renderItem = ({ item }) => {
     const isCommentOwner = item?.user_id === userId;
@@ -125,9 +140,6 @@ const CommentsModal = ({ postId, bottomSheetRef }) => {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-
-        // ListHeaderComponent={<Text>{comment_count} comments</Text>}
-        // contentContainerStyle={styles.contentContainer}
       />
     </View>
   );

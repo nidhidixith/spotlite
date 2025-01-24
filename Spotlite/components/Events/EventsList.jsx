@@ -1,52 +1,62 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 
 import {
-  clearEvents,
   fetchEvents,
   selectAllEvents,
   fetchEventsStatus,
-  // selectEventsByFilter,
 } from "../../slices/eventsSlice";
 
 import EventExcerpt from "./EventExcerpt";
+import EmptyState from "../Others/EmptyState";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+import LoadingIndicator from "../Others/LoadingIndicator";
 
 const EventsList = ({ filter }) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing
 
+  const fetchData = async () => {
+    try {
+      await dispatch(fetchEvents(filter)).unwrap(); // Fetch events with the current filter
+    } catch (error) {
+      console.error("Failed to fetch events:", error); // Handle fetch errors
+    }
+  };
+
   useEffect(() => {
-    dispatch(fetchEvents(filter));
-
-    // dispatch(loadUserFromLocalStorage());
-
-    // return () => {
-    //   dispatch(clearPosts());
-    // };
+    fetchData(); // Fetch events when the component mounts or filter changes
   }, [dispatch, filter]);
 
-  // const events = useSelector((state) => selectEventsByFilter(state, filter));
-
   const events = useSelector(selectAllEvents);
-  console.log("Filter:", filter);
-  console.log("Filtered events:", events);
 
-  // const fetchPostsStatus = useSelector(
-  //   (state) => state.userProfile.fetchProfileStatus
-  // );
+  const fetchEventsStatus = useSelector((state) => state.event.events.loading);
+  const fetchEventsError = useSelector((state) => state.event.events.error);
 
-  // const fetchProfileError = useSelector(
-  //   (state) => state.userProfile.fetchProfileError
-  // );
+  const handleRetry = () => {
+    fetchData(); // Retry fetching events
+  };
+
+  if (fetchEventsStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchEventsError) {
+    return <ErrorDisplayComponent onRetry={handleRetry} />;
+  }
 
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      console.log("Refreshing events...");
       await dispatch(fetchEvents(filter)).unwrap(); // Fetch posts and wait for completion
-      console.log("Events refreshed successfully");
     } catch (error) {
       console.error("Error refreshing events:", error);
     } finally {
@@ -55,11 +65,7 @@ const EventsList = ({ filter }) => {
   };
 
   const renderItem = ({ item }) => {
-    if (events.length === 0) {
-      return <View>Loading...</View>;
-    } else {
-      return <EventExcerpt key={`event-${item.id}`} eventId={item.id} />;
-    }
+    return <EventExcerpt key={`event-${item.id}`} eventId={item.id} />;
   };
 
   return (
@@ -71,6 +77,15 @@ const EventsList = ({ filter }) => {
         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
         refreshing={refreshing}
         onRefresh={onRefresh}
+        ListEmptyComponent={
+          <EmptyState
+            message="No events to show!"
+            details="Follow people, add your location, add interests to see events in the feed"
+          />
+        }
+        contentContainerStyle={
+          events.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
+        }
       />
     </SafeAreaView>
   );

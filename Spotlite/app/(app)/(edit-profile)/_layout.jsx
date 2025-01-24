@@ -19,6 +19,10 @@ const EditProfileLayout = () => {
         name="edit-interests"
         options={{ title: "Edit Interests" }}
       />
+      <Stack.Screen
+        name="edit-questions-and-answers"
+        options={{ title: "Edit Questions and Answers" }}
+      />
     </Stack>
   );
 };

@@ -13,17 +13,9 @@ const AppLayout = () => {
             name="(menu)"
             options={{ headerShown: false, animation: "slide_from_right" }}
           />
-          <Stack.Screen
-            name="(create)"
-            options={{ headerShown: false }}
-            // options={{ title: "Menu", animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="display-profile/[userId]"
-            options={{ headerTitle: "" }}
-          />
-          <Stack.Screen name="post/[id]" options={{ headerTitle: "" }} />
-          <Stack.Screen name="event/[id]" options={{ headerTitle: "" }} />
+
+          <Stack.Screen name="(create)" options={{ headerShown: false }} />
+
           <Stack.Screen
             name="display-event/[eventId]"
             options={{ headerTitle: "", animation: "slide_from_bottom" }}
@@ -32,43 +24,44 @@ const AppLayout = () => {
             name="display-user-event/[eventId]"
             options={{ headerTitle: "", animation: "slide_from_bottom" }}
           />
-          <Stack.Screen name="search/[query]" options={{ headerTitle: "" }} />
+
           <Stack.Screen
             name="(complete-profile)"
             options={{ headerShown: false }}
-            // options={{ title: "Menu", animation: "slide_from_right" }}
           />
+          <Stack.Screen
+            name="display-profile/[userId]"
+            options={{ headerTitle: "" }}
+          />
+          <Stack.Screen
+            name="(edit-profile)"
+            options={{ headerShown: false }}
+          />
+
           <Stack.Screen
             name="(display-posts)"
             options={{ headerShown: false }}
-            // options={{ title: "Menu", animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="(user-connections)"
-            options={{ headerShown: false }}
-            // options={{ title: "Menu", animation: "slide_from_right" }}
-          />
-          <Stack.Screen
-            name="(others-connections)"
-            options={{ headerShown: false }}
-            // options={{ title: "Menu", animation: "slide_from_right" }}
           />
           <Stack.Screen
             name="(display-events)"
             options={{ headerShown: false }}
-            // options={{ title: "Menu", animation: "slide_from_right" }}
           />
 
           <Stack.Screen
-            name="(edit-profile)"
+            name="(user-connections)"
             options={{ headerShown: false }}
-            // options={{ title: "Menu", animation: "slide_from_right" }}
           />
+          <Stack.Screen
+            name="(others-connections)"
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen name="post/[id]" options={{ headerTitle: "" }} />
+          <Stack.Screen name="event/[id]" options={{ headerTitle: "" }} />
 
           <Stack.Screen
             name="(full-media-view)"
             options={{ headerShown: false }}
-            // options={{ title: "Menu", animation: "slide_from_right" }}
           />
         </Stack>
       </BottomSheetModalProvider>

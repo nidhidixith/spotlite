@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import UserProfile
+from .models import UserProfile,Question,Answer
 from posts.models import Post
 from connections.models import UserRelation
 
@@ -16,14 +16,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile_pic = serializers.ImageField(use_url=True, required=False)
     additional_links = serializers.ListField(allow_empty=True, child=serializers.URLField(allow_blank=True),required=False)
     areas_of_interest = serializers.ListField(child=serializers.CharField(), required=False)
+
     no_of_posts = serializers.SerializerMethodField()
+    
     follower_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
     is_following = serializers.SerializerMethodField()
 
+    questions_and_answers = serializers.SerializerMethodField()
+
     class Meta:
         model = UserProfile
-        fields = ['id','user','username', 'first_name', 'last_name', 'display_name', 'date_of_birth', 'location','bio', 'instagram_link', 'facebook_link', 'youtube_link', 'tiktok_link', 'pinterest_link', 'twitter_link', 'threads_link', 'linkedin_link','additional_links', 'primary_interest', 'areas_of_interest', 'profile_pic','no_of_posts','follower_count','following_count','is_following']
+        fields = ['id','user','username', 'first_name', 'last_name', 'display_name', 'date_of_birth', 'location','bio', 'instagram_link', 'facebook_link', 'youtube_link', 'tiktok_link', 'pinterest_link', 'twitter_link', 'threads_link', 'linkedin_link','additional_links', 'primary_interest', 'areas_of_interest', 'profile_pic','no_of_posts','follower_count','following_count','is_following','questions_and_answers']
 
     def get_profile_pic(self, obj):
         request = self.context.get('request')
@@ -49,3 +53,31 @@ class UserProfileSerializer(serializers.ModelSerializer):
             return UserRelation.objects.filter(follower=current_user, following=obj.user).exists()
         return False
 
+    def get_questions_and_answers(self, obj):
+        answers = Answer.objects.filter(user_profile=obj).select_related('question')
+        # return [
+        #     {
+        #         "question": QuestionSerializer(answer.question).data,
+        #         "answer": AnswerSerializer(answer).data
+        #     }
+        #     for answer in answers
+        # ]
+        return [
+        {
+            "question_id": answer.question.id,
+            "question_text": answer.question.text,  # Displaying the question text
+            "answer_text": answer.answer  # Displaying the answer
+        }
+        for answer in answers
+    ]
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = ['id', 'text']
+
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ['id', 'question', 'answer', 'user_profile']

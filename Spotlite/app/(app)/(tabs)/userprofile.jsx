@@ -1,14 +1,14 @@
-import { View, Text, ScrollView, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  RefreshControl,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { useEffect, useState } from "react";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import BasicDetails from "../../../components/UserProfile/BasicDetails";
-import Activity from "../../../components/UserProfile/Activity";
-import SocialLinks from "../../../components/UserProfile/SocialLinks";
-import Interests from "../../../components/UserProfile/Interests";
-import UserInfo from "../../../components/UserProfile/UserInfo";
-import Bio from "../../../components/UserProfile/Bio";
 import { useDispatch, useSelector } from "react-redux";
+import React from "react";
 
 import {
   fetchUserProfile,
@@ -18,31 +18,62 @@ import {
 import { fetchUserPosts } from "../../../slices/postsSlice";
 import { fetchUserEvents } from "../../../slices/eventsSlice";
 
+import BasicDetails from "../../../components/UserProfile/BasicDetails";
+import Activity from "../../../components/UserProfile/Activity";
+import SocialLinks from "../../../components/UserProfile/SocialLinks";
+import Interests from "../../../components/UserProfile/Interests";
+import UserInfo from "../../../components/UserProfile/UserInfo";
+import Bio from "../../../components/UserProfile/Bio";
+import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
+import QuestionsAndAnswers from "../../../components/UserProfile/QuestionsAndAnswers";
+
 const UserProfile = () => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing
 
-  useEffect(() => {
-    dispatch(fetchUserProfile());
+  const fetchData = async () => {
+    try {
+      await dispatch(fetchUserProfile()).unwrap(); // Fetch data and unwrap the result
+    } catch (error) {
+      console.error("Failed to fetch profile:", error); // Handle error
+    }
+  };
 
-    // return () => {
-    //   dispatch(clearUserProfile());
-    // };
+  useEffect(() => {
+    fetchData();
   }, [dispatch]);
 
   const profile = useSelector(selectUserProfile);
-  console.log("User profile:", profile);
+
+  const fetchProfileStatus = useSelector(
+    (state) => state.profile.userProfile.fetchProfileStatus
+  );
+
+  const fetchProfileError = useSelector(
+    (state) => state.profile.userProfile.fetchProfileError
+  );
+
+  const handleRetry = async () => {
+    fetchData();
+  };
+
+  if (fetchProfileStatus === "loading") {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchProfileError) {
+    return <ErrorDisplayComponent onRetry={handleRetry} />;
+  }
 
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      console.log("Refreshing profile...");
       await Promise.all([
         dispatch(fetchUserProfile()).unwrap(),
         dispatch(fetchUserPosts()).unwrap(),
         dispatch(fetchUserEvents()).unwrap(),
       ]);
-      console.log("Profile refreshed successfully");
     } catch (error) {
       console.error("Error refreshing profile:", error);
     } finally {
@@ -62,6 +93,7 @@ const UserProfile = () => {
       <Activity profile={profile[0]} />
       <Interests profile={profile[0]} />
       <UserInfo profile={profile[0]} />
+      <QuestionsAndAnswers profile={profile[0]} />
     </ScrollView>
   );
 };

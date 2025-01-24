@@ -8,14 +8,18 @@ let responseListener;
 export const setupNotifications = (dispatch) => {
   if (!notificationListener && !responseListener) {
     // Listener for notifications received while the app is open
+    // console.log("Setting up notifications...");
+
     notificationListener = Notifications.addNotificationReceivedListener(
       (notification) => {
-        console.log("Notification received globally:", notification);
+        // console.log("I am listening...");
         const data = notification?.request?.content?.data;
         if (data) {
-          console.log("Adding notification to slice");
-          dispatch(addNotification(data));
+          dispatch(addNotification());
         }
+        // if (data) {
+        //   dispatch(addNotification(data));
+        // }
       }
     );
 
@@ -23,20 +27,23 @@ export const setupNotifications = (dispatch) => {
     responseListener = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         router.navigate("/(app)/(tabs)/notifications");
-        console.log("Notification response received globally:", response);
       }
     );
   }
 
   // Return cleanup function
   return () => {
+    // console.log("Cleaning up notifications...");
+
     if (notificationListener) {
       Notifications.removeNotificationSubscription(notificationListener);
       notificationListener = null;
+      // console.log("Cleaned up notifications 1...");
     }
     if (responseListener) {
       Notifications.removeNotificationSubscription(responseListener);
       responseListener = null;
+      // console.log("Cleaned up notifications 2...");
     }
   };
 };

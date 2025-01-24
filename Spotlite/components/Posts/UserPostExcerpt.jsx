@@ -1,27 +1,32 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
+import { useSelector } from "react-redux";
+import React, { useState, useRef, useMemo } from "react";
+
+import { selectUserPostById } from "../../slices/postsSlice";
+
 import UserPostButtons from "../Buttons/UserPostButtons";
 import PostCarousel from "./PostCarousel";
 import CustomBottomSheetModal from "../Modals/CustomBottomSheetModal";
 import UserPostMenuModal from "../Modals/UserPostMenuModal";
-import Entypo from "@expo/vector-icons/Entypo";
-import { Link } from "expo-router";
-import React, { useState, useRef, useMemo } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSelector } from "react-redux";
-import { selectUserPostById } from "../../slices/postsSlice";
 import { TimeAgo } from "../TimeAgo";
+
+import Entypo from "@expo/vector-icons/Entypo";
 
 const UserPostExcerpt = React.memo(({ postId }) => {
   const userPost = useSelector((state) => selectUserPostById(state, postId));
   const uniqueKey = `post-${userPost?.id}`;
-  const [showMore, setShowMore] = useState(false);
 
   const userPostUserId = userPost?.user_id;
-  console.log("UserPost UserId from excerpt: ", userPostUserId);
 
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ["12%"], []);
   const [modalContent, setModalContent] = useState(null);
+
+  const [showMore, setShowMore] = useState(false);
+
+  const handleShowMoreLessButtonClick = () => {
+    setShowMore(!showMore);
+  };
 
   const handlePostMenuClick = () => {
     setModalContent(
@@ -37,7 +42,6 @@ const UserPostExcerpt = React.memo(({ postId }) => {
             <Image
               className="w-[50px] h-[50px] rounded-full mr-4"
               source={{ uri: userPost?.profile_pic }}
-              // source={require("../../assets/images/pic1.jpg")}
               resizeMode="cover"
             />
           )}
@@ -75,7 +79,7 @@ const UserPostExcerpt = React.memo(({ postId }) => {
         )}
       </View>
       <PostCarousel mediaFiles={userPost?.media_files} />
-      <UserPostButtons postId={postId} />
+      <UserPostButtons post={userPost} />
 
       <CustomBottomSheetModal snapPoints={snapPoints} ref={bottomSheetRef}>
         {modalContent}

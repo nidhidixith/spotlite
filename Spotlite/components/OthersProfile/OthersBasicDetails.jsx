@@ -1,20 +1,13 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
-import { follow, unfollow } from "../../slices/userConnectionsSlice";
 import { useDispatch } from "react-redux";
 
-const OthersBasicDetails = ({ profile }) => {
-  // Guard clause to handle loading state
-  if (!profile) {
-    return (
-      <View className="bg-white px-4 py-3">
-        <Text className="text-center text-gray-500">Loading...</Text>
-      </View>
-    );
-  }
+import { follow, unfollow } from "../../slices/userConnectionsSlice";
 
+import Entypo from "@expo/vector-icons/Entypo";
+
+const OthersBasicDetails = ({ profile }) => {
   // State initialization
   const [followerCount, setFollowerCount] = useState(
     profile?.follower_count || 0

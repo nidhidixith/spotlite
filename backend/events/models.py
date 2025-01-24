@@ -22,21 +22,19 @@ def upload_to(instance, filename):
 
 
 class Event(models.Model):
-  user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+  user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, db_index=True)
   
-  event_title = models.TextField(max_length=100, blank=True) 
+  event_title = models.CharField(max_length=150, null=True, blank=True)
   event_domain = models.CharField(max_length=100, blank=True, null=True)
   event_description = models.TextField(max_length=5000, blank=True) 
 
   event_date = models.DateField(null=True, blank=True)
   event_time = models.TimeField(null=True, blank=True)
   
-  event_location = models.CharField(max_length=200,null=True, blank=True)
-  event_link = models.URLField(blank=True, null=True)
+  event_location = models.CharField(max_length=200, null=True, blank=True)
+  event_link = models.URLField(max_length=200, blank=True, null=True)
 
-#   interested_count = models.IntegerField(default=0, null=True, blank=True)
-
-  created_at = models.DateTimeField(auto_now_add=True)
+  created_at = models.DateTimeField(auto_now_add=True,db_index=True)
 
   def __str__(self):
       return f"{self.user} - {self.id}"
@@ -48,8 +46,8 @@ class EventMedia(models.Model):
 
 
 class EventInterest(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,db_index=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True,db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

@@ -8,9 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useForm } from "react-hook-form";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView } from "react-native";
-import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 
 const Step6 = ({ handlePrevStep, handleNextStep }) => {
@@ -21,19 +18,10 @@ const Step6 = ({ handlePrevStep, handleNextStep }) => {
   const [fileType, setFileType] = useState(null);
 
   const onSubmit = () => {
-    console.log(image);
-    // router.push("/home");
-
-    // const profilePic = image.split("/").pop(); // Access the uploaded file directly
-    // console.log(profilePic);
-
-    // May be store the complete URI. Don't split like above
-
     if (image) {
       const obj = {
         profile_pic: { uri: image, name: fileName, type: fileType },
       };
-      console.log("obj", obj);
       handleNextStep(obj); // Pass the object containing profile_pic
     } else {
       handleNextStep({ profile_pic: null });
@@ -82,7 +70,6 @@ const Step6 = ({ handlePrevStep, handleNextStep }) => {
       setImage(result.assets[0].uri);
       setFileName(result.assets[0].uri.split("/").pop());
       setFileType(result.assets[0].mimeType);
-      console.log("Assets: ", result.assets[0]);
     }
   };
 
@@ -97,11 +84,6 @@ const Step6 = ({ handlePrevStep, handleNextStep }) => {
       </Text>
 
       <View className="flex flex-row flex-wrap items-center rounded-sm bg-gray-100 px-2 py-1">
-        {/* <SecondaryButton
-          containerStyles="bg-gray-400 w-1/3 mb-2 mr-2 rounded-sm"
-          title="Choose Photo"
-          handlePress={pickImage}
-        /> */}
         <TouchableOpacity
           className="bg-gray-300 mr-2 p-1 rounded-sm"
           onPress={pickImage}
@@ -127,7 +109,7 @@ const Step6 = ({ handlePrevStep, handleNextStep }) => {
           className="bg-sky-600 rounded-lg p-2 flex-1"
           onPress={handleSubmit(onSubmit)}
         >
-          <Text className="text-white text-lg self-center">Finish</Text>
+          <Text className="text-white text-lg self-center">Submit</Text>
         </TouchableOpacity>
       </View>
     </>

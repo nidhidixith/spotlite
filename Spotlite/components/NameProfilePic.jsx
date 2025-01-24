@@ -25,19 +25,7 @@ const NameProfilePic = ({ obj, index, bottomSheetRef }) => {
             resizeMode="cover"
           />
 
-          {/* <TouchableOpacity
-            onPress={() => {
-              router.push({
-                pathname: "(app)/display-profile/[userId]",
-                params: {
-                  userId: obj?.user_id,
-                },
-              });
-              bottomSheetRef?.current?.close();
-            }}
-          > */}
           <Text className="text-[16px]">{obj?.display_name}</Text>
-          {/* </TouchableOpacity> */}
         </View>
         <Text className="text-[12px] italic text-gray-500">
           {obj?.primary_interest}

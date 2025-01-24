@@ -1,16 +1,19 @@
 from django.shortcuts import render
-from appusers.models import UserProfile
-from .serializers import UserSerializer
-from events.serializers import EventSerializer
-from events.models import Event
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import status
 from django.contrib.auth import authenticate
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 import re
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+
+from appusers.models import UserProfile
+from events.models import Event
+from events.serializers import EventSerializer
+from .serializers import UserSerializer
+
 
 
 # @api_view(['GET'])

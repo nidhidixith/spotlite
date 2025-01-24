@@ -1,10 +1,10 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import React from "react";
+import { Link, router } from "expo-router";
+
 import AntDesign from "@expo/vector-icons/AntDesign";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Link } from "expo-router";
 import Entypo from "@expo/vector-icons/Entypo";
 
 const SocialLinks = ({ profile }) => {
@@ -25,7 +25,9 @@ const SocialLinks = ({ profile }) => {
 
   return (
     <View className="bg-white px-4 py-3 mb-2">
-      <Text className="font-rregular font-bold text-xl mb-4">Social Links</Text>
+      <Text className="font-rregular font-bold text-xl mb-4">
+        Social Presence
+      </Text>
 
       {hasSocialLinks ? (
         <>
@@ -198,9 +200,13 @@ const SocialLinks = ({ profile }) => {
             )}
         </>
       ) : (
-        <Text className="font-rregular text-[16px] text-gray-500">
-          No links yet
-        </Text>
+        <TouchableOpacity
+          onPress={() => router.push("(app)/(edit-profile)/edit-links")}
+        >
+          <Text className="text-[16px] text-sky-600 self-center">
+            Add your Social links
+          </Text>
+        </TouchableOpacity>
       )}
     </View>
   );

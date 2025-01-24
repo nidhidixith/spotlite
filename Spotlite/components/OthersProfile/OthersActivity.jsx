@@ -1,31 +1,34 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import OtherUserPostExcerpt from "../Posts/OtherUserPostExcerpt";
-import EventExcerpt from "../Events/EventExcerpt";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { router } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+
 import {
   selectAllOtherUserPosts,
   fetchOtherUserPosts,
   clearOtherUserPosts,
   selectPostsByUser,
 } from "../../slices/postsSlice";
-import { useDispatch, useSelector } from "react-redux";
 import {
   clearOtherUserEvents,
   fetchOtherUserEvents,
   selectEventsByUser,
 } from "../../slices/eventsSlice";
+
+import OtherUserPostExcerpt from "../Posts/OtherUserPostExcerpt";
 import OtherUserEventExcerpt from "../Events/OtherUserEventExcerpt";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+
+import AntDesign from "@expo/vector-icons/AntDesign";
+import LoadingIndicator from "../Others/LoadingIndicator";
 
 const OthersActivity = ({ userId }) => {
   const [activeTab, setActiveTab] = useState("Posts");
 
-  console.log("UserId:", userId);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchOtherUserPosts(userId));
+    dispatch(fetchOtherUserPosts({ userId, page: 1 }));
     dispatch(fetchOtherUserEvents(userId));
 
     return () => {
@@ -34,16 +37,37 @@ const OthersActivity = ({ userId }) => {
     };
   }, [dispatch, userId]);
 
-  // const posts = useSelector(selectAllOtherUserPosts);
   const posts = useSelector((state) => selectPostsByUser(state, userId));
   const events = useSelector((state) => selectEventsByUser(state, userId));
 
+  const fetchPostsStatus = useSelector(
+    (state) => state.post.otherUserPosts.loading
+  );
+
+  const fetchPostsError = useSelector(
+    (state) => state.post.otherUserPosts.error
+  );
+
+  const fetchEventsStatus = useSelector(
+    (state) => state.event.otherUserEvents.loading
+  );
+
+  const fetchEventsError = useSelector(
+    (state) => state.event.otherUserEvents.error
+  );
+
+  if (fetchPostsStatus || fetchEventsStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchPostsError || fetchEventsError) {
+    return <ErrorDisplayComponent />;
+  }
+
   const latestPost = posts?.[0];
-  console.log("Latest post:", latestPost);
   const latestPostId = latestPost?.id;
 
   const latestEvent = events?.[0];
-  console.log("Latest Event:", latestEvent);
   const latestEventId = latestEvent?.id;
 
   const renderComponent = () => {
@@ -146,11 +170,6 @@ const OthersActivity = ({ userId }) => {
 
       <View className="border-t-2 border-gray-50 py-2">
         {renderComponent()}
-        {/* <OtherUserPostExcerpt />
-        <View className="flex flex-row py-1 items-center justify-center">
-          <Text className="font-bold text-[16px] mr-2">View all posts</Text>
-          <AntDesign name="arrowright" size={18} color="black" />
-        </View> */}
       </View>
     </View>
   );

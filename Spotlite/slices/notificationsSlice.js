@@ -6,9 +6,10 @@ import {
 } from "@reduxjs/toolkit";
 
 import instance from "../api";
+import * as SecureStore from "expo-secure-store";
 
 const notificationsAdapter = createEntityAdapter({
-  sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
+  // sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
 });
 
 // Define initial states
@@ -16,15 +17,36 @@ const initialState = {
   notifications: notificationsAdapter.getInitialState({
     loading: false,
     error: null,
+    nextPage: null,
+
+    fetchUndeliveredNotificationCountStatus: false,
+    fetchUndeliveredNotificationCountError: null,
   }),
   newNotificationCount: 0,
+  newNotificationsAvailable: false,
 };
+
+export const fetchUndeliveredNotificationCount = createAsyncThunk(
+  "notifications/fetchUndeliveredNotificationCount",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await instance.get(
+        "/notifications/undelivered-notifications-count/"
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 export const fetchNotifications = createAsyncThunk(
   "notifications/fetchNotifications",
-  async () => {
-    const response = await instance.get("/notifications/get-notifications/");
-    // console.log("From postSlice:", response.data);
+  async ({ page = 1 }, { rejectWithValue }) => {
+    // const response = await instance.get("/notifications/get-notifications/");
+    const response = await instance.get(
+      `/notifications/get-notifications/?page=${page}`
+    );
     return response.data;
   }
 );
@@ -32,7 +54,7 @@ export const fetchNotifications = createAsyncThunk(
 export const savePushToken = createAsyncThunk(
   "notifications/savePushToken",
   async ({ pushToken }, { rejectWithValue }) => {
-    console.log("I am here");
+    console.log("I am inside save push token");
     const response = await instance.post(
       "/notifications/save-push-token/",
       { pushToken },
@@ -42,7 +64,26 @@ export const savePushToken = createAsyncThunk(
         },
       }
     );
-    // console.log("From postSlice:", response.data);
+
+    await SecureStore.setItemAsync("push_token", pushToken);
+
+    return response.data;
+  }
+);
+
+export const unregisterPushToken = createAsyncThunk(
+  "notifications/unregisterPushToken",
+  async ({ pushToken }, { rejectWithValue }) => {
+    const response = await instance.post(
+      "/notifications/unregister-push-token/",
+      { pushToken },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
     return response.data;
   }
 );
@@ -61,7 +102,6 @@ export const markAsRead = createAsyncThunk(
         }
       );
 
-      // console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -78,41 +118,61 @@ const notificationsSlice = createSlice({
   reducers: {
     resetNotifications(state) {
       // return initialState;
-      notificationsAdapter.removeAll(state.notifications); // Clear all notifications
-      state.notifications.loading = false; // Reset loading
-      state.notifications.error = null; // Reset error
-      state.newNotificationCount = 0; // Reset notification count
+      notificationsAdapter.removeAll(state.notifications);
+      state.notifications.loading = false;
+      state.notifications.error = null;
+      // state.newNotificationCount = 0;
+      state.newNotificationsAvailable = false;
     },
     clearNotifications: (state) => {
       notificationsAdapter.removeAll(state.notifications);
-      state.newNotificationCount = 0;
+      // state.newNotificationCount = 0;
+      state.newNotificationsAvailable = false;
     },
     addNotification: (state, action) => {
-      console.log(
-        "Count from notification slice before: ",
-        state.newNotificationCount
-      );
-      notificationsAdapter.upsertOne(state.notifications, action.payload);
-      // state.notifications.count = state.notifications.count + 1;
+      // console.log("Adding notification:", action.payload);
+      // notificationsAdapter.addOne(state.notifications, action.payload);
+      // console.log("Notification added:", action.payload);
       state.newNotificationCount += 1;
-      console.log(
-        "Count from notification slice after: ",
-        state.newNotificationCount
-      );
+      state.newNotificationsAvailable = true;
     },
     resetNewNotificationCount: (state) => {
-      state.newNotificationCount = 0; // Reset count when the notifications tab is opened
+      state.newNotificationCount = 0;
+      // state.newNotificationsAvailable = false;
     },
   },
   extraReducers(builder) {
     builder
+      .addCase(fetchUndeliveredNotificationCount.pending, (state) => {
+        state.notifications.fetchUndeliveredNotificationCountStatus = true;
+        state.notifications.fetchUndeliveredNotificationCountError = null;
+      })
+      .addCase(fetchUndeliveredNotificationCount.fulfilled, (state, action) => {
+        state.notifications.fetchUndeliveredNotificationCountStatus = false;
+        const { undelivered_notifications_count } = action.payload;
+        console.log(
+          "undelivered_notifications_count: ",
+          undelivered_notifications_count
+        );
+        state.newNotificationCount += undelivered_notifications_count;
+        state.newNotificationsAvailable = true;
+      })
+      .addCase(fetchUndeliveredNotificationCount.rejected, (state, action) => {
+        state.notifications.fetchUndeliveredNotificationCountStatus = false;
+        state.notifications.fetchUndeliveredNotificationCountError =
+          action.error.message;
+      })
+
       .addCase(fetchNotifications.pending, (state) => {
         state.notifications.loading = true;
         state.notifications.error = null;
       })
       .addCase(fetchNotifications.fulfilled, (state, action) => {
         state.notifications.loading = false;
-        notificationsAdapter.upsertMany(state.notifications, action.payload);
+        const { results, next } = action.payload;
+        notificationsAdapter.addMany(state.notifications, results);
+        state.notifications.nextPage = next;
+        // state.newNotificationsAvailable = false;
       })
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.notifications.loading = false;
@@ -133,6 +193,24 @@ const notificationsSlice = createSlice({
         // state.otherUserPosts.error = action.error.message;
       })
 
+      // For unregistering Push Token
+      .addCase(unregisterPushToken.pending, (state) => {
+        // state.otherUserPosts.loading = true;
+        // state.otherUserPosts.error = null;
+      })
+      .addCase(unregisterPushToken.fulfilled, (state, action) => {
+        // state.otherUserPosts.loading = false;
+        // otherUserPostsAdapter.upsertOne(state.otherUserPosts, action.payload);
+      })
+      .addCase(unregisterPushToken.rejected, (state, action) => {
+        // state.otherUserPosts.loading = false;
+        // state.otherUserPosts.error = action.payload || action.error.message;
+        console.log(
+          "Push token error: ",
+          action.payload || action.error.message
+        );
+      })
+
       // For Mark as read
       .addCase(markAsRead.pending, (state) => {
         // state.otherUserPosts.loading = true;
@@ -141,6 +219,14 @@ const notificationsSlice = createSlice({
       .addCase(markAsRead.fulfilled, (state, action) => {
         // state.otherUserPosts.loading = false;
         // otherUserPostsAdapter.upsertOne(state.otherUserPosts, action.payload);
+        const fullNotificationId = action.meta.arg.notificationId;
+        if (fullNotificationId) {
+          const fullNotification =
+            state.notifications.entities[fullNotificationId];
+          if (fullNotification) {
+            fullNotification.is_read = true;
+          }
+        }
       })
       .addCase(markAsRead.rejected, (state, action) => {
         // state.otherUserPosts.loading = false;
@@ -165,6 +251,3 @@ export const {
 } = notificationsAdapter.getSelectors(
   (state) => state.notification.notifications
 );
-
-// Direct selector to access the count
-// export const selectNotificationCount = (state) => state.notification.count;

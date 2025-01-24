@@ -1,20 +1,24 @@
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocalSearchParams } from "expo-router";
+
 import {
   clearOtherUserFollowing,
   fetchOtherUserFollowingList,
   selectAllOtherUserFollowing,
 } from "../../../slices/userConnectionsSlice";
+
 import NameProfilePic from "../../../components/NameProfilePic";
-import { useLocalSearchParams } from "expo-router";
+import EmptyState from "../../../components/Others/EmptyState";
+import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
 const MyFollowing = () => {
   const dispatch = useDispatch();
 
   let { userId } = useLocalSearchParams();
   userId = Number(userId);
-  console.log("UserId:", userId);
 
   useEffect(() => {
     dispatch(fetchOtherUserFollowingList({ userId }));
@@ -24,6 +28,22 @@ const MyFollowing = () => {
   }, [dispatch, userId]);
 
   const userFollowing = useSelector(selectAllOtherUserFollowing);
+
+  const fetchFollowingStatus = useSelector(
+    (state) => state.userConnection.otherUserFollowing.loading
+  );
+
+  const fetchFollowingError = useSelector(
+    (state) => state.userConnection.otherUserFollowing.error
+  );
+
+  if (fetchFollowingStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchFollowingError) {
+    return <ErrorDisplayComponent />;
+  }
 
   const renderItem = ({ item }) => {
     return <NameProfilePic obj={item} index={item.id} key={item.id} />;
@@ -36,8 +56,9 @@ const MyFollowing = () => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.id}`}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        ListEmptyComponent={
-          <Text className="self-center">Not following yet!</Text>
+        ListEmptyComponent={<EmptyState message="Not following yet!" />}
+        contentContainerStyle={
+          userFollowing.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
         }
       />
     </View>

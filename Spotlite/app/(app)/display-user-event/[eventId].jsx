@@ -1,21 +1,20 @@
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React, { useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Link, useLocalSearchParams } from "expo-router";
 
 import {
   addInterestInEvent,
   removeInterestInEvent,
+  selectEventById,
 } from "../../../slices/eventsSlice";
+
 import InterestedModal from "../../../components/Modals/InterestedModal";
 import CustomBottomSheetModal from "../../../components/Modals/CustomBottomSheetModal";
-import { useLocalSearchParams } from "expo-router";
-import { Link } from "expo-router";
-import { selectEventById } from "../../../slices/eventsSlice";
 import EventCarousel from "../../../components/Events/EventCarousel";
+
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 

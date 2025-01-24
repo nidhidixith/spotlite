@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { View, Text, TextInput, Alert } from "react-native";
-import { useForm, Controller } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
 import { Link, router } from "expo-router";
+
 import { completeUserProfile } from "../../../slices/userProfileSlice";
-import { connectWebSocket } from "../../../utilities/websocket";
+import { handleDeleteUser } from "../../../utilities/handleDeleteUser";
 
 import Step1 from "./step1";
 import Step2 from "./step2";
@@ -21,6 +21,7 @@ const CompleteProfile = () => {
   const [formData, setFormData] = useState({});
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 6;
+
   const { profileCompletionError } = useSelector(
     (state) => state.profile.userProfile
   );
@@ -40,6 +41,16 @@ const CompleteProfile = () => {
       setCurrentStep(currentStep - 1);
     }
   };
+
+  const handleSkip = () => {
+    handleSubmit(formData);
+  };
+
+  // const handleSkip = (data) => {
+  //   const updatedFormData = { ...formData, ...data };
+  //   setFormData(updatedFormData);
+  //   handleSubmit(updatedFormData);
+  // };
 
   const handleSubmit = async (data) => {
     // Receive updated data as parameter
@@ -122,7 +133,10 @@ const CompleteProfile = () => {
       profileData.append("linkedin_link", extractedData.linkedInLink);
     }
 
-    if (extractedData.additionalLinks.length > 0) {
+    if (
+      extractedData.additionalLinks &&
+      extractedData.additionalLinks.length > 0
+    ) {
       profileData.append("additional_links", extractedData.additionalLinks);
     }
 
@@ -132,21 +146,25 @@ const CompleteProfile = () => {
       profileData.append("profile_pic", extractedData.profile_pic);
     }
 
-    console.log("Extracted data:", extractedData);
-    // router.push("/(app)/(tabs)/home");
     try {
       const response = await dispatch(
         completeUserProfile(profileData)
       ).unwrap();
       if (response) {
         Alert.alert("Profile Completion successful");
-        connectWebSocket();
         router.push("/(app)/(tabs)/home");
       }
-    } catch (error) {
-      console.error("Error:", error.response);
-      Alert.alert("Profile Completion failed", "Please try again.");
-      // router.push("/(auth)/signup");
+    } catch (err) {
+      const errorMessage =
+        (typeof err === "string" && err) || // If `err` is a string, use it
+        err?.message || // If `err` has a `message` property
+        JSON.stringify(err) || // Convert `err` to string if it's an object
+        "An unexpected error occurred. Try again later.";
+
+      // Add "Please register again" to the error message
+      const finalErrorMessage = `${errorMessage} Please register again.`;
+      Alert.alert("Error", finalErrorMessage);
+      handleDeleteUser(dispatch, router);
     }
   };
 
@@ -181,12 +199,14 @@ const CompleteProfile = () => {
               <Step4
                 handlePrevStep={handlePrevStep}
                 handleNextStep={handleNextStep}
+                handleSkip={handleSkip}
               />
             )}
             {currentStep === 5 && (
               <Step5
                 handlePrevStep={handlePrevStep}
                 handleNextStep={handleNextStep}
+                handleSkip={handleSkip}
               />
             )}
             {currentStep === 6 && (

@@ -1,25 +1,17 @@
 import { View, Text, Image, Dimensions, TouchableOpacity } from "react-native";
 import React, { useMemo, useRef, useState } from "react";
-import Entypo from "@expo/vector-icons/Entypo";
 import { router } from "expo-router";
 import { useSelector } from "react-redux";
+
 import { selectUserEventById } from "../../slices/eventsSlice";
-import { TimeAgo } from "../TimeAgo";
+
 import CustomBottomSheetModal from "../Modals/CustomBottomSheetModal";
 import UserEventMenuModal from "../Modals/UserEventMenuModal";
 
+import Entypo from "@expo/vector-icons/Entypo";
+
 const UserEventExcerpt = React.memo(({ eventId }) => {
   const event = useSelector((state) => selectUserEventById(state, eventId));
-  // const eventMedia = event?.media_files[0]?.media_file;
-
-  // const isImage =
-  //   eventMedia?.endsWith(".jpg") ||
-  //   eventMedia?.endsWith(".png") ||
-  //   eventMedia?.endsWith(".jpeg") ||
-  //   eventMedia?.endsWith(".webp");
-
-  // console.log("Event media files:", event?.media_files);
-  // console.log("Event media file:", event?.media_files[0]?.media_file);
 
   const eventMediaFiles = event?.media_files;
 
@@ -33,7 +25,6 @@ const UserEventExcerpt = React.memo(({ eventId }) => {
     )?.media_file || null;
 
   const uniqueKey = `userevent-${event?.id}`;
-  const [showMore, setShowMore] = useState(false);
 
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ["12%"], []);
@@ -82,7 +73,6 @@ const UserEventExcerpt = React.memo(({ eventId }) => {
             <Text className="font-rregular text-sm">
               {event?.event_date} {event?.event_time}
             </Text>
-            {/* <Text className="font-rregular text-sm text-gray-500">Online</Text> */}
             {event?.interested_count > 0 ? (
               <Text className="font-rregular text-sm text-gray-500">
                 {event?.interested_count} interested

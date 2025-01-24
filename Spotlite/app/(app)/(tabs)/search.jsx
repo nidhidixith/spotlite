@@ -3,11 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   clearSearches,
   performSearch,
   selectAllSearches,
 } from "../../../slices/searchSlice";
+
 import SearchResults from "../../../components/Search/SearchResults";
 
 const Search = () => {
@@ -18,8 +20,9 @@ const Search = () => {
 
   const handleSearchClick = () => {
     if (query === "") return Alert.alert("Please input something");
+
     dispatch(performSearch({ query }));
-    setQuery(""); // Clear the input field
+    // setQuery(""); // Clear the input field
     setHasSearched(true); // Mark search as performed
   };
 
@@ -47,6 +50,7 @@ const Search = () => {
           <Text className="text-sky-600 text-xs">Search</Text>
         </TouchableOpacity>
       </View>
+
       <View className="px-4 mt-1">
         <TouchableOpacity className="" onPress={handleClearSearches}>
           <Text className="text-sky-600 self-end mb-1">Clear</Text>

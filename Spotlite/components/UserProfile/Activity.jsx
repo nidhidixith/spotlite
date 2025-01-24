@@ -1,17 +1,21 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import UserPostExcerpt from "../Posts/UserPostExcerpt";
-import EventExcerpt from "../Events/EventExcerpt";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
+import { router } from "expo-router";
+
 import {
   fetchUserPosts,
   selectAllUserPosts,
   clearUserPosts,
 } from "../../slices/postsSlice";
 import { fetchUserEvents, selectAllUserEvents } from "../../slices/eventsSlice";
+
+import UserPostExcerpt from "../Posts/UserPostExcerpt";
 import UserEventExcerpt from "../Events/UserEventExcerpt";
+
+import AntDesign from "@expo/vector-icons/AntDesign";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+import LoadingIndicator from "../Others/LoadingIndicator";
 
 const Activity = () => {
   const [activeTab, setActiveTab] = useState("Posts");
@@ -19,24 +23,34 @@ const Activity = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchUserPosts());
+    dispatch(fetchUserPosts({ page: 1 }));
     dispatch(fetchUserEvents());
-
-    // dispatch(loadUserFromLocalStorage());
-
-    // return () => {
-    //   dispatch(clearUserPosts());
-    // };
   }, [dispatch]);
+
   const posts = useSelector(selectAllUserPosts);
   const events = useSelector(selectAllUserEvents);
 
+  const fetchPostsStatus = useSelector((state) => state.post.userPosts.loading);
+  const fetchPostsError = useSelector((state) => state.post.userPosts.error);
+
+  const fetchEventsStatus = useSelector(
+    (state) => state.event.userEvents.loading
+  );
+
+  const fetchEventsError = useSelector((state) => state.event.userEvents.error);
+
+  if (fetchPostsStatus || fetchEventsStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchPostsError || fetchEventsError) {
+    return <ErrorDisplayComponent />;
+  }
+
   const latestPost = posts?.[0];
-  console.log("Latest post:", latestPost);
   const latestPostId = latestPost?.id;
 
   const latestEvent = events?.[0];
-  console.log("Latest post:", latestEvent);
   const latestEventId = latestEvent?.id;
 
   const renderComponent = () => {
@@ -82,19 +96,6 @@ const Activity = () => {
             No events yet
           </Text>
         );
-
-      // case "Events":
-      //   return (
-      //     <>
-      //       <EventExcerpt />
-      //       <View className="flex flex-row py-1 items-center justify-center">
-      //         <Text className="font-bold text-[16px] mr-2">
-      //           View all events
-      //         </Text>
-      //         <AntDesign name="arrowright" size={18} color="black" />
-      //       </View>
-      //     </>
-      //   );
 
       default:
         return (

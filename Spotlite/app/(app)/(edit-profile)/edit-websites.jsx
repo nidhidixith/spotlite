@@ -5,15 +5,18 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
+import { router } from "expo-router";
+
 import {
   selectUserProfile,
   editProfile,
 } from "../../../slices/userProfileSlice";
-import { router } from "expo-router";
+import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
 const EditWebsites = () => {
   const {
@@ -26,7 +29,9 @@ const EditWebsites = () => {
 
   const dispatch = useDispatch();
   const profile = useSelector(selectUserProfile);
-  console.log("User profile from edit:", profile[0]?.additional_links);
+
+  const maxLength = 200;
+
   const initialLinks =
     Array.isArray(profile[0]?.additional_links) &&
     profile[0]?.additional_links.length === 1 &&
@@ -48,6 +53,15 @@ const EditWebsites = () => {
   // Add link function
   const addLink = () => {
     if (!linkInput.trim()) return;
+
+    // Check if the link exceeds the maximum length
+    if (linkInput.length > maxLength) {
+      setError("linkInput", {
+        type: "manual",
+        message: `Link must be less than ${maxLength} characters.`,
+      });
+      return; // Stop further processing if the length is exceeded
+    }
 
     const validationResult = isValidUrl(linkInput);
     if (validationResult === true) {
@@ -71,27 +85,42 @@ const EditWebsites = () => {
     setHasChanges(true); // Track changes
   };
 
+  const editProfileStatus = useSelector(
+    (state) => state.profile.userProfile.editProfileStatus
+  );
+
+  const editProfileError = useSelector(
+    (state) => state.profile.userProfile.editProfileError
+  );
+
+  if (editProfileStatus === "loading") {
+    return <LoadingIndicator />;
+  }
+
   // On form submit
   const onSubmit = async () => {
-    console.log("Links:", links);
-
-    // const obj = { additionalLinks: links };
-    // console.log("Data:", obj);
-
     const profileData = new FormData();
 
     profileData.append("additional_links", links);
+    console.log("Links:", links);
 
-    console.log("Profile data from edit additional links", profileData);
     try {
       const response = await dispatch(editProfile(profileData)).unwrap();
       Alert.alert("Edit Successful");
       router.push("(app)/(tabs)/home");
     } catch (err) {
       console.error("Request failed", err);
-      Alert.alert("Request failed, Please try again later");
+      console.log(err);
+
+      const errorMessage =
+        (typeof err === "string" && err) || // If `err` is a string, use it
+        err?.message || // If `err` has a `message` property
+        JSON.stringify(err) || // Convert `err` to string if it's an object
+        "An unknown error occurred. Try again later"; // Fallback message
+
+      Alert.alert("Edit Failed", errorMessage); // Pass string to Alert.alert
       // Alert.alert(editProfileError);
-      router.push("(app)/(tabs)/home");
+      router.replace("(app)/(edit-profile)/edit-profile");
     }
   };
   return (
@@ -104,8 +133,6 @@ const EditWebsites = () => {
         backgroundColor: "white",
       }}
     >
-      {/* <Text className="text-lg font-bold mb-4">Edit your Websites</Text> */}
-
       <View className="mb-5">
         <View className="mb-3">
           <Text className="text-lg font-bold mb-4">Websites</Text>
@@ -160,13 +187,6 @@ const EditWebsites = () => {
           <Text className="">Add link</Text>
         </TouchableOpacity>
 
-        {/* <TouchableOpacity
-          className={`${
-            hasChanges ? "bg-sky-600" : "bg-gray-300"
-          } py-1 rounded-lg mt-6`}
-          onPress={handleSubmit(onSubmit)}
-          disabled={!hasChanges} // Disable Save button if no changes
-        > */}
         <TouchableOpacity
           className={`bg-sky-600 py-1 rounded-lg mt-4 ${
             !hasChanges ? "opacity-50" : ""

@@ -10,21 +10,21 @@ import {
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useForm, Controller } from "react-hook-form";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Entypo from "@expo/vector-icons/Entypo";
 import { Link, router } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
+
 import { loginUser } from "../../slices/authSlice";
 import { resetUserProfile } from "../../slices/userProfileSlice";
-// import { resetUserConnections } from "../../slices/userConnectionsSlice";
 import { resetPosts } from "../../slices/postsSlice";
 import { resetEvents } from "../../slices/eventsSlice";
 import {
   resetNewNotificationCount,
   resetNotifications,
 } from "../../slices/notificationsSlice";
-import { connectWebSocket } from "../../utilities/websocket";
 import { resetUserConnections } from "../../slices/userConnectionsSlice";
+
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const Login = () => {
   const {
@@ -42,12 +42,10 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
       const userData = new FormData();
       userData.append("username", data.email);
       userData.append("password", data.password);
 
-      console.log(userData);
       const response = await dispatch(loginUser(userData)).unwrap();
       if (response) {
         Alert.alert("Login successful");
@@ -56,15 +54,10 @@ const Login = () => {
           dispatch(resetUserConnections()),
           dispatch(resetPosts()),
           dispatch(resetEvents()),
-          // console.log("Before login:", newNotificationCount),
           dispatch(resetNotifications()),
-          dispatch(resetNewNotificationCount()),
-          console.log("After login, count is:", newNotificationCount),
+          // dispatch(resetNewNotificationCount()),
         ]);
-        // connectWebSocket();
         router.replace("/(app)/(tabs)/home");
-
-        // router.replace("/(app)/(tabs)/userprofile");
       }
     } catch (error) {
       // console.error("Login error:", error);
@@ -82,9 +75,6 @@ const Login = () => {
         <Text className="font-rregular text-3xl font-bold mb-10 self-center">
           Login to your account
         </Text>
-        {/* <Text className="font-rregular text-[14px] text-gray-500 mb-8">
-          Welcome back! Your content awaits. Login to explore
-        </Text> */}
 
         <View className="mb-6">
           <Text className="font-rregular text-base font-bold mb-2">
@@ -121,7 +111,7 @@ const Login = () => {
             />
           </View>
           {errors.email && (
-            <Text className="font-rregular text-red-500 mt-2">
+            <Text className="font-rregular text-red-500 mt-1">
               {errors.email.message}
             </Text>
           )}
@@ -152,7 +142,7 @@ const Login = () => {
             />
           </View>
           {errors.password && (
-            <Text className="font-rregular text-red-500 mt-2">
+            <Text className="font-rregular text-red-500 mt-1">
               {errors.password.message}
             </Text>
           )}

@@ -8,8 +8,9 @@ import {
 import instance from "../api";
 
 const userProfileAdapter = createEntityAdapter();
-
 const otherUserProfileAdapter = createEntityAdapter();
+const questionsAdapter = createEntityAdapter();
+const answersAdapter = createEntityAdapter();
 
 const initialState = {
   userProfile: userProfileAdapter.getInitialState({
@@ -30,6 +31,15 @@ const initialState = {
     fetchOtherProfileStatus: "idle",
     fetchOtherProfileError: null,
   }),
+
+  questions: questionsAdapter.getInitialState({
+    fetchQuestionsStatus: "idle",
+    fetchQuestionsError: null,
+  }),
+  answers: answersAdapter.getInitialState({
+    createAnswerStatus: "idle",
+    createAnswerError: null,
+  }),
 };
 
 export const fetchUserProfile = createAsyncThunk(
@@ -37,8 +47,6 @@ export const fetchUserProfile = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await instance.get("/get-user-profile/");
-      console.log("Fetched profile:");
-      console.log(response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -51,7 +59,6 @@ export const fetchOtherUserProfile = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await instance.get(`/get-other-user-profile/${userId}/`);
-      // console.log(response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -69,8 +76,39 @@ export const completeUserProfile = createAsyncThunk(
         },
       });
 
-      console.log("I am here.......");
-      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const fetchQuestions = createAsyncThunk(
+  "questions/fetchQuestions",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await instance.get("/get-questions/");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const createOrUpdateAnswers = createAsyncThunk(
+  "answers/createOrUpdateAnswers  ",
+  async (answerData, { rejectWithValue }) => {
+    try {
+      const response = await instance.post(
+        "/create-or-update-answers/",
+        answerData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -81,7 +119,6 @@ export const completeUserProfile = createAsyncThunk(
 export const editProfile = createAsyncThunk(
   "userProfile/editProfile",
   async (profileData, { rejectWithValue }) => {
-    console.log("Redux state profile data:", profileData);
     try {
       const response = await instance.put("/edit-profile/", profileData, {
         headers: {
@@ -89,7 +126,6 @@ export const editProfile = createAsyncThunk(
         },
       });
 
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (!error.response) {
@@ -107,9 +143,14 @@ const userProfileSlice = createSlice({
     resetUserProfile(state) {
       return initialState;
     },
-    // clearUserProfile: userProfileAdapter.removeAll,
     clearUserProfile: (state) => {
       userProfileAdapter.removeAll(state.userProfile);
+    },
+    clearQuestions: (state) => {
+      questionsAdapter.removeAll(state.questions);
+    },
+    clearAnswers: (state) => {
+      answersAdapter.removeAll(state.answers);
     },
     clearOtherUserProfile: (state) => {
       otherUserProfileAdapter.removeAll(state.otherUserProfile);
@@ -122,41 +163,30 @@ const userProfileSlice = createSlice({
       })
       .addCase(completeUserProfile.fulfilled, (state, action) => {
         state.userProfile.profileCompletionStatus = "succeeded";
-        userProfileAdapter.upsertOne(state.userProfile, action.payload);
+        // userProfileAdapter.upsertOne(state.userProfile, action.payload);
         state.userProfile.profileCompletionError = null;
       })
       .addCase(completeUserProfile.rejected, (state, action) => {
         state.userProfile.profileCompletionStatus = "failed";
-        // state.userProfile.profileCompletionError = action.error.message;
         state.userProfile.profileCompletionError =
           action.payload || action.error.message;
-        console.log(
-          "Profile Completion Error:",
-          state.userProfile.profileCompletionError
-        );
       })
 
+      // For logged-in user
       .addCase(fetchUserProfile.pending, (state, action) => {
         state.userProfile.fetchProfileStatus = "loading";
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.userProfile.fetchProfileStatus = "succeeded";
         userProfileAdapter.upsertOne(state.userProfile, action.payload);
-        console.log(
-          "User Profile from adapter:",
-          userProfileAdapter.getSelectors().selectAll(state.userProfile)
-        );
         state.userProfile.fetchProfileError = null;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.userProfile.fetchProfileStatus = "failed";
         state.userProfile.fetchProfileError = action.error.message;
-        console.log(
-          "Profile Fetch Error:",
-          state.userProfile.fetchProfileError
-        );
       })
 
+      // For other user profile
       .addCase(fetchOtherUserProfile.pending, (state, action) => {
         state.otherUserProfile.fetchOtherProfileStatus = "loading";
       })
@@ -166,21 +196,14 @@ const userProfileSlice = createSlice({
           state.otherUserProfile,
           action.payload
         );
-        // console.log(
-        //   "User Profile from adapter:",
-        //   userProfileAdapter.getSelectors().selectAll(state)
-        // );
         state.otherUserProfile.fetchOtherProfileError = null;
       })
       .addCase(fetchOtherUserProfile.rejected, (state, action) => {
         state.otherUserProfile.fetchOtherProfileStatus = "failed";
         state.otherUserProfile.fetchOtherProfileError = action.error.message;
-        console.log(
-          "Profile Fetch Error:",
-          state.otherUserProfile.fetchOtherProfileError
-        );
       })
 
+      // Edit Profile
       .addCase(editProfile.pending, (state, action) => {
         state.userProfile.editProfileStatus = "loading";
       })
@@ -192,21 +215,61 @@ const userProfileSlice = createSlice({
       .addCase(editProfile.rejected, (state, action) => {
         state.userProfile.editProfileStatus = "failed";
         state.userProfile.editProfileError = action.error.message;
-        console.log("Profile Edit Error:", state.userProfile.editProfileError);
+      })
+
+      // Fetch Questions
+      .addCase(fetchQuestions.pending, (state, action) => {
+        state.questions.fetchQuestionsStatus = "loading";
+      })
+      .addCase(fetchQuestions.fulfilled, (state, action) => {
+        state.questions.fetchQuestionsStatus = "succeeded";
+        questionsAdapter.upsertMany(state.questions, action.payload);
+        state.questions.fetchQuestionsError = null;
+      })
+      .addCase(fetchQuestions.rejected, (state, action) => {
+        state.questions.fetchQuestionsStatus = "failed";
+        state.questions.fetchQuestionsError =
+          action.payload || action.error.message;
+      })
+
+      // Create answers
+      .addCase(createOrUpdateAnswers.pending, (state, action) => {
+        state.answers.createAnswerStatus = "loading";
+      })
+      .addCase(createOrUpdateAnswers.fulfilled, (state, action) => {
+        state.answers.createAnswerStatus = "succeeded";
+        // answersAdapter.upsertOne(state.answers, action.payload);
+        state.answers.createAnswerError = null;
+      })
+      .addCase(createOrUpdateAnswers.rejected, (state, action) => {
+        state.answers.createAnswerStatus = "failed";
+        state.answers.createAnswerError =
+          action.payload || action.error.message;
       });
   },
 });
 
-export const { resetUserProfile, clearUserProfile, clearOtherUserProfile } =
-  userProfileSlice.actions;
+export const {
+  resetUserProfile,
+  clearUserProfile,
+  clearOtherUserProfile,
+  clearQuestions,
+  clearAnswers,
+} = userProfileSlice.actions;
 
 export default userProfileSlice.reducer;
 
-export const {
-  selectAll: selectUserProfile,
-  // selectById: selectUserProfileById,
-  // selectIds: selectUserProfileIds,
-} = userProfileAdapter.getSelectors((state) => state.profile.userProfile);
+export const { selectAll: selectUserProfile } = userProfileAdapter.getSelectors(
+  (state) => state.profile.userProfile
+);
+
+export const { selectAll: selectAllQuestions } = questionsAdapter.getSelectors(
+  (state) => state.profile.questions
+);
+
+export const { selectAll: selectAllAnswers } = answersAdapter.getSelectors(
+  (state) => state.profile.answers
+);
 
 export const {
   selectAll: selectAllOtherUserProfiles,

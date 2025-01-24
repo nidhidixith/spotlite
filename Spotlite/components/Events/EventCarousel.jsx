@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { router } from "expo-router";
+
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 const EventCarousel = ({ mediaFiles }) => {
   const screenWidth = Dimensions.get("window").width;
@@ -16,8 +17,6 @@ const EventCarousel = ({ mediaFiles }) => {
 
   const renderItem = ({ item, index }) => {
     const mediaFile = item.media_file.split("/").pop();
-    // console.log(item.media_file);
-    // console.log(play);
 
     const isVideo =
       mediaFile.endsWith(".mp4") ||
@@ -63,14 +62,13 @@ const EventCarousel = ({ mediaFiles }) => {
                 });
               }}
             >
-              {/* <FontAwesome name="play" size={60} color="#FFFFFF" /> */}
               <AntDesign name="play" size={60} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         ) : (
           <>
             <Image
-              source={{ uri: item.media_file }} // Corrected source for local video file
+              source={{ uri: item.media_file }}
               style={{ height: 400, width: screenWidth }}
               resizeMode="cover"
             />
@@ -83,8 +81,6 @@ const EventCarousel = ({ mediaFiles }) => {
   // Render Dot Indicators
   const renderDotIndicators = () => {
     return mediaFiles?.map((_, index) => {
-      // if the active index === index
-
       if (activeIndex === index) {
         return (
           <View

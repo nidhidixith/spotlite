@@ -1,14 +1,17 @@
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.shortcuts import get_object_or_404
+from django.db.models import F
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny, IsAuthenticated
+
 from .models import UserRelation
 from notifications.models import Notification
 from .serializers import FollowerSerializer, FollowingSerializer
-from django.shortcuts import get_object_or_404
-from django.db.models import F
+
 
 # Create your views here.
 @api_view(['POST'])
@@ -62,7 +65,7 @@ def unfollow_user(request, user_id):
         # Delete the relationship
         user_relation.delete()
 
-    return Response({"message": "Unfollowed"}, status=status.HTTP_201_CREATED)
+    return Response({"message": "Unfollowed"}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -71,9 +74,7 @@ def get_followers_list(request):
     user = request.user
     
     user_relation = UserRelation.objects.filter(following=user)
-    print(user_relation)
     serializer = FollowerSerializer(user_relation, many=True,context={'request': request})
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -83,9 +84,7 @@ def get_following_list(request):
     user = request.user
     
     user_relation = UserRelation.objects.filter(follower=user)
-    print(user_relation)
     serializer = FollowingSerializer(user_relation, many=True,context={'request': request})
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -93,22 +92,19 @@ def get_following_list(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_others_followers_list(request, user_id):
-    user = User.objects.get(id=user_id)
-    
+    # user = User.objects.get(id=user_id)
+    user = get_object_or_404(User, id=user_id)
+
     user_relation = UserRelation.objects.filter(following=user)
-    print(user_relation)
     serializer = FollowerSerializer(user_relation, many=True,context={'request': request})
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_others_following_list(request, user_id):
-    user = User.objects.get(id=user_id)
+    user = get_object_or_404(User, id=user_id)
     
     user_relation = UserRelation.objects.filter(follower=user)
-    print(user_relation)
     serializer = FollowingSerializer(user_relation, many=True,context={'request': request})
-    print(serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,52 +1,68 @@
 import React, { useEffect, useCallback } from "react";
-import { View, Text, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 
 import {
-  clearOtherUserEvents,
   fetchOtherUserEvents,
-  selectAllOtherUserEvents,
-  fetchOtherUserEventsStatus,
   selectEventsByUser,
 } from "../../slices/eventsSlice";
 
 import OtherUserEventExcerpt from "./OtherUserEventExcerpt";
+import EmptyState from "../Others/EmptyState";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+import LoadingIndicator from "../Others/LoadingIndicator";
 
 const OtherUserEventsList = ({ userId }) => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(fetchOtherUserEvents(userId));
+  const fetchData = async () => {
+    try {
+      await dispatch(fetchOtherUserEvents(userId)).unwrap();
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+    }
+  };
 
-  //   // dispatch(loadUserFromLocalStorage());
-
-  //   // return () => {
-  //   //   dispatch(clearPosts());
-  //   // };
-  // }, [dispatch]);
+  useEffect(() => {
+    fetchData();
+  }, [dispatch]);
 
   const events = useSelector((state) => selectEventsByUser(state, userId));
-  console.log("Events:", events);
-  // const fetchPostsStatus = useSelector(
-  //   (state) => state.userProfile.fetchProfileStatus
-  // );
 
-  // const fetchProfileError = useSelector(
-  //   (state) => state.userProfile.fetchProfileError
-  // );
+  const fetchEventsStatus = useSelector(
+    (state) => state.event.otherUserEvents.loading
+  );
+
+  const fetchEventsError = useSelector(
+    (state) => state.event.otherUserEvents.error
+  );
+
+  const handleRetry = () => {
+    fetchData(); // Retry fetching events
+  };
+
+  if (fetchEventsStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchEventsError) {
+    <ErrorDisplayComponent onRetry={handleRetry} />;
+  }
 
   const renderItem = ({ item }) => {
-    if (events.length === 0) {
-      return <View>Loading...</View>;
-    } else {
-      return (
-        <OtherUserEventExcerpt
-          key={`otheruserevent-${item.id}`}
-          eventId={item.id}
-        />
-      );
-    }
+    return (
+      <OtherUserEventExcerpt
+        key={`otheruserevent-${item.id}`}
+        eventId={item.id}
+      />
+    );
   };
 
   return (
@@ -56,6 +72,10 @@ const OtherUserEventsList = ({ userId }) => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.type}-${item.id}`}
         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
+        ListEmptyComponent={<EmptyState message="No events yet!" />}
+        contentContainerStyle={
+          events.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
+        }
       />
     </SafeAreaView>
   );

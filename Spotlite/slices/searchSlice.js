@@ -18,7 +18,6 @@ export const performSearch = createAsyncThunk(
   "searches/performSearch ",
   async ({ query }, { rejectWithValue }) => {
     const response = await instance.get(`/search_service/search/?q=${query}`);
-    console.log("Search results: ", response.data);
     return response.data;
   }
 );
@@ -60,8 +59,3 @@ export const {
   selectById: selectSearchById,
   selectIds: selectSearchIds,
 } = searchAdapter.getSelectors((state) => state.search.searches);
-
-// export const selectPostsByUser = createSelector(
-//   [selectAllOtherUserPosts, (state, userId) => userId],
-//   (posts, userId) => posts.filter((post) => post.user === userId)
-// );

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import { useForm, Controller } from "react-hook-form";
@@ -34,6 +35,19 @@ const CreatePost = () => {
 
   const [mediaFiles, setMediaFiles] = useState({});
 
+  const addPostStatus = useSelector((state) => state.post.addPostStatus);
+
+  const addPostError = useSelector((state) => state.post.addPostError);
+
+  if (addPostStatus === "loading") {
+    // Show Activity Indicator while loading
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#0284c7" />
+      </View>
+    );
+  }
+
   // Check if mediaFiles has any keys (indicating at least one image is present)
   const canSave =
     (text.trim() || Object.keys(mediaFiles).length > 0) &&
@@ -43,16 +57,32 @@ const CreatePost = () => {
     if (canSave) {
       try {
         setAddRequestStatus("pending");
-        const response = await dispatch(
-          addNewPost({ text, mediaFiles })
-        ).unwrap();
+
+        const formData = new FormData();
+        formData.append("text", text);
+        // Append mediaFiles under the key 'uploaded_files'
+        if (Object.keys(mediaFiles).length > 0) {
+          mediaFiles.forEach((file) => {
+            formData.append("uploaded_files", file);
+          });
+        }
+
+        const response = await dispatch(addNewPost(formData)).unwrap();
         setText("");
         setMediaFiles({});
         Alert.alert("Post successful");
-        router.push("(app)/(tabs)/home");
+        // router.push("(app)/(tabs)/home");
       } catch (err) {
-        console.error("Failed to save the post: ", err);
-        Alert.alert("Failed to create post");
+        // console.error("Failed to save the post: ", err);
+        // Alert.alert("Failed to create post");
+        const errorMessage =
+          (typeof err === "string" && err) || // If `err` is a string, use it
+          err?.message || // If `err` has a `message` property
+          JSON.stringify(err) || // Convert `err` to string if it's an object
+          "An unexpected error occurred.";
+
+        const finalErrorMessage = `${errorMessage} Please try again.`;
+        Alert.alert("Error", finalErrorMessage);
         router.push("(app)/(tabs)/home");
       } finally {
         setAddRequestStatus("idle");
@@ -123,7 +153,7 @@ const CreatePost = () => {
             name="text"
             value={text}
             onChangeText={setText}
-            maxLength={1000}
+            maxLength={5000}
           />
         </View>
       </ScrollView>

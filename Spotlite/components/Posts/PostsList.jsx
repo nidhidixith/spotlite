@@ -1,10 +1,14 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { View, Text, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
-// import { useFocusEffect } from "@react-navigation/native";
 
-// import { loadUserFromLocalStorage } from "../../slices/authSlice";
 import {
   clearPosts,
   fetchPosts,
@@ -13,37 +17,92 @@ import {
 } from "../../slices/postsSlice";
 
 import PostExcerpt from "./PostExcerpt";
+import EmptyState from "../Others/EmptyState";
+import ListEndComponent from "../Others/ListEndComponent";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+import LoadingIndicator from "../Others/LoadingIndicator";
 
 const PostsList = () => {
   const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const fetchData = async () => {
+    setLoading(true); // Start loading
+    try {
+      await dispatch(fetchPosts({ page: 1 })).unwrap(); // Fetch data and unwrap the result
+    } catch (error) {
+      console.error("Failed to fetch posts:", error); // Handle error
+    } finally {
+      setLoading(false); // End loading
+    }
+  };
 
   useEffect(() => {
-    dispatch(fetchPosts());
-
-    // dispatch(loadUserFromLocalStorage());
-
-    // return () => {
-    //   dispatch(clearPosts());
-    // };
+    fetchData();
   }, [dispatch]);
 
   const posts = useSelector(selectAllPosts);
+  const fetchPostsError = useSelector((state) => state.post.posts.error);
+  const nextPage = useSelector((state) => state.post.posts.nextPage);
 
-  // const fetchPostsStatus = useSelector(
-  //   (state) => state.userProfile.fetchProfileStatus
-  // );
+  const handleLoadMore = async () => {
+    if (nextPage && !loadingMore) {
+      setLoadingMore(true);
+      const nextPageNumber = new URL(nextPage).searchParams.get("page");
+      try {
+        await dispatch(fetchPosts({ page: nextPageNumber })).unwrap();
+      } catch (error) {
+        console.error("Error loading more posts:", error);
+      } finally {
+        setLoadingMore(false);
+      }
+    }
+  };
 
-  // const fetchProfileError = useSelector(
-  //   (state) => state.userProfile.fetchProfileError
-  // );
+  const handleRetry = async () => {
+    fetchData(); // Re-fetch posts on retry
+  };
+
+  if (loading) {
+    // // Show Activity Indicator while loading
+    // return (
+    //   <View className="flex-1 justify-center items-center bg-white">
+    //     <ActivityIndicator size="large" color="#0284c7" />
+    //   </View>
+    // );
+    return <LoadingIndicator />;
+  }
+
+  if (fetchPostsError) {
+    // return (
+    //   <View className="flex-1 justify-center items-center bg-white px-4">
+    //     <Text className="text-red-600 text-lg font-bold mb-4">
+    //       Oops! Something went wrong.
+    //     </Text>
+    //     <Text className="text-gray-600 text-center mb-4">
+    //       Please check your connection or try again later.
+    //     </Text>
+
+    //     {/* Retry Button */}
+    //     <TouchableOpacity
+    //       className="bg-sky-600 py-2 px-6 rounded-full"
+    //       onPress={handleRetry}
+    //     >
+    //       <Text className="text-white font-medium">Retry</Text>
+    //     </TouchableOpacity>
+    //   </View>
+    // );
+    return <ErrorDisplayComponent onRetry={handleRetry} />;
+  }
 
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      console.log("Refreshing posts...");
-      await dispatch(fetchPosts()).unwrap(); // Fetch posts and wait for completion
-      console.log("Posts refreshed successfully");
+      dispatch(clearPosts());
+      await dispatch(fetchPosts({ page: 1 })).unwrap(); // Fetch posts and wait for completion
     } catch (error) {
       console.error("Error refreshing posts:", error);
     } finally {
@@ -52,11 +111,7 @@ const PostsList = () => {
   };
 
   const renderItem = ({ item }) => {
-    if (posts.length === 0) {
-      return <View>Loading...</View>;
-    } else {
-      return <PostExcerpt key={`post-${item.id}`} postId={item.id} />;
-    }
+    return <PostExcerpt key={`post-${item.id}`} postId={item.id} />;
   };
 
   return (
@@ -66,8 +121,48 @@ const PostsList = () => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.type}-${item.id}`}
         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
-        refreshing={refreshing} // Pass refreshing state
-        onRefresh={onRefresh} // Pass onRefresh handler
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        ListEmptyComponent={
+          <EmptyState
+            message="No posts yet!"
+            details="Follow people to see their posts in the feed"
+          />
+        }
+        contentContainerStyle={
+          posts.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
+        }
+        onEndReached={handleLoadMore} // Trigger loading more posts
+        onEndReachedThreshold={0.5} // Load more when the list is 50% from the bottom
+        ListFooterComponent={
+          loadingMore ? (
+            <View className="justify-center items-center bg-white">
+              <ActivityIndicator size="large" color="#0284c7" />
+            </View>
+          ) : nextPage === null ? (
+            <ListEndComponent message="You've reached the end!" />
+          ) : null
+        }
+        // ListFooterComponent={
+        //   loadingMore ? (
+        //     <ActivityIndicator size="large" color="#0284c7" />
+        //   ) : nextPage === null ? (
+        //     <View className="p-2 bg-white">
+        //       <Text className="text-lg font-semibold text-sky-600 self-center">
+        //         You are all caught up...
+        //       </Text>
+        //     </View>
+        //   ) : (
+        //     <TouchableOpacity className="p-2 bg-white">
+        //       <Text
+        //         className="text-xl font-bold text-sky-600 self-center"
+        //         onPress={handleLoadMore}
+        //       >
+        //         Load more...
+        //       </Text>
+        //     </TouchableOpacity>
+        //   )
+        // }
       />
     </SafeAreaView>
   );

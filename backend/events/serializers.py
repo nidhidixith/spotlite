@@ -31,11 +31,11 @@ class EventSerializer(serializers.ModelSerializer):
 
     interested_count = serializers.SerializerMethodField()
     is_interested = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
-        fields = ['id', 'user', 'user_id', 'display_name', 'profile_pic', 'uploaded_files','media_files', 'event_title', 'event_domain', 'event_description','event_date','event_time', 'event_location','event_link','created_at',
-         'interested_count','is_interested']
+        fields = ['id', 'user', 'user_id', 'display_name', 'profile_pic', 'uploaded_files','media_files', 'event_title', 'event_domain', 'event_description','event_date','event_time', 'event_location','event_link','created_at','interested_count','is_interested','content_type']
 
     def create(self, validated_data):
         uploaded_files = validated_data.pop("uploaded_files", None)
@@ -63,6 +63,8 @@ class EventSerializer(serializers.ModelSerializer):
             return EventInterest.objects.filter(user=current_user, event=obj).exists()
         return False
 
+    def get_content_type(self, obj):
+        return "event"
 
     def update(self, instance, validated_data):
         media_data = validated_data.pop('media_files', [])

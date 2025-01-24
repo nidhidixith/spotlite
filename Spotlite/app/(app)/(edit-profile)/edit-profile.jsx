@@ -6,35 +6,14 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
-import React, { useState, useEffect } from "react";
-
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-
-import {
-  fetchUserProfile,
-  clearUserProfile,
-  selectUserProfile,
-} from "../../../slices/userProfileSlice";
-
 import { router } from "expo-router";
-import * as ImagePicker from "expo-image-picker";
+
+import { selectUserProfile } from "../../../slices/userProfileSlice";
 
 const EditProfile = () => {
-  const [image, setImage] = useState(null);
-  const [fileName, setFileName] = useState(null);
-
-  // const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   dispatch(fetchUserProfile());
-
-  //   // return () => {
-  //   //   dispatch(clearUserProfile());
-  //   // };
-  // }, [dispatch]);
-
   const profile = useSelector(selectUserProfile);
-  // console.log("User profile:", profile);
 
   return (
     <ScrollView
@@ -48,7 +27,6 @@ const EditProfile = () => {
       <View className="border-b-2 border-gray-100 pb-3">
         <View className="flex flex-row justify-between mb-4">
           <Text className="text-xl font-bold">Profile Picture</Text>
-          {/* <TouchableOpacity onPress={pickImage}> */}
           <TouchableOpacity
             onPress={() =>
               router.push("(app)/(edit-profile)/edit-profile-picture")
@@ -57,19 +35,6 @@ const EditProfile = () => {
             <Text className="text-lg text-sky-600">Edit</Text>
           </TouchableOpacity>
         </View>
-        {/* {image ? (
-          <Image
-            className="w-[150px] h-[150px] rounded-full mr-2 self-center"
-            source={{ uri: image }}
-            resizeMode="cover"
-          />
-        ) : (
-          <Image
-            className="w-[150px] h-[150px] rounded-full mr-2 self-center"
-            source={require("../../../assets/images/profile-pic.jpg")}
-            resizeMode="cover"
-          />
-        )} */}
       </View>
 
       <View className="border-b-2 border-gray-100  py-3">
@@ -113,12 +78,6 @@ const EditProfile = () => {
           <Text className="text-xl font-bold">Bio</Text>
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-bio")}
-            // onPress={() => {
-            //   router.push({
-            //     pathname: "(app)/(edit-profile)/edit-bio",
-            //     params: { profile: JSON.stringify(profile[0]) },
-            //   });
-            // }}
           >
             <Text className="text-lg text-sky-600">Edit</Text>
           </TouchableOpacity>
@@ -165,13 +124,18 @@ const EditProfile = () => {
         </View>
       </View>
 
-      {/* <TouchableOpacity
-        className="bg-sky-600 py-1 rounded-lg mt-6"
-      >
-        <Text className="text-lg self-center font-semibold text-white ">
-          Save
-        </Text>
-      </TouchableOpacity> */}
+      <View className="border-b-2 border-gray-100 py-3">
+        <View className="flex flex-row justify-between ">
+          <Text className="text-xl font-bold">Q&As</Text>
+          <TouchableOpacity
+            onPress={() =>
+              router.push("(app)/(edit-profile)/edit-questions-and-answers")
+            }
+          >
+            <Text className="text-lg text-sky-600">Edit</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </ScrollView>
   );
 };

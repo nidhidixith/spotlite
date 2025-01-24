@@ -1,12 +1,37 @@
-import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
-import React from "react";
-import { useSelector } from "react-redux";
-import { selectAllSearches } from "../../slices/searchSlice";
-import NameProfilePic from "../NameProfilePic";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { router } from "expo-router";
+
+import { performSearch, selectAllSearches } from "../../slices/searchSlice";
+
+import NameProfilePic from "../NameProfilePic";
+import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+import LoadingIndicator from "../Others/LoadingIndicator";
 
 const SearchResults = () => {
   const results = useSelector(selectAllSearches);
+
+  const fetchSearchStatus = useSelector(
+    (state) => state.search.searches.loading
+  );
+
+  const fetchSearchError = useSelector((state) => state.search.searches.error);
+
+  if (fetchSearchStatus) {
+    return <LoadingIndicator />;
+  }
+
+  if (fetchSearchError) {
+    return <ErrorDisplayComponent />;
+  }
 
   if (results.length === 0) {
     return <Text>No results found!</Text>;
@@ -16,13 +41,16 @@ const SearchResults = () => {
     if (item.type === "user") {
       return <NameProfilePic obj={item} index={item.id} key={item.id} />;
     } else if (item.type === "event") {
-      const eventMedia = item?.media_files[0]?.media_file;
+      const eventMediaFiles = item?.media_files;
 
-      const isImage =
-        eventMedia?.endsWith(".jpg") ||
-        eventMedia?.endsWith(".png") ||
-        eventMedia?.endsWith(".jpeg") ||
-        eventMedia?.endsWith(".webp");
+      const firstImage =
+        eventMediaFiles.find(
+          (eventMediaFile) =>
+            eventMediaFile?.media_file?.endsWith(".jpg") ||
+            eventMediaFile?.media_file?.endsWith(".png") ||
+            eventMediaFile?.media_file?.endsWith(".jpeg") ||
+            eventMediaFile?.media_file?.endsWith(".webp")
+        )?.media_file || null;
 
       return (
         <>
@@ -37,18 +65,16 @@ const SearchResults = () => {
               });
             }}
           >
-            {item?.media_files.length != 0 && isImage ? (
+            {item?.media_files.length != 0 && firstImage != null ? (
               <Image
                 className="w-[70px] h-[70px] rounded-xl mr-4"
-                source={{ uri: eventMedia }}
-                // source={require("../../assets/images/pic1.jpg")}
+                source={{ uri: firstImage }}
                 resizeMode="cover"
               />
             ) : (
               <Image
                 className="w-[70px] h-[70px] rounded-xl mr-4"
-                // source={{ uri: event?.media_files[0] }}
-                source={require("../../assets/images/pic1.jpg")}
+                source={require("../../assets/images/default-event-image.png")}
                 resizeMode="cover"
               />
             )}

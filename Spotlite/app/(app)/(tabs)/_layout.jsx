@@ -1,9 +1,9 @@
 import { View, Text } from "react-native";
 import React from "react";
-import { Tabs, Redirect } from "expo-router";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useSelector } from "react-redux";
-import { selectNotificationCount } from "../../../slices/notificationsSlice";
+import { Tabs, Redirect } from "expo-router";
+
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const TabIcon = ({ color, name, focused, title, size, badgeCount }) => {
   return (
@@ -33,7 +33,6 @@ const TabLayout = () => {
   return (
     <Tabs
       screenOptions={{
-        // tabBarActiveTintColor: "#1e40af",
         tabBarActiveTintColor: "#0284c7",
         tabBarInactiveTintColor: "gray",
         tabBarShowLabel: false,
