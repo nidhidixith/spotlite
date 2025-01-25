@@ -3,7 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 
 const instance = axios.create({
-  baseURL: "http://192.168.1.36:8000/api",
+  baseURL: "http://192.168.1.35:8000/api",
 });
 
 const logoutUser = async () => {
@@ -13,7 +13,7 @@ const logoutUser = async () => {
     await SecureStore.deleteItemAsync("refresh_token");
 
     // Redirect to the home page (or login screen)
-    router.replace("/SignIn");
+    router.replace("/(auth)/login");
     // Assuming you are using React Navigation to manage navigation
   } catch (error) {
     console.error("Error during logout:", error);
@@ -58,7 +58,7 @@ instance.interceptors.response.use(
       if (refreshToken) {
         try {
           const response = await axios.post(
-            "http://192.168.1.36:8000/api/token/refresh/",
+            "http://192.168.1.35:8000/api/token/refresh/",
             { refresh: refreshToken }
           );
 
@@ -74,11 +74,12 @@ instance.interceptors.response.use(
         } catch (refreshError) {
           console.log("Error refreshing token:", refreshError);
           // Handle refresh token error (e.g., redirect to login page)
+          logoutUser();
         }
       } else {
         console.log("No refresh token available");
         // Handle case where no refresh token is available (e.g., logout user)
-        // logoutUser();
+        logoutUser();
       }
     }
 

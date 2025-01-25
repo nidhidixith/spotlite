@@ -61,7 +61,7 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.36:8000/api/register/",
+        "http://192.168.1.35:8000/api/register/",
         userData,
         {
           headers: {
@@ -86,7 +86,7 @@ export const loginUser = createAsyncThunk(
     console.log("I am inside Login");
     try {
       const response = await axios.post(
-        "http://192.168.1.36:8000/api/token/",
+        "http://192.168.1.35:8000/api/token/",
         userData,
         {
           headers: {
