@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import AntDesign from "@expo/vector-icons/AntDesign";
+
+import { links } from "../../../utilities/links";
 
 const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
   const {
@@ -13,15 +15,82 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
     formState: { errors },
   } = useForm();
 
+  const [socialLinks, setSocialLinks] = useState([]);
+  const [linkName, setLinkName] = useState(null);
+  const [linkInput, setLinkInput] = useState("");
+
+  const [error, setError] = useState(null);
+
+  const maxLength = 200;
+
   const isValidUrl = (url) => {
     if (!url) return true; // Allow empty input
     const regex = /^https:\/\/[^\s/$.?#].[^\s]*$/i;
     return regex.test(url) || "Invalid URL format (must start with https://)";
   };
 
+  const handleLinkNamePress = (name) => {
+    setLinkName(name);
+    setLinkInput("");
+  };
+
+  const handleAddLink = () => {
+    if (!linkName) {
+      // setError("Please select a link type");
+      Alert.alert("Error", "Please select a link type.");
+      return;
+    }
+    if (!linkInput.trim()) {
+      // setError("Please enter a link");
+      Alert.alert("Error", "Please enter a link.");
+      return;
+    }
+    if (linkInput.trim().length > maxLength) {
+      // setError(`Input must be less than ${maxLength} characters`);
+      Alert.alert("Error", `Input must be less than ${maxLength} characters`);
+      return;
+    }
+
+    const validationError = isValidUrl(linkInput);
+    if (validationError !== true) {
+      // setError("Invalid URL", validationError);
+      Alert.alert("Invalid URL", validationError);
+      return;
+    }
+
+    const updatedLinks = [
+      ...socialLinks.filter((link) => link.platform !== linkName),
+      {
+        platform: linkName,
+        url: linkInput,
+      },
+    ];
+
+    setSocialLinks(updatedLinks);
+    setLinkName(null);
+    setLinkInput("");
+    // console.log("Social Links: ", updatedLinks);
+  };
+
+  const removeLink = (name) => {
+    setSocialLinks((prevLinks) =>
+      prevLinks.filter((link) => link.platform !== name)
+    );
+  };
+
   const onSubmit = (data) => {
-    console.log(data);
-    handleNextStep(data);
+    // console.log(data);
+
+    const formattedSocialLinks = socialLinks.map((link) => ({
+      platform: link.platform,
+      url: link.url,
+    }));
+
+    const obj = { socialLinks: JSON.stringify(formattedSocialLinks) };
+
+    // profileData.append("social_links", JSON.stringify(formattedSocialLinks));
+
+    handleNextStep(obj);
   };
 
   // const onSkip = (data) => {
@@ -40,317 +109,100 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
         <Text className="self-end text-end text-sky-600 text-[16px]">Skip</Text>
       </TouchableOpacity>
 
-      <View className="mb-4">
-        <View className="flex flex-row items-center mb-2">
-          <Text className=" font-semibold text-[16px]">Instagram</Text>
-        </View>
-        <Controller
-          control={control}
-          rules={{
-            validate: isValidUrl,
-            maxLength: {
-              value: 200,
-              message: "Maximum 200 characters allowed",
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex flex-row items-center rounded-xl border border-gray-200 px-2 py-2">
-              <FontAwesome
-                name="instagram"
-                size={18}
-                color="#E4405F"
-                marginRight={8}
-              />
-              <TextInput
-                className="flex-1"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Add link"
-              />
-            </View>
-          )}
-          name="instagramLink"
-        />
-        {errors.instagramLink && (
-          <Text className="text-red-500 mb-2">
-            {errors.instagramLink.message}
+      <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
+        {Object.keys(links).map((key) => (
+          <TouchableOpacity
+            key={key}
+            activeOpacity={0.5}
+            onPress={() => handleLinkNamePress(links[key].platform)}
+            className="flex flex-row items-center rounded-lg border border-gray-300 m-1 px-3 py-2"
+          >
+            {links[key].icon}
+            <Text className="text-[14px] ml-1">
+              {links[key].platform.charAt(0).toUpperCase() +
+                links[key].platform.slice(1)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Section 2: Add Link */}
+      {linkName && (
+        <View className="mb-6">
+          <Text className="text-[14px] mb-2 font-medium">
+            {linkName.charAt(0).toUpperCase() + linkName.slice(1)} link
           </Text>
-        )}
-      </View>
-
-      <View className="mb-4">
-        <View className="flex flex-row items-center mb-2">
-          <Text className=" font-semibold text-[16px]">Facebook</Text>
+          <View className="flex flex-row items-center mb-4">
+            <Controller
+              control={control}
+              rules={
+                {
+                  // validate: (value) => isValidUrl(value) || "Invalid URL format",
+                  // maxLength: {
+                  //   value: 200,
+                  //   message: "Maximum 200 characters allowed",
+                  // },
+                }
+              }
+              render={({ field: { onChange, onBlur } }) => (
+                <TextInput
+                  className="rounded-lg border border-gray-200 px-3 py-2 flex-1"
+                  onBlur={onBlur}
+                  onChangeText={(text) => {
+                    onChange(text);
+                    setLinkInput(text);
+                  }}
+                  value={linkInput}
+                  placeholder={`Add ${linkName} link`}
+                />
+              )}
+              name={linkName}
+            />
+            {errors[linkName] && (
+              <Text className="text-red-500 ml-2">
+                {errors[linkName]?.message}
+              </Text>
+            )}
+            <TouchableOpacity
+              className={`ml-2 px-4 py-2 rounded-lg ${
+                linkInput ? "bg-sky-500" : "bg-gray-300"
+              }`}
+              onPress={handleAddLink}
+              disabled={!linkInput}
+            >
+              <Text className="text-white font-medium">Add</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Controller
-          control={control}
-          rules={{
-            validate: isValidUrl,
-            maxLength: {
-              value: 200,
-              message: "Maximum 200 characters allowed",
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex flex-row items-center rounded-xl border border-gray-200 px-2 py-2">
-              <AntDesign
-                name="facebook-square"
-                size={18}
-                color="#3b5998"
-                marginRight={8}
-              />
-              <TextInput
-                className="flex-1"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Add link"
-              />
-            </View>
-          )}
-          name="facebookLink"
-        />
-        {errors.facebookLink && (
-          <Text className="text-red-500 mb-2">
-            {errors.facebookLink.message}
-          </Text>
-        )}
+      )}
+
+      {/* Section 3: Your Links */}
+
+      {/* {socialLinks != null && (
+        <> */}
+      <Text className="text-base text-sky-600 mb-2 font-semibold">
+        Your Links
+      </Text>
+      <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
+        {socialLinks.map((link) => {
+          const platformDetails = links[link.platform] || {};
+          return (
+            <TouchableOpacity
+              key={link.platform}
+              onPress={() => removeLink(link.platform)}
+              className="flex flex-row items-center rounded-lg border border-gray-300 m-1 px-3 py-2"
+            >
+              {platformDetails.icon}
+              <Text className="text-[14px] ml-1">
+                {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
+              </Text>
+              <Text className="text-red-500 ml-2 font-bold">x</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
-
-      <View className="mb-4">
-        <View className="flex flex-row items-center mb-2">
-          <Text className=" font-semibold text-[16px]">Youtube</Text>
-        </View>
-        <Controller
-          control={control}
-          rules={{
-            validate: isValidUrl,
-            maxLength: {
-              value: 200,
-              message: "Maximum 200 characters allowed",
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex flex-row items-center rounded-xl border border-gray-200 px-2 py-2">
-              <AntDesign
-                name="youtube"
-                size={20}
-                color="#FF0000"
-                marginRight={8}
-              />
-
-              <TextInput
-                className="flex-1"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Add link"
-              />
-            </View>
-          )}
-          name="youtubeLink"
-        />
-        {errors.youtubeLink && (
-          <Text className="text-red-500 mb-2">
-            {errors.youtubeLink.message}
-          </Text>
-        )}
-      </View>
-
-      <View className="mb-4">
-        <View className="flex flex-row items-center mb-2">
-          <Text className=" font-semibold text-[16px]">Tiktok</Text>
-        </View>
-        <Controller
-          control={control}
-          rules={{
-            validate: isValidUrl,
-            maxLength: {
-              value: 200,
-              message: "Maximum 200 characters allowed",
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex flex-row items-center rounded-xl border border-gray-200 px-2 py-2">
-              <FontAwesome6
-                name="tiktok"
-                size={16}
-                color="#010101"
-                marginRight={8}
-              />
-              <TextInput
-                className="flex-1"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Add link"
-              />
-            </View>
-          )}
-          name="tiktokLink"
-        />
-        {errors.tiktokLink && (
-          <Text className="text-red-500 mb-2">{errors.tiktokLink.message}</Text>
-        )}
-      </View>
-
-      <View className="mb-4">
-        <View className="flex flex-row items-center mb-2">
-          <Text className=" font-semibold text-[16px]">Pinterest</Text>
-        </View>
-        <Controller
-          control={control}
-          rules={{
-            validate: isValidUrl,
-            maxLength: {
-              value: 200,
-              message: "Maximum 200 characters allowed",
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex flex-row items-center rounded-xl border border-gray-200 px-2 py-2">
-              <FontAwesome
-                name="pinterest"
-                size={18}
-                color="#E60023"
-                marginRight={8}
-              />
-              <TextInput
-                className="flex-1"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Add link"
-              />
-            </View>
-          )}
-          name="pinterestLink"
-        />
-        {errors.pinterestLink && (
-          <Text className="text-red-500 mb-2">
-            {errors.pinterestLink.message}
-          </Text>
-        )}
-      </View>
-
-      <View className="mb-4">
-        <View className="flex flex-row items-center mb-2">
-          <Text className=" font-semibold text-[16px]">Twitter</Text>
-        </View>
-        <Controller
-          control={control}
-          rules={{
-            validate: isValidUrl,
-            maxLength: {
-              value: 200,
-              message: "Maximum 200 characters allowed",
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex flex-row items-center rounded-xl border border-gray-200 px-2 py-2">
-              <FontAwesome
-                name="twitter"
-                size={18}
-                color="#1DA1F2"
-                marginRight={8}
-              />
-              <TextInput
-                className="flex-1"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Add link"
-              />
-            </View>
-          )}
-          name="twitterLink"
-        />
-        {errors.twitterLink && (
-          <Text className="text-red-500 mb-2">
-            {errors.twitterLink.message}
-          </Text>
-        )}
-      </View>
-
-      <View className="mb-4">
-        <View className="flex flex-row items-center mb-2">
-          <Text className=" font-semibold text-[16px]">Threads</Text>
-        </View>
-        <Controller
-          control={control}
-          rules={{
-            validate: isValidUrl,
-            maxLength: {
-              value: 200,
-              message: "Maximum 200 characters allowed",
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex flex-row items-center rounded-xl border border-gray-200 px-2 py-2">
-              <FontAwesome6
-                name="threads"
-                size={18}
-                color="#000000"
-                marginRight={8}
-              />
-              <TextInput
-                className="flex-1"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Add link"
-              />
-            </View>
-          )}
-          name="threadsLink"
-        />
-        {errors.threadsLink && (
-          <Text className="text-red-500 mb-2">
-            {errors.threadsLink.message}
-          </Text>
-        )}
-      </View>
-
-      <View className="mb-4">
-        <View className="flex flex-row items-center mb-2">
-          <Text className=" font-semibold text-[16px]">LinkedIn</Text>
-        </View>
-        <Controller
-          control={control}
-          rules={{
-            validate: isValidUrl,
-            maxLength: {
-              value: 200,
-              message: "Maximum 200 characters allowed",
-            },
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View className="flex flex-row items-center rounded-xl border border-gray-200 px-2 py-2">
-              <AntDesign
-                name="linkedin-square"
-                size={18}
-                color="#0077b5"
-                marginRight={8}
-              />
-              <TextInput
-                className="flex-1"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Add link"
-              />
-            </View>
-          )}
-          name="linkedInLink"
-        />
-        {errors.linkedInLink && (
-          <Text className="text-red-500 mb-2">
-            {errors.linkedInLink.message}
-          </Text>
-        )}
-      </View>
-
+      {/* </>
+      )} */}
       <View className="flex flex-row justify-between gap-x-4 mt-5">
         <TouchableOpacity
           className="bg-sky-600 rounded-lg p-2 flex-1"

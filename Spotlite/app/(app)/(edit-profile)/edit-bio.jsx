@@ -49,7 +49,7 @@ const EditBio = () => {
     try {
       const response = await dispatch(editProfile(profileData)).unwrap();
       Alert.alert("Edit Successful");
-      router.push("(app)/(tabs)/home");
+      router.replace("(app)/(edit-profile)/edit-profile");
     } catch (err) {
       console.error("Request failed", err);
       console.log(err);

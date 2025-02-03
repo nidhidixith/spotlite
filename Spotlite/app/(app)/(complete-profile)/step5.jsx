@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 
 const Step5 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
@@ -17,10 +11,12 @@ const Step5 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
     clearErrors,
   } = useForm();
 
-  const maxLength = 200; // Define the maximum length constraint
+  const maxNameLength = 100;
+  const maxLinkLength = 200;
 
   const [links, setLinks] = useState([]);
   const [linkInput, setLinkInput] = useState("");
+  const [linkName, setLinkName] = useState("");
 
   // Function to check valid URLs
   const isValidUrl = (url) => {
@@ -31,42 +27,63 @@ const Step5 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
 
   // Add link function
   const addLink = () => {
-    if (!linkInput.trim()) return;
-
-    // Check if the link exceeds the maximum length
-    if (linkInput.length > maxLength) {
-      setError("linkInput", {
-        type: "manual",
-        message: `Link must be less than ${maxLength} characters.`,
-      });
-      return; // Stop further processing if the length is exceeded
+    if (!linkName.trim()) {
+      Alert.alert("Error", "Please add the name.");
+      return;
+    }
+    if (!linkInput.trim()) {
+      Alert.alert("Error", "Please enter a link.");
+      return;
     }
 
-    const validationResult = isValidUrl(linkInput);
-    if (validationResult === true) {
-      if (!links.includes(linkInput)) {
-        setLinks([...links, linkInput]);
-        clearErrors("linkInput"); // Clear any existing error once a valid link is added
-      }
-    } else {
-      setError("linkInput", {
-        type: "manual",
-        message: validationResult, // Set error if link is invalid
-      });
+    if (linkName.trim().length > maxNameLength) {
+      Alert.alert(
+        "Error",
+        `Name must be less than ${maxNameLength} characters`
+      );
+      return;
     }
-    setLinkInput(""); // Clear input after adding
+    if (linkInput.trim().length > maxLinkLength) {
+      Alert.alert(
+        "Error",
+        `Link must contain less than ${maxLinkLength} characters`
+      );
+      return;
+    }
+
+    const validationError = isValidUrl(linkInput);
+    if (validationError !== true) {
+      Alert.alert("Invalid URL", validationError);
+      return;
+    }
+
+    const updatedLinks = [
+      ...links.filter((link) => link.description !== linkName),
+      {
+        url: linkInput,
+        description: linkName,
+      },
+    ];
+
+    setLinks(updatedLinks);
+    setLinkName("");
+    setLinkInput("");
   };
 
   // Remove link function
   const removeLink = (index) => {
     setLinks(links.filter((_, i) => i !== index));
   };
-
   // On form submit
   const onSubmit = () => {
     console.log("Links:", links);
 
-    const obj = { additionalLinks: links };
+    const formattedLinks = links.map((link) => ({
+      url: link.url,
+      description: link.description,
+    }));
+
+    const obj = { additionalLinks: JSON.stringify(formattedLinks) };
     handleNextStep(obj); // Go to the next step
   };
 
@@ -81,13 +98,42 @@ const Step5 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
       </TouchableOpacity>
 
       <View className="mb-5">
+        <Text className="text-base text-sky-600 mb-3 font-semibold">
+          Add your websites/external links
+        </Text>
         <View className="mb-3">
-          <Text className="mb-2 font-semibold text-[16px]">Websites</Text>
           <Controller
             control={control}
-            rules={{
-              validate: isValidUrl,
-            }}
+            // rules={{
+            //   maxLength: maxNameLength,
+            // }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                className="rounded-xl border border-gray-200 px-2 py-2"
+                onBlur={onBlur}
+                onChangeText={(text) => {
+                  onChange(text);
+                  setLinkName(text);
+                }}
+                value={linkName}
+                placeholder="Add name"
+              />
+            )}
+            name="linkName"
+          />
+          {/* Display error if invalid link is added */}
+          {errors.linkName && (
+            <Text className="text-red-500 mb-2">{errors.linkName.message}</Text>
+          )}
+        </View>
+
+        <View className="mb-3">
+          <Controller
+            control={control}
+            // rules={{
+            //   validate: isValidUrl,
+            //   maxLength: maxLinkLength,
+            // }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 className="rounded-xl border border-gray-200 px-2 py-2"
@@ -97,7 +143,7 @@ const Step5 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
                   setLinkInput(text);
                 }}
                 value={linkInput}
-                placeholder="Add links to your websites"
+                placeholder="Add the link of your website"
               />
             )}
             name="linkInput"
@@ -109,31 +155,37 @@ const Step5 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
             </Text>
           )}
         </View>
-
-        {/* Render the list of added links */}
-        {links.map((item, index) => (
-          <View
-            key={index}
-            className="flex flex-row items-center p-1 flex-wrap rounded-sm bg-gray-100 px-2 py-2 mb-1"
-          >
-            <Text className="flex-1">{item}</Text>
-
-            <TouchableOpacity
-              className="bg-red-500 p-1 rounded-lg"
-              onPress={() => removeLink(index)}
-            >
-              <Text className="text-white">Remove</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-
         <TouchableOpacity
-          className="bg-gray-300 p-2 rounded-lg mt-5 self-end"
+          className={`ml-2 px-4 py-2 rounded-lg self-end ${
+            linkInput ? "bg-sky-500" : "bg-gray-300"
+          }`}
           onPress={addLink}
+          disabled={!linkInput || !linkName}
         >
-          <Text className="">Add link</Text>
+          <Text className="text-white font-medium">Add</Text>
         </TouchableOpacity>
       </View>
+      {/* Render the list of added links */}
+
+      {links.length > 0 && (
+        <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
+          {links.map((item, index) => (
+            <View
+              key={index}
+              className="flex flex-row items-center p-1 flex-wrap rounded-sm bg-gray-100 m-1 px-2 py-2 mb-1"
+            >
+              <Text className="text-[14px] ml-1">
+                {item.description.charAt(0).toUpperCase() +
+                  item.description.slice(1)}
+              </Text>
+
+              <TouchableOpacity onPress={() => removeLink(index)}>
+                <Text className="text-red-500 ml-2 font-bold">x</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      )}
 
       <View className="flex flex-row justify-between gap-x-4 mt-5">
         <TouchableOpacity

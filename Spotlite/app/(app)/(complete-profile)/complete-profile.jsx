@@ -62,14 +62,15 @@ const CompleteProfile = () => {
       location,
       primary_interest,
       bio,
-      instagramLink,
-      facebookLink,
-      youtubeLink,
-      tiktokLink,
-      pinterestLink,
-      twitterLink,
-      threadsLink,
-      linkedInLink,
+      // instagramLink,
+      // facebookLink,
+      // youtubeLink,
+      // tiktokLink,
+      // pinterestLink,
+      // twitterLink,
+      // threadsLink,
+      // linkedInLink,
+      socialLinks,
       additionalLinks,
       tags,
       profile_pic,
@@ -82,14 +83,15 @@ const CompleteProfile = () => {
       dob,
       location,
       bio,
-      instagramLink,
-      facebookLink,
-      youtubeLink,
-      tiktokLink,
-      pinterestLink,
-      twitterLink,
-      threadsLink,
-      linkedInLink,
+      // instagramLink,
+      // facebookLink,
+      // youtubeLink,
+      // tiktokLink,
+      // pinterestLink,
+      // twitterLink,
+      // threadsLink,
+      // linkedInLink,
+      socialLinks,
       additionalLinks,
       primary_interest,
       tags,
@@ -108,35 +110,36 @@ const CompleteProfile = () => {
     profileData.append("primary_interest", extractedData.primary_interest);
     profileData.append("bio", extractedData.bio);
 
-    if (extractedData.instagramLink) {
-      profileData.append("instagram_link", extractedData.instagramLink);
-    }
-    if (extractedData.facebookLink) {
-      profileData.append("facebook_link", extractedData.facebookLink);
-    }
-    if (extractedData.youtubeLink) {
-      profileData.append("youtube_link", extractedData.youtubeLink);
-    }
-    if (extractedData.tiktokLink) {
-      profileData.append("tiktok_link", extractedData.tiktokLink);
-    }
-    if (extractedData.pinterestLink) {
-      profileData.append("pinterest_link", extractedData.pinterestLink);
-    }
-    if (extractedData.twitterLink) {
-      profileData.append("twitter_link", extractedData.twitterLink);
-    }
-    if (extractedData.threadsLink) {
-      profileData.append("threads_link", extractedData.threadsLink);
-    }
-    if (extractedData.linkedInLink) {
-      profileData.append("linkedin_link", extractedData.linkedInLink);
+    // if (extractedData.instagramLink) {
+    //   profileData.append("instagram_link", extractedData.instagramLink);
+    // }
+    // if (extractedData.facebookLink) {
+    //   profileData.append("facebook_link", extractedData.facebookLink);
+    // }
+    // if (extractedData.youtubeLink) {
+    //   profileData.append("youtube_link", extractedData.youtubeLink);
+    // }
+    // if (extractedData.tiktokLink) {
+    //   profileData.append("tiktok_link", extractedData.tiktokLink);
+    // }
+    // if (extractedData.pinterestLink) {
+    //   profileData.append("pinterest_link", extractedData.pinterestLink);
+    // }
+    // if (extractedData.twitterLink) {
+    //   profileData.append("twitter_link", extractedData.twitterLink);
+    // }
+    // if (extractedData.threadsLink) {
+    //   profileData.append("threads_link", extractedData.threadsLink);
+    // }
+    // if (extractedData.linkedInLink) {
+    //   profileData.append("linkedin_link", extractedData.linkedInLink);
+    // }
+
+    if (extractedData.socialLinks) {
+      profileData.append("social_links", extractedData.socialLinks);
     }
 
-    if (
-      extractedData.additionalLinks &&
-      extractedData.additionalLinks.length > 0
-    ) {
+    if (extractedData.additionalLinks) {
       profileData.append("additional_links", extractedData.additionalLinks);
     }
 

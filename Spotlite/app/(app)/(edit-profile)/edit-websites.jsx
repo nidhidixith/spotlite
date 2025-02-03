@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -30,17 +29,13 @@ const EditWebsites = () => {
   const dispatch = useDispatch();
   const profile = useSelector(selectUserProfile);
 
-  const maxLength = 200;
+  const maxNameLength = 100;
+  const maxLinkLength = 200;
 
-  const initialLinks =
-    Array.isArray(profile[0]?.additional_links) &&
-    profile[0]?.additional_links.length === 1 &&
-    profile[0]?.additional_links[0] != ""
-      ? profile[0]?.additional_links[0].split(",")
-      : [];
-
-  const [links, setLinks] = useState(initialLinks);
+  const [links, setLinks] = useState(profile[0]?.additional_links);
   const [linkInput, setLinkInput] = useState("");
+  const [linkName, setLinkName] = useState("");
+
   const [hasChanges, setHasChanges] = useState(false);
 
   // Function to check valid URLs
@@ -52,31 +47,48 @@ const EditWebsites = () => {
 
   // Add link function
   const addLink = () => {
-    if (!linkInput.trim()) return;
-
-    // Check if the link exceeds the maximum length
-    if (linkInput.length > maxLength) {
-      setError("linkInput", {
-        type: "manual",
-        message: `Link must be less than ${maxLength} characters.`,
-      });
-      return; // Stop further processing if the length is exceeded
+    if (!linkName.trim()) {
+      Alert.alert("Error", "Please add the name.");
+      return;
+    }
+    if (!linkInput.trim()) {
+      Alert.alert("Error", "Please enter a link.");
+      return;
     }
 
-    const validationResult = isValidUrl(linkInput);
-    if (validationResult === true) {
-      if (!links.includes(linkInput)) {
-        setLinks([...links, linkInput]);
-        setHasChanges(true); // Track changes
-        clearErrors("linkInput"); // Clear any existing error once a valid link is added
-      }
-    } else {
-      setError("linkInput", {
-        type: "manual",
-        message: validationResult, // Set error if link is invalid
-      });
+    if (linkName.trim().length > maxNameLength) {
+      Alert.alert(
+        "Error",
+        `Name must be less than ${maxNameLength} characters`
+      );
+      return;
     }
-    setLinkInput(""); // Clear input after adding
+    if (linkInput.trim().length > maxLinkLength) {
+      Alert.alert(
+        "Error",
+        `Link must contain less than ${maxLinkLength} characters`
+      );
+      return;
+    }
+
+    const validationError = isValidUrl(linkInput);
+    if (validationError !== true) {
+      Alert.alert("Invalid URL", validationError);
+      return;
+    }
+
+    const updatedLinks = [
+      ...links.filter((link) => link.description !== linkName),
+      {
+        url: linkInput,
+        description: linkName,
+      },
+    ];
+
+    setLinks(updatedLinks);
+    setLinkName("");
+    setLinkInput("");
+    setHasChanges(true); // const validationResult = isValidUrl(linkInput);
   };
 
   // Remove link function
@@ -101,13 +113,18 @@ const EditWebsites = () => {
   const onSubmit = async () => {
     const profileData = new FormData();
 
-    profileData.append("additional_links", links);
-    console.log("Links:", links);
+    const formattedLinks = links.map((link) => ({
+      url: link.url,
+      description: link.description,
+    }));
+    profileData.append("additional_links", JSON.stringify(formattedLinks));
+
+    console.log("Profile data: ", profileData);
 
     try {
       const response = await dispatch(editProfile(profileData)).unwrap();
       Alert.alert("Edit Successful");
-      router.push("(app)/(tabs)/home");
+      router.replace("(app)/(edit-profile)/edit-profile");
     } catch (err) {
       console.error("Request failed", err);
       console.log(err);
@@ -134,13 +151,42 @@ const EditWebsites = () => {
       }}
     >
       <View className="mb-5">
+        <Text className="text-base text-sky-600 mb-3 font-semibold">
+          Add your websites/external links
+        </Text>
         <View className="mb-3">
-          <Text className="text-lg font-bold mb-4">Websites</Text>
           <Controller
             control={control}
-            rules={{
-              validate: isValidUrl,
-            }}
+            // rules={{
+            //   maxLength: maxNameLength,
+            // }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                className="rounded-xl border border-gray-200 px-2 py-2"
+                onBlur={onBlur}
+                onChangeText={(text) => {
+                  onChange(text);
+                  setLinkName(text);
+                }}
+                value={linkName}
+                placeholder="Add name"
+              />
+            )}
+            name="linkName"
+          />
+          {/* Display error if invalid link is added */}
+          {errors.linkName && (
+            <Text className="text-red-500 mb-2">{errors.linkName.message}</Text>
+          )}
+        </View>
+
+        <View className="mb-3">
+          <Controller
+            control={control}
+            // rules={{
+            //   validate: isValidUrl,
+            //   maxLength: maxLinkLength,
+            // }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 className="rounded-xl border border-gray-200 px-2 py-2"
@@ -150,7 +196,7 @@ const EditWebsites = () => {
                   setLinkInput(text);
                 }}
                 value={linkInput}
-                placeholder="Add links to your websites"
+                placeholder="Add the link of your website"
               />
             )}
             name="linkInput"
@@ -163,42 +209,46 @@ const EditWebsites = () => {
           )}
         </View>
 
-        {/* Render the list of added links */}
+        <TouchableOpacity
+          className={`ml-2 px-4 py-2 rounded-lg self-end ${
+            linkInput ? "bg-sky-500" : "bg-gray-300"
+          }`}
+          onPress={addLink}
+          disabled={!linkInput || !linkName}
+        >
+          <Text className="text-white font-medium">Add</Text>
+        </TouchableOpacity>
+      </View>
+      {/* Render the list of added links */}
+      <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
         {links.map((item, index) => (
           <View
             key={index}
-            className="flex flex-row items-center p-1 flex-wrap rounded-sm bg-gray-100 px-2 py-2 mb-1"
+            className="flex flex-row items-center p-1 flex-wrap rounded-sm bg-gray-100 m-1 px-2 py-2 mb-1"
           >
-            <Text className="flex-1">{item}</Text>
+            <Text className="text-[14px] ml-1">
+              {item.description.charAt(0).toUpperCase() +
+                item.description.slice(1)}
+            </Text>
 
-            <TouchableOpacity
-              className="bg-red-500 p-1 rounded-lg"
-              onPress={() => removeLink(index)}
-            >
-              <Text className="text-white">Remove</Text>
+            <TouchableOpacity onPress={() => removeLink(index)}>
+              <Text className="text-red-500 ml-2 font-bold">x</Text>
             </TouchableOpacity>
           </View>
         ))}
-
-        <TouchableOpacity
-          className="bg-gray-300 p-2 rounded-lg mt-5 self-end"
-          onPress={addLink}
-        >
-          <Text className="">Add link</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className={`bg-sky-600 py-1 rounded-lg mt-4 ${
-            !hasChanges ? "opacity-50" : ""
-          }`}
-          disabled={!hasChanges}
-          onPress={handleSubmit(onSubmit)}
-        >
-          <Text className="text-white text-lg self-center font-semibold">
-            Save
-          </Text>
-        </TouchableOpacity>
       </View>
+
+      <TouchableOpacity
+        className={`bg-sky-600 py-1 rounded-lg mt-4 ${
+          !hasChanges ? "opacity-50" : ""
+        }`}
+        disabled={!hasChanges}
+        onPress={handleSubmit(onSubmit)}
+      >
+        <Text className="text-white text-lg self-center font-semibold">
+          Save
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

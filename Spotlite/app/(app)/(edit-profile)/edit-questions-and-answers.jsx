@@ -86,7 +86,7 @@ const EditQuestionsAndAnswers = () => {
       const response = await dispatch(createOrUpdateAnswers(formData)).unwrap();
       setAnswers({});
       Alert.alert("Edit Successful");
-      router.push("(app)/(tabs)/home");
+      router.replace("(app)/(edit-profile)/edit-profile");
     } catch (err) {
       console.error("Request failed", err);
       console.log(err);

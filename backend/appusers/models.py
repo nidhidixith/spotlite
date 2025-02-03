@@ -13,22 +13,8 @@ class UserProfile(models.Model):
     location = models.CharField(max_length=200, null=True, blank=True)
     primary_interest = models.CharField(max_length=50, blank=True)
     bio = models.TextField(max_length=500, blank=True)
-
-    instagram_link = models.URLField(max_length=200,null=True, blank=True)
-    facebook_link = models.URLField(max_length=200,null=True, blank=True)
-    youtube_link = models.URLField(max_length=200,null=True, blank=True)
-    tiktok_link = models.URLField(max_length=200,null=True, blank=True)
-    pinterest_link = models.URLField(max_length=200,null=True, blank=True)
-    twitter_link = models.URLField(max_length=200,null=True, blank=True)
-    threads_link = models.URLField(max_length=200, null=True,blank=True)
-    linkedin_link = models.URLField(max_length=200,null=True, blank=True)
-
-    additional_links = ArrayField(models.URLField(max_length=200), null=True, blank=True, default=list)
-
     areas_of_interest = ArrayField(models.CharField(max_length=100), blank=True, default=list)
-
     profile_pic = models.ImageField(default='def.webp', upload_to='profile_pics', null=True, blank=True)
-
     is_primary_profile_complete = models.BooleanField(default=False)
     is_full_profile_complete = models.BooleanField(default=False)
 
@@ -77,6 +63,46 @@ class UserProfile(models.Model):
         self.is_primary_profile_complete = self.check_primary_profile_completion()
         self.is_full_profile_complete = self.check_full_profile_completion()
         super().save(*args, **kwargs)
+
+
+class SocialLink(models.Model):
+    SOCIAL_PLATFORM_CHOICES = [
+        ('instagram', 'Instagram'),
+        ('facebook', 'Facebook'),
+        ('youtube', 'YouTube'),
+        ('tiktok', 'TikTok'),
+        ('pinterest', 'Pinterest'),
+        ('twitter', 'Twitter'),
+        ('threads', 'Threads'),
+        ('linkedin', 'LinkedIn'),
+        ('portfolio', 'Portfolio'),
+    ]
+    user_profile = models.ForeignKey(
+        'UserProfile', 
+        on_delete=models.CASCADE, 
+        related_name='social_links'
+    )
+    platform = models.CharField(max_length=50, choices=SOCIAL_PLATFORM_CHOICES)
+    url = models.URLField(max_length=200)
+
+    class Meta:
+        unique_together = ('user_profile', 'platform')  # Ensure each platform has one link per user.
+
+    def __str__(self):
+        return f"{self.platform} link for {self.user_profile.user.username}"
+
+
+class AdditionalLink(models.Model):
+    user_profile = models.ForeignKey(
+        'UserProfile', 
+        on_delete=models.CASCADE, 
+        related_name='additional_links'
+    )
+    url = models.URLField(max_length=200)
+    description = models.CharField(max_length=100, blank=True, null=True)  # Optional description for the link.
+
+    def __str__(self):
+        return f"Additional link for {self.user_profile.user.username}"
 
 
 class Question(models.Model):

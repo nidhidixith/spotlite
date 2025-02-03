@@ -15,8 +15,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from .models import UserProfile, Question, Answer
-from .serializers import UserProfileSerializer, QuestionSerializer, AnswerSerializer
+from .models import UserProfile, SocialLink, AdditionalLink, Question, Answer
+from .serializers import UserProfileSerializer, SocialLinkSerializer, AdditionalLinkSerializer,QuestionSerializer, AnswerSerializer
 
 
 @api_view(['POST'])
@@ -58,11 +58,80 @@ def logout_user(request):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def complete_user_profile(request):
+#     user = request.user
+#     user_profile, created = UserProfile.objects.get_or_create(user=user)
+
+#     # Use the serializer to update the user profile fields
+#     serializer = UserProfileSerializer(user_profile, data=request.data, partial=True,context={'request': request})
+    
+#     # Validate and save the serializer
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#     else:
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def complete_user_profile(request):
     user = request.user
+    data = request.data
     user_profile, created = UserProfile.objects.get_or_create(user=user)
+
+    if 'social_links' in data:
+        social_links_data = data['social_links']
+        print("Social links: ", social_links_data)
+        try:
+            social_links = json.loads(social_links_data)  # Parse the JSON string into a Python list
+            
+            for link in social_links:
+                serializer = SocialLinkSerializer(data=link, partial=True)
+                if serializer.is_valid():
+                    serializer.save(user_profile=user_profile)
+                else:
+                    print("Validation Error:", serializer.errors)  # For debugging
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except json.JSONDecodeError as e:
+            return Response(
+                {"error": f"Failed to parse social links: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Failed to update social links: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    # Handle Additional Links
+    if 'additional_links' in data:
+        additional_links_data = data['additional_links']
+        print("Additional links: ", additional_links_data)
+        try:
+            additional_links = json.loads(additional_links_data)  
+
+            for link in additional_links:
+                serializer = AdditionalLinkSerializer(data=link, partial=True)
+                if serializer.is_valid():
+                    serializer.save(user_profile=user_profile)  # Associate user_profile explicitly
+                else:
+                    print("Validation Error:", serializer.errors)  # For debugging
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except json.JSONDecodeError as e:
+            return Response(
+                {"error": f"Failed to parse additional links: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Failed to update additional links: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
 
     # Use the serializer to update the user profile fields
     serializer = UserProfileSerializer(user_profile, data=request.data, partial=True,context={'request': request})
@@ -74,6 +143,7 @@ def complete_user_profile(request):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def question_list(request):
@@ -82,28 +152,6 @@ def question_list(request):
     return Response(serializer.data)
 
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def create_answer(request):
-#     # List to store answers
-#     answers_data = request.data.getlist('answers')  # 'answers' is the name in FormData
-
-#     # Validate and save each answer
-#     for answer_data in answers_data:
-#         try:
-#             answer_data = json.loads(answer_data)  # Convert the stringified answer data back to an object
-#             question_id = answer_data['questionId']
-#             answer_text = answer_data['answer']
-#             question = Question.objects.get(id=question_id)
-#             answer = Answer.objects.create(
-#                 user_profile=request.user.userprofile,
-#                 question=question,
-#                 answer=answer_text,
-#             )
-#         except Exception as e:
-#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-#     return Response({'message': 'Answers submitted successfully!'}, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -141,14 +189,6 @@ def create_or_update_answers(request):
     return Response({'message': 'Answers updated successfully!'}, status=status.HTTP_200_OK)
 
 
-# def create_answer(request):
-#     serializer = AnswerSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save(user_profile=request.user.userprofile)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -168,31 +208,99 @@ def get_other_user_profile(request, userId):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def edit_profile(request):
     user = request.user
     data = request.data
+    print("Data: ",data)
     user_profile = UserProfile.objects.get(user=user)
 
+    # Remove profile picture if requested
     remove_profile_pic = data.get('remove_profile_pic', False)
-    serializer = UserProfileSerializer(user_profile, data=data, partial=True,context={'request': request})
+    if remove_profile_pic and user_profile.profile_pic:
+        user_profile.profile_pic = None
+        user_profile.save()
 
-    if remove_profile_pic:
-        if user_profile.profile_pic:
-            user_profile.profile_pic = None
-            user_profile.save()
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-     
+    if 'social_links' in data:
+        social_links_data = data['social_links']
+        print("Social links: ", social_links_data)
+        try:
+            social_links = json.loads(social_links_data)  # Parse the JSON string into a Python list
+            
+            # First, collect all the valid social links
+            valid_links = []
+            
+            for link in social_links:
+                serializer = SocialLinkSerializer(data=link, partial=True)
+                if serializer.is_valid():
+                    valid_links.append(serializer)
+                else:
+                    print("Validation Error:", serializer.errors)  # For debugging
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            # Now, proceed to delete the old social links only if all new links are valid
+            user_profile.social_links.all().delete()
+            
+            # Add the valid social links
+            for serializer in valid_links:
+                serializer.save(user_profile=user_profile)  # Associate user_profile explicitly
+
+        except json.JSONDecodeError as e:
+            return Response(
+                {"error": f"Failed to parse social links: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Failed to update social links: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    # Handle Additional Links
+    if 'additional_links' in data:
+        additional_links_data = data['additional_links']
+        print("Additional links: ", additional_links_data)
+        try:
+            additional_links = json.loads(additional_links_data)  # Parse the JSON string into a Python list
+            valid_links = []
+
+            for link in additional_links:
+                serializer = AdditionalLinkSerializer(data=link, partial=True)
+                if serializer.is_valid():
+                    valid_links.append(serializer)
+                else:
+                    print("Validation Error:", serializer.errors)  # For debugging
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            # Now, proceed to delete the old social links only if all new links are valid
+            user_profile.additional_links.all().delete()
+            
+            # Add the valid social links
+            for serializer in valid_links:
+                serializer.save(user_profile=user_profile)  # Associate user_profile explicitly
+        except json.JSONDecodeError as e:
+            return Response(
+                {"error": f"Failed to parse additional links: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {"error": f"Failed to update additional links: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    # Update UserProfile fields
+    serializer = UserProfileSerializer(
+        user_profile, data=data, partial=True, context={'request': request}
+    )
     if serializer.is_valid():
+        print("Serializer v data: ",serializer.validated_data)
+
         serializer.save()
+        print("Serializer: ",serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE'])
@@ -221,3 +329,144 @@ def delete_user(request):
 @permission_classes([IsAuthenticated])
 def success(request):
     return JsonResponse('Success..Yay!',safe=False) 
+
+
+
+# @api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+# def edit_profile(request):
+#     user = request.user
+#     data = request.data
+#     user_profile = UserProfile.objects.get(user=user)
+
+#     remove_profile_pic = data.get('remove_profile_pic', False)
+#     serializer = UserProfileSerializer(user_profile, data=data, partial=True,context={'request': request})
+
+#     if remove_profile_pic:
+#         if user_profile.profile_pic:
+#             user_profile.profile_pic = None
+#             user_profile.save()
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+     
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#     else:
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# @api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+# def edit_profile(request):
+#     user = request.user
+#     data = request.data
+#     user_profile = UserProfile.objects.get(user=user)
+
+#     # Remove profile picture if requested
+#     remove_profile_pic = data.get('remove_profile_pic', False)
+#     if remove_profile_pic and user_profile.profile_pic:
+#         user_profile.profile_pic = None
+#         user_profile.save()
+
+#     # Handle Social Links
+#     social_links_data = data.get('social_links', '[]')  # Default to empty list if not provided
+#     print("Social links: ",social_links_data)
+
+#     if social_links_data != []:
+#         try:
+#             social_links = json.loads(social_links_data)  # Parse the JSON string into a Python list
+#             # Clear existing links to update with new ones
+#             user_profile.social_links.all().delete()
+#             # Add updated social links
+#             for link in social_links:
+#                 platform = link.get('platform')
+#                 url = link.get('url')
+#                 if platform and url:
+#                     SocialLink.objects.create(
+#                         user_profile=user_profile,
+#                         platform=platform,
+#                         url=url
+#                     )
+#         except json.JSONDecodeError as e:
+#             return Response(
+#                 {"error": f"Failed to parse social links: {str(e)}"},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+#         except Exception as e:
+#             return Response(
+#                 {"error": f"Failed to update social links: {str(e)}"},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+
+#     # Handle Additional Links
+#     additional_links_data = data.get('additional_links', '[]')  # Default to empty list if not provided
+#     print("Additional links: ",additional_links_data)
+#     if additional_links_data != []: 
+#         try:
+#             additional_links = json.loads(additional_links_data)  # Parse the JSON string into a Python list
+#             # Clear existing additional links to update with new ones
+#             user_profile.additional_links.all().delete()
+#             # Add updated additional links
+#             for link in additional_links:
+#                 url = link.get('url')
+#                 description = link.get('description', '')  # Description is optional
+#                 if url and description:
+#                     AdditionalLink.objects.create(
+#                         user_profile=user_profile,
+#                         url=url,
+#                         description=description
+#                     )
+#         except json.JSONDecodeError as e:
+#             return Response(
+#                 {"error": f"Failed to parse additional links: {str(e)}"},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+#         except Exception as e:
+#             return Response(
+#                 {"error": f"Failed to update additional links: {str(e)}"},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
+
+#     # Update UserProfile fields
+#     serializer = UserProfileSerializer(
+#         user_profile, data=data, partial=True, context={'request': request}
+#     )
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def create_answer(request):
+#     # List to store answers
+#     answers_data = request.data.getlist('answers')  # 'answers' is the name in FormData
+
+#     # Validate and save each answer
+#     for answer_data in answers_data:
+#         try:
+#             answer_data = json.loads(answer_data)  # Convert the stringified answer data back to an object
+#             question_id = answer_data['questionId']
+#             answer_text = answer_data['answer']
+#             question = Question.objects.get(id=question_id)
+#             answer = Answer.objects.create(
+#                 user_profile=request.user.userprofile,
+#                 question=question,
+#                 answer=answer_text,
+#             )
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+#     return Response({'message': 'Answers submitted successfully!'}, status=status.HTTP_201_CREATED)
+
+
+# def create_answer(request):
+#     serializer = AnswerSerializer(data=request.data)
+#     if serializer.is_valid():
+#         serializer.save(user_profile=request.user.userprofile)
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
