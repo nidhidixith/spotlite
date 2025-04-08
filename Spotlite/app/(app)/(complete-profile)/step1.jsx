@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 const Step1 = ({ handleNextStep }) => {
   return (
     <>
-      <Text className="text-2xl font-semibold text-center mb-5">
+      <Text className="text-2xl text-gray-800 font-semibold text-center mb-5">
         Welcome to Spotlite
       </Text>
 
@@ -27,10 +27,10 @@ const Step1 = ({ handleNextStep }) => {
       </Text>
 
       <TouchableOpacity
-        className="bg-sky-600 w-full mt-5 rounded-lg p-2"
+        className="bg-sky-600 w-full max-w-md mx-auto mt-5 rounded-lg py-2"
         onPress={handleNextStep}
       >
-        <Text className="text-white text-lg self-center">Next</Text>
+        <Text className="text-white text-lg font-medium self-center">Next</Text>
       </TouchableOpacity>
     </>
   );

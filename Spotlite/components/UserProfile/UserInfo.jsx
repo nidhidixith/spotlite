@@ -4,37 +4,47 @@ import { router } from "expo-router";
 
 const UserInfo = ({ profile }) => {
   return (
-    <View className="bg-white px-4 py-3 mb-2">
-      <Text className="font-rregular font-bold text-xl mb-4 ">
+    <View className="bg-white px-4 py-3">
+      <Text className="text-gray-800 font-semibold text-xl mb-3">
         Personal Information
       </Text>
       <View className="flex flex-row flex-wrap  mb-1">
-        <Text className="font-semibold text-sm">Email Address/Username: </Text>
-        <Text className="text-sm">{profile?.username}</Text>
+        <Text className="font-semibold text-base text-gray-800">
+          Email Address/Username:{" "}
+        </Text>
+        <Text className="text-base text-gray-800">{profile?.username}</Text>
       </View>
 
       <View className="flex flex-row flex-wrap  mb-1">
-        <Text className="font-semibold text-sm">Location: </Text>
+        <Text className="font-semibold text-base text-gray-800">
+          Location:{" "}
+        </Text>
         {profile?.location ? (
-          <Text className="text-sm">{profile?.location}</Text>
+          <Text className="text-base text-gray-800">{profile?.location}</Text>
         ) : (
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-details")}
           >
-            <Text className="text-sm text-sky-600">Add your location</Text>
+            <Text className="text-base text-sky-600">Add your location</Text>
           </TouchableOpacity>
         )}
       </View>
 
       <View className="flex flex-row flex-wrap  mb-1">
-        <Text className="font-semibold text-sm">Date of birth: </Text>
+        <Text className="font-semibold text-base text-gray-800">
+          Date of birth:{" "}
+        </Text>
         {profile?.date_of_birth ? (
-          <Text className="text-sm">{profile?.date_of_birth}</Text>
+          <Text className="text-base text-gray-800">
+            {profile?.date_of_birth}
+          </Text>
         ) : (
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-details")}
           >
-            <Text className="text-sm text-sky-600">Add your date of birth</Text>
+            <Text className="text-base text-sky-600">
+              Add your date of birth
+            </Text>
           </TouchableOpacity>
         )}
       </View>

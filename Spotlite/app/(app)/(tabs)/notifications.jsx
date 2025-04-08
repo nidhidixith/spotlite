@@ -105,16 +105,12 @@ const Notifications = () => {
   };
 
   const renderItem = ({ item }) => {
-    if (notifications.length === 0) {
-      return <View>Loading...</View>;
-    } else {
-      return (
-        <NotificationExcerpt
-          key={`notification-${item.id}`}
-          notificationId={item.id}
-        />
-      );
-    }
+    return (
+      <NotificationExcerpt
+        key={`notification-${item.id}`}
+        notificationId={item.id}
+      />
+    );
   };
   return (
     <View className="bg-white flex-1">
@@ -126,13 +122,15 @@ const Notifications = () => {
           <View
             style={{
               height: 1,
-              backgroundColor: "#E5E7EB",
+              backgroundColor: "#e5e7eb",
             }}
           />
         )}
         refreshing={refreshing} // Pass refreshing state
         onRefresh={onRefresh}
-        ListEmptyComponent={<EmptyState message="No notifications yet!" />}
+        ListEmptyComponent={
+          <EmptyState message="No notifications yet!" icon="bell-off" />
+        }
         contentContainerStyle={
           notifications.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
         }

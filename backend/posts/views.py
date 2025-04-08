@@ -15,7 +15,7 @@ from .models import Post, Likes, Comments,  PostMedia
 from connections.models import UserRelation
 from notifications.models import Notification
 from notifications.models import PushToken
-from .serializers import PostsSerializer, LikeSerializer, CommentSerializer,  PostMediaSerializer
+from .serializers import PostsSerializer, LikeSerializer, CommentSerializer,  PostMediaSerializer, PostsSerializerWeb
 from .utils import send_push_notification
 from rest_framework.pagination import PageNumberPagination
 
@@ -84,6 +84,21 @@ def get_other_user_posts(request, userId):
     serializer = PostsSerializer(paginated_posts,many=True,context={'request': request})
     return paginator.get_paginated_response(serializer.data)
     # return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_latest_post(request, userId):
+    user = get_object_or_404(User, id=userId)
+    
+    # Get the latest post by ordering in descending order of created_at
+    latest_post = Post.objects.filter(user=user).select_related('user').order_by('-created_at').first()
+
+    if latest_post:
+        serializer = PostsSerializerWeb(latest_post, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response({'detail': 'No posts found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])

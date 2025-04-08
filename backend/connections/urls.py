@@ -5,6 +5,7 @@ from . import views
 urlpatterns=[
   path('follow/<int:user_id>/', views.follow_user, name='follow-user'),
   path('unfollow/<int:user_id>/', views.unfollow_user, name='unfollow-user'),
+  path('remove-follower/<int:user_id>/', views.remove_follower, name='remove-follower'),
   
   path('get-followers-list/', views.get_followers_list, name='get-followers-list'),
   path('get-following-list/', views.get_following_list, name='get-following-list'),

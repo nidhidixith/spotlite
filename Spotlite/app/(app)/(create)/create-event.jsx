@@ -21,15 +21,21 @@ import { addNewEvent } from "../../../slices/eventsSlice";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useToast } from "../../../contexts/ToastContext";
 
 const CreateEvent = () => {
   const {
     control,
     handleSubmit,
+    reset,
+    setValue,
     formState: { errors, isDirty },
   } = useForm();
 
   const dispatch = useDispatch();
+
+  const { showToast } = useToast();
+
   const [mediaFiles, setMediaFiles] = useState({});
 
   // State for date picker
@@ -86,17 +92,21 @@ const CreateEvent = () => {
     eventData.append("event_domain", data.event_domain);
     eventData.append("event_description", data.event_description);
 
-    if (eventDate) {
-      const formattedEventDate = eventDate
-        ? `${eventDate.getFullYear()}-${(eventDate.getMonth() + 1)
-            .toString()
-            .padStart(2, "0")}-${eventDate
-            .getDate()
-            .toString()
-            .padStart(2, "0")}`
-        : "";
-      eventData.append("event_date", formattedEventDate);
+    if (data.event_date) {
+      eventData.append("event_date", data.event_date);
     }
+
+    // if (eventDate) {
+    //   const formattedEventDate = eventDate
+    //     ? `${eventDate.getFullYear()}-${(eventDate.getMonth() + 1)
+    //         .toString()
+    //         .padStart(2, "0")}-${eventDate
+    //         .getDate()
+    //         .toString()
+    //         .padStart(2, "0")}`
+    //     : "";
+    //   eventData.append("event_date", formattedEventDate);
+    // }
 
     if (eventTime) {
       const formattedEventTime = eventTime
@@ -127,8 +137,22 @@ const CreateEvent = () => {
     try {
       const response = await dispatch(addNewEvent(eventData)).unwrap();
 
-      Alert.alert("Event created successfully");
-      // router.push("(app)/(tabs)/home");
+      // Alert.alert("Event created successfully");
+      showToast("Event created successfully!", "success");
+
+      // Reset the form after successful submission
+      // Manually reset form fields
+      setValue("event_title", "");
+      setValue("event_domain", "");
+      setValue("event_description", "");
+      setValue("event_location", "");
+      setValue("event_link", "");
+      setValue("event_date", "");
+      // setEventDate(null);
+      setEventTime(null);
+      setMediaFiles({});
+
+      router.push("(app)/(display-events)/display-user-events");
     } catch (err) {
       // console.error("Failed to save the event: ", err);
       // Alert.alert("Failed to create event");
@@ -141,7 +165,7 @@ const CreateEvent = () => {
       // Add "Please register again" to the error message
       const finalErrorMessage = `${errorMessage} Please try again.`;
       Alert.alert("Error", finalErrorMessage);
-      router.push("(app)/(tabs)/home");
+      // router.push("(app)/(tabs)/home");
     }
   };
 
@@ -203,9 +227,9 @@ const CreateEvent = () => {
   return (
     <View className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="p-3">
+        <View className="px-4 py-2">
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-[16px]">
+            <Text className="mb-2 font-semibold text-sm text-gray-600">
               Event Title *
             </Text>
             <Controller
@@ -219,11 +243,12 @@ const CreateEvent = () => {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  className="rounded-lg border border-gray-200 p-2"
+                  className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Add a suitable title for the event"
+                  placeholderTextColor="#9CA3AF"
                 />
               )}
               name="event_title"
@@ -236,7 +261,7 @@ const CreateEvent = () => {
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-[16px]">
+            <Text className="mb-2 font-semibold text-sm text-gray-600">
               Event Domain *
             </Text>
             <Controller
@@ -250,11 +275,12 @@ const CreateEvent = () => {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  className="rounded-lg border border-gray-200 p-2"
+                  className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Singing/Dancing/Cooking/Painting/Photography..."
+                  placeholderTextColor="#9CA3AF"
                 />
               )}
               name="event_domain"
@@ -267,7 +293,7 @@ const CreateEvent = () => {
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-[16px]">
+            <Text className="mb-2 font-semibold text-sm text-gray-600">
               Event Description *
             </Text>
             <Controller
@@ -283,13 +309,14 @@ const CreateEvent = () => {
                 <TextInput
                   multiline
                   numberOfLines={6}
-                  className="p-2 border border-gray-200 rounded-lg"
+                  className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Online/Offline, Topics, participants, purpose, Contact Info..."
                   scrollEnabled
                   style={{ textAlignVertical: "top" }}
+                  placeholderTextColor="#9CA3AF"
                 />
               )}
               name="event_description"
@@ -302,13 +329,14 @@ const CreateEvent = () => {
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-[16px]">Event Date</Text>
-            <View className="flex flex-row justify-between gap-4">
+            <Text className="mb-2 font-semibold text-sm text-gray-600">
+              Event Date
+            </Text>
+            {/* <View className="flex flex-row justify-between">
               <View className="flex flex-row items-center flex-1">
-                {/* <Text className="text-[14px] mr-2">From</Text> */}
                 <View className="flex-1">
                   <TouchableOpacity
-                    className="flex flex-row items-center border border-gray-300 rounded-lg px-2 py-2"
+                    className="flex flex-row items-center border border-gray-200 rounded-lg px-3 py-3 focus:border-sky-500"
                     onPress={showDatepickerHandler}
                   >
                     <Text className="flex-1">
@@ -320,21 +348,97 @@ const CreateEvent = () => {
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </View> */}
+
+            <Controller
+              control={control}
+              name="event_date"
+              rules={{
+                validate: (value) => {
+                  const selectedDate = new Date(value);
+                  const currentDate = new Date();
+
+                  // Reset the time part of both dates to compare only the date
+                  currentDate.setHours(0, 0, 0, 0);
+                  selectedDate.setHours(0, 0, 0, 0);
+
+                  if (selectedDate < currentDate) {
+                    return "Event date cannot be in the past";
+                  }
+                  return true; // Validation passed
+                },
+              }}
+              render={({ field: { onChange, value } }) => (
+                <>
+                  <TouchableOpacity
+                    className="flex flex-row items-center border border-gray-200 rounded-lg px-3 py-3 focus:border-sky-500"
+                    onPress={showDatepickerHandler}
+                  >
+                    <Text
+                      className={`text-sm flex-1 ${
+                        value ? "text-gray-900" : "text-gray-400"
+                      }`}
+                    >
+                      {value
+                        ? new Date(value).toLocaleDateString()
+                        : "Select Date"}
+                    </Text>
+                    <AntDesign name="calendar" size={16} color="black" />
+                  </TouchableOpacity>
+                  {showDatePicker && (
+                    <DateTimePicker
+                      testID="datePicker"
+                      value={value ? new Date(value) : new Date()}
+                      mode="date"
+                      display="default"
+                      onChange={(event, selectedDate) => {
+                        const currentDate = selectedDate || value;
+                        setShowDatePicker(false);
+
+                        // Format the date as YYYY-MM-DD before sending it to the backend
+                        const formattedDate = currentDate
+                          ? `${currentDate.getFullYear()}-${(
+                              currentDate.getMonth() + 1
+                            )
+                              .toString()
+                              .padStart(2, "0")}-${currentDate
+                              .getDate()
+                              .toString()
+                              .padStart(2, "0")}`
+                          : "";
+
+                        onChange(formattedDate); // Set the formatted date
+                      }}
+                    />
+                  )}
+                </>
+              )}
+            />
+            {errors.event_date && (
+              <Text className="text-red-500 mt-1">
+                {errors.event_date.message}
+              </Text>
+            )}
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-[16px]">Event Time</Text>
+            <Text className="mb-2 font-semibold text-sm text-gray-600">
+              Event Time
+            </Text>
 
             <View className="flex flex-row justify-between gap-4">
               <View className="flex flex-row items-center flex-1">
                 {/* <Text className="text-[14px] mr-2">From</Text> */}
                 <View className="flex-1">
                   <TouchableOpacity
-                    className="flex flex-row items-center border border-gray-300 rounded-lg px-2 py-2"
+                    className="flex flex-row items-center border border-gray-200 rounded-lg px-3 py-3 focus:border-sky-500"
                     onPress={showTimepickerHandler}
                   >
-                    <Text className="flex-1">
+                    <Text
+                      className={`text-sm flex-1 ${
+                        eventTime ? "text-gray-900" : "text-gray-400"
+                      }`}
+                    >
                       {eventTime
                         ? eventTime.toLocaleTimeString()
                         : "Select Time"}
@@ -347,7 +451,7 @@ const CreateEvent = () => {
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-[16px]">
+            <Text className="mb-2 font-semibold text-sm text-gray-600">
               Event Location
             </Text>
             <Controller
@@ -360,11 +464,12 @@ const CreateEvent = () => {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  className="rounded-lg border border-gray-200 p-2"
+                  className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Add event location"
+                  placeholderTextColor="#9CA3AF"
                 />
               )}
               name="event_location"
@@ -377,7 +482,9 @@ const CreateEvent = () => {
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 font-semibold text-[16px]">Event Link</Text>
+            <Text className="mb-2 font-semibold text-sm text-gray-600">
+              Event Link
+            </Text>
             <Controller
               control={control}
               rules={{
@@ -389,11 +496,12 @@ const CreateEvent = () => {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  className="rounded-lg border border-gray-200 p-2"
+                  className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Add Event link"
+                  placeholderTextColor="#9CA3AF"
                 />
               )}
               name="event_link"
@@ -404,7 +512,9 @@ const CreateEvent = () => {
               </Text>
             )}
           </View>
-          <Text className="text-sky-600">* Mandatory fields</Text>
+          <Text className="text-sm italic text-sky-600">
+            * Mandatory fields
+          </Text>
         </View>
 
         <TouchableOpacity
@@ -413,18 +523,18 @@ const CreateEvent = () => {
           activeOpacity={0.6}
         >
           <View className="mr-1 px-1">
-            <MaterialIcons name="photo-library" size={24} color="#2AAA8A" />
+            <MaterialIcons name="photo-library" size={22} color="#2AAA8A" />
           </View>
-          <Text className={`text-base mr-2`}>Photo/Video</Text>
+          <Text className={`text-base text-gray-800 mr-2`}>Photo/Video</Text>
           {Object.keys(mediaFiles).length > 0 && (
-            <Text className="text-button-primary">
+            <Text className="text-sky-600 text-sm">
               {Object.keys(mediaFiles).length} files selected
             </Text>
           )}
         </TouchableOpacity>
 
         {/* Date picker */}
-        {showDatePicker && (
+        {/* {showDatePicker && (
           <DateTimePicker
             testID="datePicker"
             value={eventDate ? new Date(eventDate) : new Date()}
@@ -432,7 +542,7 @@ const CreateEvent = () => {
             display="default"
             onChange={onEventDateChange}
           />
-        )}
+        )} */}
 
         {/* Time picker */}
         {showTimePicker && (
@@ -447,15 +557,13 @@ const CreateEvent = () => {
         )}
 
         <TouchableOpacity
-          className={`bg-sky-600 self-end px-3 py-2 m-2 rounded-lg ${
+          className={`bg-sky-600  self-end px-4 py-2 m-2 rounded-lg ${
             isDirty ? "" : "opacity-50"
           }`}
           onPress={handleSubmit(onSubmit)}
           disabled={!isDirty}
         >
-          <Text className="text-lg self-center font-semibold text-white">
-            Post
-          </Text>
+          <Text className=" text-white text-sm font-medium">Post</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

@@ -23,6 +23,8 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 import defaultImage from "../../../assets/images/def.webp"; // Import default image
 import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+
 const EditProfilePicture = () => {
   const { handleSubmit } = useForm();
   const dispatch = useDispatch();
@@ -122,44 +124,43 @@ const EditProfilePicture = () => {
         backgroundColor: "white",
       }}
     >
-      <View className="mb-6">
-        <View className="flex flex-row justify-between mb-4">
-          <Text className="text-xl font-bold">Profile Picture</Text>
-          <TouchableOpacity onPress={pickImage}>
-            <Text className="text-lg text-sky-600">Edit</Text>
-          </TouchableOpacity>
-        </View>
-        {image ? (
-          <Image
-            className="w-[150px] h-[150px] rounded-full mr-2 self-center"
-            source={typeof image === "string" ? { uri: image } : image}
-            resizeMode="cover"
-          />
-        ) : (
-          <Image
-            className="w-[150px] h-[150px] rounded-full mr-2 self-center"
-            source={defaultImage}
-            resizeMode="cover"
-          />
-        )}
-      </View>
-      <View className="flex flex-row items-center">
-        <EvilIcons name="trash" size={28} color="#ef4444" />
-        <TouchableOpacity onPress={() => setImage(defaultImage)}>
-          <Text className="text-red-500 text-[16px]">
-            Remove Profile Picture
-          </Text>
+      <View className="flex flex-row justify-between mb-4">
+        <Text className="text-gray-800 font-semibold text-lg">
+          Profile Picture
+        </Text>
+        <TouchableOpacity onPress={pickImage}>
+          <Text className="text-base text-sky-600">Edit</Text>
         </TouchableOpacity>
       </View>
+      {image ? (
+        <Image
+          className="w-[120px] h-[120px] rounded-full self-center mb-4"
+          source={typeof image === "string" ? { uri: image } : image}
+          resizeMode="cover"
+        />
+      ) : (
+        <Image
+          className="w-[120px] h-[120px] rounded-full self-center mb-4"
+          source={defaultImage}
+          resizeMode="cover"
+        />
+      )}
 
       <TouchableOpacity
-        className={`bg-sky-600 py-1 rounded-lg mt-4 ${
-          image === profile[0]?.profile_pic ? "opacity-50" : ""
-        }`}
+        className="flex flex-row items-center"
+        onPress={() => setImage(defaultImage)}
+      >
+        <FontAwesome name="trash-o" size={16} color="#ef4444" marginRight={5} />
+        <Text className="text-red-500 text-sm">Remove Profile Picture</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        className={`border border-sky-600 bg-sky-600 rounded-lg p-1 mt-6
+                    ${image === profile[0]?.profile_pic ? "opacity-50" : ""}`}
         onPress={handleSubmit(onSubmit)}
         disabled={image === profile[0]?.profile_pic} // Disable when there's no change
       >
-        <Text className="text-white text-lg self-center font-semibold">
+        <Text className=" text-base text-white self-center font-medium">
           Save
         </Text>
       </TouchableOpacity>

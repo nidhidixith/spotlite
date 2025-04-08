@@ -68,6 +68,30 @@ def unfollow_user(request, user_id):
     return Response({"message": "Unfollowed"}, status=status.HTTP_200_OK)
 
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def remove_follower(request, user_id):
+    following = request.user
+
+    try:
+        follower = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    if following.id == follower.id:
+        return Response({"error": "You cannot remove yourself from your followers."}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    user_relation = UserRelation.objects.filter(follower=follower, following=following).first()
+
+    if not user_relation:
+        return Response({"error": "This user is not your follower."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Delete the relationship
+    user_relation.delete()
+    return Response({"message": "Follower removed"}, status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_followers_list(request):

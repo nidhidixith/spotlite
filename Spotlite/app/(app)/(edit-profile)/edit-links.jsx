@@ -7,7 +7,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { router } from "expo-router";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -30,15 +30,11 @@ const EditLinks = () => {
 
   const profile = useSelector(selectUserProfile);
   // console.log("User profile from backend: ", profile);
-  console.log(
-    "Type of Social links from backend: ",
-    typeof profile[0]?.social_links
-  );
+
   console.log("Social links from backend: ", profile[0]?.social_links);
 
   const [socialLinks, setSocialLinks] = useState(profile[0]?.social_links);
   const [linkName, setLinkName] = useState(null);
-  // const [linkIcon, setLinkIcon] = useState(null);
   const [linkInput, setLinkInput] = useState("");
 
   const [modified, setModified] = useState(false);
@@ -66,7 +62,6 @@ const EditLinks = () => {
 
   const handleLinkNamePress = (name) => {
     setLinkName(name);
-    // setLinkIcon(icon);
     setLinkInput("");
   };
 
@@ -99,16 +94,13 @@ const EditLinks = () => {
       {
         platform: linkName,
         url: linkInput,
-        // icon: linkIcon,
       },
     ];
 
     setSocialLinks(updatedLinks);
     setLinkName(null);
-    // setLinkIcon(null);
     setLinkInput("");
     setModified(true);
-    // console.log("Social Links: ", updatedLinks);
   };
 
   const removeLink = (name) => {
@@ -160,19 +152,19 @@ const EditLinks = () => {
       }}
     >
       {/* Section 1: Instruction */}
-      <Text className="text-base text-sky-600 mb-3 font-semibold">
+      <Text className="text-sky-600 font-semibold text-base mb-2">
         Select the platform to add a link
       </Text>
-      <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
+      <View className="flex flex-row flex-wrap items-center rounded-lg mb-4">
         {Object.keys(links).map((key) => (
           <TouchableOpacity
             key={key}
             activeOpacity={0.5}
             onPress={() => handleLinkNamePress(links[key].platform)}
-            className="flex flex-row items-center rounded-lg border border-gray-300 m-1 px-3 py-2"
+            className="flex flex-row items-center rounded-lg border border-gray-300 mx-1 my-2 px-2 py-1"
           >
             {links[key].icon}
-            <Text className="text-[14px] ml-1">
+            <Text className="text-sm">
               {links[key].platform.charAt(0).toUpperCase() +
                 links[key].platform.slice(1)}
             </Text>
@@ -182,11 +174,11 @@ const EditLinks = () => {
 
       {/* Section 2: Add Link */}
       {linkName && (
-        <View className="mb-6">
-          <Text className="text-[14px] mb-2 font-medium">
+        <View className="mb-4">
+          <Text className="text-sm mb-2 font-semibold text-gray-600">
             {linkName.charAt(0).toUpperCase() + linkName.slice(1)} link
           </Text>
-          <View className="flex flex-row items-center mb-4">
+          <View className="flex flex-row items-center">
             <Controller
               control={control}
               rules={
@@ -200,7 +192,7 @@ const EditLinks = () => {
               }
               render={({ field: { onChange, onBlur } }) => (
                 <TextInput
-                  className="rounded-lg border border-gray-200 px-3 py-2 flex-1"
+                  className="rounded-lg border border-gray-200 px-3 py-2 flex-1 text-gray-900 text-sm focus:border-sky-500"
                   onBlur={onBlur}
                   onChangeText={(text) => {
                     onChange(text);
@@ -208,6 +200,7 @@ const EditLinks = () => {
                   }}
                   value={linkInput}
                   placeholder={`Add ${linkName} link`}
+                  placeholderTextColor="#9CA3AF"
                 />
               )}
               name={linkName}
@@ -218,7 +211,7 @@ const EditLinks = () => {
               </Text>
             )}
             <TouchableOpacity
-              className={`ml-2 px-4 py-2 rounded-lg ${
+              className={`ml-2 px-2 py-3 rounded-lg ${
                 linkInput ? "bg-sky-500" : "bg-gray-300"
               }`}
               onPress={handleAddLink}
@@ -232,20 +225,20 @@ const EditLinks = () => {
 
       {/* Section 3: Your Links */}
 
-      <Text className="text-base text-sky-600 mb-2 font-semibold">
+      <Text className="text-sm text-sky-600 mb-2 font-semibold">
         Your Links
       </Text>
-      <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
+      <View className="flex flex-row flex-wrap items-center">
         {socialLinks.map((link) => {
           const platformDetails = links[link.platform] || {};
           return (
             <TouchableOpacity
               key={link.platform}
               onPress={() => removeLink(link.platform)}
-              className="flex flex-row items-center rounded-lg border border-gray-300 m-1 px-3 py-2"
+              className="flex flex-row items-center rounded-lg border border-sky-300  mx-1 my-2 px-2 py-1"
             >
               {platformDetails.icon}
-              <Text className="text-[14px] ml-1">
+              <Text className="text-sm ">
                 {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
               </Text>
               <Text className="text-red-500 ml-2 font-bold">x</Text>
@@ -253,17 +246,16 @@ const EditLinks = () => {
           );
         })}
       </View>
-      {/* {link.icon || platformDetails.icon} */}
 
       {/* Section 4: Submit Button */}
       <TouchableOpacity
-        className={`bg-sky-600 py-3 rounded-lg mt-8 ${
+        className={`border border-sky-600 bg-sky-600 rounded-lg p-1 mt-6 ${
           !modified ? "opacity-50" : ""
         }`}
         disabled={!modified}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text className="text-white text-lg text-center font-semibold">
+        <Text className="text-base text-white self-center font-medium">
           Save
         </Text>
       </TouchableOpacity>

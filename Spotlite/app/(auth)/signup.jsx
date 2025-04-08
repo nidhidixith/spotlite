@@ -4,9 +4,10 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  ScrollView,
   Alert,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useForm, Controller } from "react-hook-form";
 import { Link, router } from "expo-router";
@@ -24,6 +25,7 @@ import { resetUserConnections } from "../../slices/userConnectionsSlice";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useToast } from "../../contexts/ToastContext";
 
 const SignUp = () => {
   const {
@@ -32,7 +34,11 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
   const { registerError } = useSelector((state) => state.users);
+
+  const { showToast } = useToast();
 
   const dispatch = useDispatch();
 
@@ -44,7 +50,11 @@ const SignUp = () => {
 
       const response = await dispatch(registerUser(userData)).unwrap();
       if (response) {
-        Alert.alert("Registration successful");
+        // Alert.alert("Registration successful");
+        showToast(
+          "Registration successful, Please complete your profile",
+          "success"
+        );
         await Promise.all([
           dispatch(resetUserProfile()),
           dispatch(resetUserConnections()),
@@ -59,26 +69,34 @@ const SignUp = () => {
     } catch (error) {
       // console.error("Login error:", error);
       // Alert.alert("Registration failed", "Please try again.");
+      Alert.alert("Registration failed", "Please try again.");
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-8 justify-center">
-        <Text className="font-rregular text-3xl font-bold mb-10 self-center">
-          Create your account
-        </Text>
+    <SafeAreaView className="flex-1 bg-white px-8">
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+      >
+        <View className="mb-4">
+          <Text className=" text-3xl text-gray-900 font-bold mb-4">
+            Create your account
+          </Text>
+          <Text className=" text-sm text-gray-500">
+            Enter your details below to create a new account and get started.
+          </Text>
+        </View>
 
-        <View className="mb-6">
-          <Text className="font-rregular text-base font-bold mb-2">
+        <View className="mb-4">
+          <Text className="text-base text-gray-800 font-semibold mb-2">
             Email Address
           </Text>
 
-          <View className="flex-row items-center rounded-sm bg-gray-100 px-4">
+          <View className="flex-row items-center rounded-lg border border-gray-200 px-4 focus:border-sky-500">
             <FontAwesome
               name="envelope"
               size={16}
-              color="black"
+              color="#333333"
               marginRight={5}
             />
             <Controller
@@ -92,11 +110,12 @@ const SignUp = () => {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  className="flex-1 px-1 py-2"
+                  className="flex-1 px-1 py-2 text-gray-900 text-sm"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="name@example.com"
+                  placeholderTextColor="#9CA3AF"
                   keyboardType="email-address"
                   autoCapitalize="none"
                 />
@@ -105,19 +124,22 @@ const SignUp = () => {
             />
           </View>
           {errors.email && (
-            <Text className="font-rregular text-red-500 mt-1">
-              {errors.email.message}
-            </Text>
+            <Text className=" text-red-500 mt-1">{errors.email.message}</Text>
           )}
         </View>
 
-        <View className="mb-4">
-          <Text className="font-rregular text-base font-bold mb-2">
+        <View className="mb-8">
+          <Text className="text-base text-gray-800 font-semibold mb-2">
             Password
           </Text>
 
-          <View className="flex-row items-center rounded-sm bg-gray-100 px-4">
-            <Entypo name="lock" size={20} color="black" marginRight={5} />
+          <View className="flex-row items-center rounded-lg border border-gray-200 px-4 focus:border-sky-500">
+            <FontAwesome
+              name="lock"
+              size={22}
+              color="#333333"
+              marginRight={6}
+            />
             <Controller
               control={control}
               rules={{
@@ -133,47 +155,56 @@ const SignUp = () => {
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  className="flex-1 px-1 py-2"
+                  className="flex-1 px-1 py-2 text-gray-900 text-sm"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
                   placeholder="Create your Password"
-                  secureTextEntry
+                  placeholderTextColor="#9CA3AF"
+                  secureTextEntry={!isPasswordVisible}
                 />
               )}
               name="password"
             />
+            {/* Eye Icon for Toggle */}
+            <TouchableOpacity
+              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+              className="p-1"
+            >
+              <FontAwesome
+                name={isPasswordVisible ? "eye" : "eye-slash"}
+                size={18}
+                color="#333333"
+                // marginLeft={8}
+              />
+            </TouchableOpacity>
           </View>
           {errors.password && (
-            <Text className="font-rregular text-red-500 mt-1">
+            <Text className=" text-red-500 mt-1">
               {errors.password.message}
             </Text>
           )}
         </View>
-        <Link
-          className="font-rregular text-[16px] mb-12 self-center"
-          href="/login"
-        >
-          <Text className="font-rregular text-[16px] mb-12 self-center">
-            Already have an account?{" "}
-            <Text className="text-sky-600 font-bold">Login</Text>
-          </Text>
-        </Link>
 
         <TouchableOpacity
-          className="bg-sky-600 border border-white py-2 rounded-full self-center w-full"
+          className="bg-sky-600 py-2 rounded-lg w-full max-w-md mx-auto"
           onPress={handleSubmit(onSubmit)}
         >
-          <Text className="font-rregular text-white text-xl font-bold self-center">
+          <Text className=" text-white text-lg font-medium self-center">
             Sign Up
           </Text>
         </TouchableOpacity>
         {registerError && (
-          <Text className="font-rregular text-red-500 self-center mt-1">
-            {registerError}
+          <Text className=" text-red-500 mt-2 self-center">
+            {registerError || registerError.detail}
           </Text>
         )}
-      </View>
+
+        <Link className=" text-sm text-gray-500 self-center mt-4" href="/login">
+          Already have an account?{" "}
+          <Text className=" text-sky-600 font-semibold underline">Login</Text>
+        </Link>
+      </ScrollView>
     </SafeAreaView>
   );
 };

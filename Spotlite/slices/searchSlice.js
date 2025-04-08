@@ -16,8 +16,11 @@ const initialState = {
 
 export const performSearch = createAsyncThunk(
   "searches/performSearch ",
-  async ({ query }, { rejectWithValue }) => {
-    const response = await instance.get(`/search_service/search/?q=${query}`);
+  async ({ query, filter }, { rejectWithValue }) => {
+    console.log("Filter: ", filter);
+    const response = await instance.get(
+      `/search_service/search/?q=${query}&filter=${filter}`
+    );
     return response.data;
   }
 );

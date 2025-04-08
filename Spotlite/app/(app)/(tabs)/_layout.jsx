@@ -99,6 +99,7 @@ const TabLayout = () => {
           // title: "Notifications",
           // headerTitleAlign: "center",
           headerShown: true,
+          headerTitle: "Notifications",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               color={color}
@@ -114,7 +115,7 @@ const TabLayout = () => {
       <Tabs.Screen
         name="userprofile"
         options={{
-          // title: "My Profile",
+          title: "My Profile",
           // headerTitleAlign: "center",
           headerShown: true,
           tabBarIcon: ({ color, focused }) => (
@@ -123,7 +124,7 @@ const TabLayout = () => {
               name="user-circle-o"
               focused={focused}
               title="Profile"
-              size={24}
+              size={22}
             />
           ),
         }}

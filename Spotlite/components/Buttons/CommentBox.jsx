@@ -62,28 +62,31 @@ const CommentBox = ({ postId, postComments, setPostComments }) => {
             <TextInput
               multiline
               numberOfLines={4}
-              className="border border-gray-200 px-2 rounded-lg"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               placeholder="Add comment"
+              placeholderTextColor="#9CA3AF"
             />
           )}
           name="comment"
         />
         {errors.comment && (
-          <Text className="text-red-500 mb-2">{errors.comment.message}</Text>
+          <Text className="text-red-500 mt-1">{errors.comment.message}</Text>
         )}
       </View>
 
       <TouchableOpacity
-        className={`bg-sky-600 py-1 rounded-lg mt-4 ${
+        className={`border border-sky-600 bg-sky-600 rounded-lg p-1 mt-4 ${
           isDirty ? "" : "opacity-50"
         }`}
         onPress={handleSubmit(onSubmit)}
         disabled={!isDirty}
       >
-        <Text className="text-white text-base self-center">Post</Text>
+        <Text className="text-base text-white self-center font-medium">
+          Post
+        </Text>
       </TouchableOpacity>
     </>
   );

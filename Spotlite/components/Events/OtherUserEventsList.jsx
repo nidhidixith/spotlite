@@ -72,7 +72,13 @@ const OtherUserEventsList = ({ userId }) => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.type}-${item.id}`}
         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
-        ListEmptyComponent={<EmptyState message="No events yet!" />}
+        ListEmptyComponent={
+          <EmptyState
+            message="No Events Available"
+            details="This user hasn’t created any events yet. Check back later!"
+            icon="calendar"
+          />
+        }
         contentContainerStyle={
           events.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
         }

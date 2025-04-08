@@ -68,8 +68,9 @@ const UserEventsList = () => {
         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
         ListEmptyComponent={
           <EmptyState
-            message="No events yet!"
-            details="Create events and engage with the community"
+            message="No events yet"
+            details="Create an event to connect with people and share experiences."
+            icon="calendar"
           />
         }
         contentContainerStyle={

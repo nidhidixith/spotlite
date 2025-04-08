@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Alert,
   FlatList,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -71,6 +73,7 @@ const EditQuestionsAndAnswers = () => {
   if (fetchQuestionsError) {
     return <ErrorDisplayComponent />;
   }
+
   const handleAnswerChange = (questionId, text) => {
     setAnswers((prev) => ({ ...prev, [questionId]: text.trim() }));
   };
@@ -103,63 +106,63 @@ const EditQuestionsAndAnswers = () => {
   };
 
   return (
-    <View className="flex-1 bg-white p-4">
-      <FlatList
-        data={questions}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => {
-          // Find the answer for this question from profile.questions_and_answers
-          const existingAnswer = profile[0]?.questions_and_answers?.find(
-            (answer) => answer.question_id === item.id
-          );
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
 
-          return (
-            <View className="bg-white p-4 rounded-lg shadow-sm">
-              <Text className="text-lg font-semibold text-gray-800 mb-2">
-                {item.text}
-              </Text>
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-gray-700"
-                    multiline={true} // Enables multiple lines
-                    // textAlignVertical="top" // Ensures text starts from the top
-                    defaultValue={
-                      existingAnswer ? existingAnswer.answer_text : ""
-                    }
-                    onChangeText={(text) => handleAnswerChange(item.id, text)}
-                    returnKeyType="default" // Configures the Enter key behavior
-                    blurOnSubmit={false} // Prevents dismissing the keyboard
-                  />
-                )}
-                name="answerInput"
-              />
-              {errors.answerInput && (
-                <Text className="text-red-500 mb-2">
-                  {errors.answerInput.message}
-                </Text>
-              )}
-            </View>
-          );
-        }}
-        ListHeaderComponent={
-          <Text className="text-2xl font-bold text-center text-sky-600 mb-4">
-            Q&A Form
-          </Text>
-        }
-        ListFooterComponent={
-          <TouchableOpacity
-            className="bg-sky-600 py-1 rounded-lg mt-4"
-            onPress={handleSubmit(onSubmit)}
-          >
-            <Text className="text-white text-lg self-center font-semibold">
-              Save
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        backgroundColor: "white",
+      }}
+    >
+      <Text className="text-2xl text-sky-600 font-semibold text-center mb-4">
+        Q&A Form
+      </Text>
+
+      {questions.map((item) => {
+        const existingAnswer = profile[0]?.questions_and_answers?.find(
+          (answer) => answer.question_id === item.id
+        );
+
+        return (
+          <View key={item.id} className="mb-4">
+            <Text className="mb-2 font-semibold text-sm text-gray-600">
+              {item.text}
             </Text>
-          </TouchableOpacity>
-        }
-      />
-    </View>
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
+                  multiline={true}
+                  defaultValue={
+                    existingAnswer ? existingAnswer.answer_text : ""
+                  }
+                  onChangeText={(text) => handleAnswerChange(item.id, text)}
+                  returnKeyType="default"
+                  blurOnSubmit={false}
+                />
+              )}
+              name="answerInput"
+            />
+            {errors.answerInput && (
+              <Text className="text-red-500 mt-1">
+                {errors.answerInput.message}
+              </Text>
+            )}
+          </View>
+        );
+      })}
+
+      <TouchableOpacity
+        className="border border-sky-600 bg-sky-600 rounded-lg p-1 mt-2"
+        onPress={handleSubmit(onSubmit)}
+      >
+        <Text className="text-base text-white self-center font-medium">
+          Save
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 

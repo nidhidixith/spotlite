@@ -25,6 +25,7 @@ import LoadingIndicator from "../Others/LoadingIndicator";
 import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
 
 import Entypo from "@expo/vector-icons/Entypo";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const CommentsModal = ({ postId, bottomSheetRef }) => {
   const dispatch = useDispatch();
@@ -100,41 +101,43 @@ const CommentsModal = ({ postId, bottomSheetRef }) => {
           <View className="flex flex-row items-center">
             <TouchableOpacity
               onPress={() => {
-                router.push({
-                  pathname: "(app)/display-profile/[userId]",
-                  params: {
-                    userId: item?.user_id,
-                  },
-                });
-
-                bottomSheetRef.current?.close();
+                bottomSheetRef?.current?.dismiss(); // Dismiss bottom sheet first
+                setTimeout(() => {
+                  router.push({
+                    pathname: "(app)/display-profile/[userId]",
+                    params: {
+                      userId: item?.user_id,
+                    },
+                  });
+                }, 300); // Add slight delay to ensure smooth transition
               }}
             >
-              <Text className="text-md font-bold">{item?.display_name}</Text>
+              <Text className="text-sm font-medium">{item?.display_name}</Text>
             </TouchableOpacity>
-            <Text className="text-[10px] italic text-gray-500 ml-auto">
+            <Text className="text-xs italic text-gray-500 ml-auto">
               <TimeAgo timestamp={item.created_at} />
             </Text>
             {(isCommentOwner || isPostOwner) && (
               <TouchableOpacity
                 onPress={() => showAlert(item.id)}
-                className="ml-2"
+                className="px-2 py-1"
               >
-                <Entypo name="trash" size={18} color="red" />
+                {/* <Entypo name="trash" size={14} color="red" /> */}
+                <FontAwesome name="trash" size={16} color="#ef4444" />
               </TouchableOpacity>
             )}
           </View>
-          <Text className="text-[12px] text-gray-500 mb-2">
+          <Text className="text-xs text-gray-500 mb-2">
             {item?.primary_interest}
           </Text>
-          <Text className="text-md">{item.text}</Text>
+          <Text className="text-sm">{item.text}</Text>
         </View>
       </View>
     );
   };
 
   return (
-    <View className="flex-1 px-5 py-2">
+    <View className="flex-1 px-4 py-2">
       <BottomSheetFlatList
         data={comments}
         keyExtractor={(item) => item.id}

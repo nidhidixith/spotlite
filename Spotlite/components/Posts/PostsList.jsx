@@ -125,8 +125,9 @@ const PostsList = () => {
         onRefresh={onRefresh}
         ListEmptyComponent={
           <EmptyState
-            message="No posts yet!"
+            message="No posts yet"
             details="Follow people to see their posts in the feed"
+            icon="file-text"
           />
         }
         contentContainerStyle={
@@ -139,7 +140,7 @@ const PostsList = () => {
             <View className="justify-center items-center bg-white">
               <ActivityIndicator size="large" color="#0284c7" />
             </View>
-          ) : nextPage === null ? (
+          ) : nextPage === null && posts.length !== 0 ? (
             <ListEndComponent message="You've reached the end!" />
           ) : null
         }

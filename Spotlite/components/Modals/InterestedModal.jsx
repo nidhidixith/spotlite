@@ -55,7 +55,7 @@ const InterestedModal = ({ eventId, bottomSheetRef }) => {
     );
   };
   return (
-    <View className="flex-1 px-5 py-2">
+    <View className="flex-1 px-4 py-2">
       <BottomSheetFlatList
         data={interests}
         keyExtractor={(item) => item.id}

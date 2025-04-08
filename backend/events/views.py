@@ -9,7 +9,7 @@ from django.contrib.postgres.search import SearchQuery, SearchVector
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -17,7 +17,7 @@ from .models import Event, EventMedia, EventInterest
 from connections.models import UserRelation
 from notifications.models import Notification
 from appusers.models import UserProfile
-from .serializers import EventSerializer, EventMediaSerializer, EventInterestSerializer
+from .serializers import EventSerializer, EventMediaSerializer, EventInterestSerializer, EventSerializerWeb
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -71,6 +71,7 @@ def get_events(request):
     elif filter_type == "by-following":
         following = UserRelation.objects.filter(follower=user).values_list('following', flat=True)
         events = Event.objects.filter(user__id__in=following)
+        # events = Event.objects.all()
 
     elif filter_type == "nearby":
         current_user_location = UserProfile.objects.get(user=user).location
@@ -90,7 +91,7 @@ def get_events(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_events(request):
-    events = Event.objects.filter(user=request.user)
+    events = Event.objects.filter(user=request.user).order_by('-created_at')
     serializer = EventSerializer(events,many=True,context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -100,10 +101,33 @@ def get_user_events(request):
 def get_other_user_events(request, userId):
     user = get_object_or_404(User, id=userId)
 
-    events = Event.objects.filter(user=user)
+    events = Event.objects.filter(user=user).order_by('-created_at')
     serializer = EventSerializer(events,many=True,context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_latest_event(request, userId):
+    user = get_object_or_404(User, id=userId)
+    
+    # Get the latest post by ordering in descending order of created_at
+    latest_event = Event.objects.filter(user=user).select_related('user').order_by('-created_at').first()
+
+    if latest_event:
+        serializer = EventSerializerWeb(latest_event, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        return Response({'detail': 'No events found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_interested_events(request):
+    user = request.user
+    interested_event_ids = EventInterest.objects.filter(user=user).values_list('event_id', flat=True)
+    events = Event.objects.filter(id__in=interested_event_ids).select_related('user').order_by('-created_at')
+
+    serializer = EventSerializer(events,many=True,context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 #Interested
 

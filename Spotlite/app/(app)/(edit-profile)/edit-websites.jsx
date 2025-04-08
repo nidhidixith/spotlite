@@ -15,6 +15,7 @@ import {
   selectUserProfile,
   editProfile,
 } from "../../../slices/userProfileSlice";
+
 import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
 const EditWebsites = () => {
@@ -88,7 +89,7 @@ const EditWebsites = () => {
     setLinks(updatedLinks);
     setLinkName("");
     setLinkInput("");
-    setHasChanges(true); // const validationResult = isValidUrl(linkInput);
+    setHasChanges(true);
   };
 
   // Remove link function
@@ -150,8 +151,8 @@ const EditWebsites = () => {
         backgroundColor: "white",
       }}
     >
-      <View className="mb-5">
-        <Text className="text-base text-sky-600 mb-3 font-semibold">
+      <View className="mb-2">
+        <Text className="text-gray-600 font-semibold text-base mb-3">
           Add your websites/external links
         </Text>
         <View className="mb-3">
@@ -162,7 +163,7 @@ const EditWebsites = () => {
             // }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className="rounded-xl border border-gray-200 px-2 py-2"
+                className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
                 onBlur={onBlur}
                 onChangeText={(text) => {
                   onChange(text);
@@ -170,13 +171,14 @@ const EditWebsites = () => {
                 }}
                 value={linkName}
                 placeholder="Add name"
+                placeholderTextColor="#9CA3AF"
               />
             )}
             name="linkName"
           />
           {/* Display error if invalid link is added */}
           {errors.linkName && (
-            <Text className="text-red-500 mb-2">{errors.linkName.message}</Text>
+            <Text className="text-red-500 mt-1">{errors.linkName.message}</Text>
           )}
         </View>
 
@@ -189,7 +191,7 @@ const EditWebsites = () => {
             // }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className="rounded-xl border border-gray-200 px-2 py-2"
+                className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
                 onBlur={onBlur}
                 onChangeText={(text) => {
                   onChange(text);
@@ -197,20 +199,21 @@ const EditWebsites = () => {
                 }}
                 value={linkInput}
                 placeholder="Add the link of your website"
+                placeholderTextColor="#9CA3AF"
               />
             )}
             name="linkInput"
           />
           {/* Display error if invalid link is added */}
           {errors.linkInput && (
-            <Text className="text-red-500 mb-2">
+            <Text className="text-red-500 mt-1">
               {errors.linkInput.message}
             </Text>
           )}
         </View>
 
         <TouchableOpacity
-          className={`ml-2 px-4 py-2 rounded-lg self-end ${
+          className={`px-4 py-2 rounded-lg self-end ${
             linkInput ? "bg-sky-500" : "bg-gray-300"
           }`}
           onPress={addLink}
@@ -220,32 +223,34 @@ const EditWebsites = () => {
         </TouchableOpacity>
       </View>
       {/* Render the list of added links */}
-      <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
-        {links.map((item, index) => (
-          <View
-            key={index}
-            className="flex flex-row items-center p-1 flex-wrap rounded-sm bg-gray-100 m-1 px-2 py-2 mb-1"
-          >
-            <Text className="text-[14px] ml-1">
-              {item.description.charAt(0).toUpperCase() +
-                item.description.slice(1)}
-            </Text>
 
-            <TouchableOpacity onPress={() => removeLink(index)}>
+      {links.length > 0 && (
+        <View className="flex flex-row flex-wrap items-center">
+          {links.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              className="flex flex-row items-center p-1 flex-wrap rounded-lg border border-sky-300  mx-1 my-2 px-2 py-1"
+              onPress={() => removeLink(index)}
+            >
+              <Text className="text-sm">
+                {item.description.charAt(0).toUpperCase() +
+                  item.description.slice(1)}
+              </Text>
+
               <Text className="text-red-500 ml-2 font-bold">x</Text>
             </TouchableOpacity>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
+      )}
 
       <TouchableOpacity
-        className={`bg-sky-600 py-1 rounded-lg mt-4 ${
+        className={`border border-sky-600 bg-sky-600 rounded-lg p-1 mt-6 ${
           !hasChanges ? "opacity-50" : ""
         }`}
         disabled={!hasChanges}
         onPress={handleSubmit(onSubmit)}
       >
-        <Text className="text-white text-lg self-center font-semibold">
+        <Text className="text-base text-white self-center font-medium">
           Save
         </Text>
       </TouchableOpacity>

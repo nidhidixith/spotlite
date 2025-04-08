@@ -35,8 +35,9 @@
     "owner": "spotlite-frontend",
     "plugins": [
       "expo-router",
-      "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font"
     ]
+    
   }
 }

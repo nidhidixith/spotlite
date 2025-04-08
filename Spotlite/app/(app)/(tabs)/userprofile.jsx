@@ -5,6 +5,7 @@ import {
   RefreshControl,
   ActivityIndicator,
   TouchableOpacity,
+  Button,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,10 +28,14 @@ import Bio from "../../../components/UserProfile/Bio";
 import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
 import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 import QuestionsAndAnswers from "../../../components/UserProfile/QuestionsAndAnswers";
+import { useToast } from "../../../contexts/ToastContext";
+import SocialStats from "../../../components/UserProfile/SocialStats";
 
 const UserProfile = () => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing
+
+  const { showToast } = useToast();
 
   const fetchData = async () => {
     try {
@@ -83,6 +88,7 @@ const UserProfile = () => {
 
   return (
     <ScrollView
+      className="bg-gray-100"
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
@@ -90,6 +96,7 @@ const UserProfile = () => {
       <BasicDetails profile={profile[0]} />
       <Bio profile={profile[0]} />
       <SocialLinks profile={profile[0]} />
+      <SocialStats profile={profile[0]} />
       <Activity profile={profile[0]} />
       <Interests profile={profile[0]} />
       <UserInfo profile={profile[0]} />

@@ -75,41 +75,43 @@ const Step6 = ({ handlePrevStep, handleNextStep }) => {
 
   return (
     <>
-      <Text className="text-2xl font-semibold text-center mb-5">
+      <Text className="text-2xl text-gray-800 font-semibold text-center mb-5">
         Add Profile Picture
       </Text>
 
-      <Text className="font-semibold text-base mb-5">
+      <Text className="font-semibold text-base text-gray-600 mb-3">
         Upload your Profile Picture
       </Text>
 
-      <View className="flex flex-row flex-wrap items-center rounded-sm bg-gray-100 px-2 py-1">
-        <TouchableOpacity
-          className="bg-gray-300 mr-2 p-1 rounded-sm"
-          onPress={pickImage}
-        >
-          <Text>Choose Photo</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        className="flex flex-row flex-wrap items-center rounded-sm bg-gray-100 px-2 py-1"
+        onPress={pickImage}
+      >
+        <Text className="text-sky-600 font-medium mr-2 p-1">Choose Photo</Text>
         {image ? <Text>{fileName}</Text> : <Text>No file chosen</Text>}
-      </View>
-      {image && <Image source={{ uri: image }} style={styles.image} />}
-      <Text className="italic text-center">
+      </TouchableOpacity>
+      <Text className="text-sm text-gray-500 italic mt-1">
         Choose an engaging photo that represents you well.
       </Text>
+      {image && <Image source={{ uri: image }} style={styles.image} />}
 
       <View className="flex flex-row justify-between gap-x-4 mt-5">
         <TouchableOpacity
-          className="bg-sky-600 rounded-lg p-2 flex-1"
+          className="border border-sky-600 rounded-lg p-2 flex-1"
           onPress={handlePrevStep}
         >
-          <Text className="text-white text-lg self-center">Prev</Text>
+          <Text className="text-sky-600 text-lg font-medium self-center">
+            Prev
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="bg-sky-600 rounded-lg p-2 flex-1"
           onPress={handleSubmit(onSubmit)}
         >
-          <Text className="text-white text-lg self-center">Submit</Text>
+          <Text className="text-white text-lg font-medium self-center">
+            Submit
+          </Text>
         </TouchableOpacity>
       </View>
     </>

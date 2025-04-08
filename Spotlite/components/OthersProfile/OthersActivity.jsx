@@ -78,7 +78,7 @@ const OthersActivity = ({ userId }) => {
             <OtherUserPostExcerpt postId={latestPostId} />
 
             <TouchableOpacity
-              className="flex flex-row py-1 items-center justify-center"
+              className="flex flex-row items-center justify-center px-4 py-2"
               onPress={() =>
                 router.push({
                   pathname: "(app)/(display-posts)/display-other-user-posts",
@@ -86,12 +86,14 @@ const OthersActivity = ({ userId }) => {
                 })
               }
             >
-              <Text className="font-bold text-[16px] mr-2">View all posts</Text>
-              <AntDesign name="arrowright" size={18} color="black" />
+              <Text className="font-medium text-gray-600 text-base mr-2">
+                View all posts
+              </Text>
+              <AntDesign name="arrowright" size={18} color="#4b5563" />
             </TouchableOpacity>
           </>
         ) : (
-          <Text className="text-lg px-4 self-center font-semibold">
+          <Text className="text-base text-gray-600 px-4 py-2 self-center font-medium ">
             No posts yet
           </Text>
         );
@@ -102,7 +104,7 @@ const OthersActivity = ({ userId }) => {
             <OtherUserEventExcerpt eventId={latestEventId} />
 
             <TouchableOpacity
-              className="flex flex-row py-1 items-center justify-center"
+              className="flex flex-row px-4 py-2 items-center justify-center "
               onPress={() =>
                 router.push({
                   pathname: "(app)/(display-events)/display-other-user-events",
@@ -110,21 +112,21 @@ const OthersActivity = ({ userId }) => {
                 })
               }
             >
-              <Text className="font-bold text-[16px] mr-2">
+              <Text className="font-medium text-gray-600 text-base mr-2">
                 View all events
               </Text>
-              <AntDesign name="arrowright" size={18} color="black" />
+              <AntDesign name="arrowright" size={18} color="#4b5563" />
             </TouchableOpacity>
           </>
         ) : (
-          <Text className="text-lg px-4 self-center font-semibold">
+          <Text className="text-base text-gray-600 px-4 py-2 self-center font-medium">
             No events yet
           </Text>
         );
 
       default:
         return (
-          <Text className="px-4 self-center font-bold text-lg">
+          <Text className="text-base text-gray-600 px-4 py-2 self-center font-medium">
             No activity yet!
           </Text>
         );
@@ -132,18 +134,20 @@ const OthersActivity = ({ userId }) => {
   };
 
   return (
-    <View className="bg-white mb-2">
+    <View className="bg-white mb-3">
       <View className="px-4 py-3">
-        <Text className="font-rregular font-bold text-xl mb-4">Activity</Text>
+        <Text className="text-gray-800 font-semibold text-xl mb-3">
+          Activity
+        </Text>
         <View className="flex flex-row">
           <TouchableOpacity
-            className={`py-2 px-3 mr-4 rounded-2xl bg-gray-200 ${
-              activeTab === "Posts" && "bg-sky-600"
+            className={`px-3 py-1 mr-4 rounded-2xl bg-gray-200 ${
+              activeTab === "Posts" && "bg-sky-600 border border-sky-600"
             }`}
             onPress={() => setActiveTab("Posts")}
           >
             <Text
-              className={`font-rregular font-bold text-[16px] ${
+              className={`text-sm font-medium  ${
                 activeTab === "Posts" && "text-white"
               }`}
             >
@@ -152,13 +156,13 @@ const OthersActivity = ({ userId }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className={`py-2 px-3 mr-4 rounded-2xl bg-gray-200 ${
-              activeTab === "Events" && "bg-sky-600"
+            className={`px-3 py-1 mr-4 rounded-2xl bg-gray-200 ${
+              activeTab === "Events" && "bg-sky-600  border border-sky-600 "
             }`}
             onPress={() => setActiveTab("Events")}
           >
             <Text
-              className={`font-rregular font-bold text-[16px] ${
+              className={`text-sm font-medium ${
                 activeTab === "Events" && "text-white"
               }`}
             >
@@ -168,7 +172,8 @@ const OthersActivity = ({ userId }) => {
         </View>
       </View>
 
-      <View className="border-t-2 border-gray-50 py-2">
+      <View className="border-t-2 border-gray-50">
+        {/* <View className="border-t-2 border-gray-50 py-2"> */}
         {renderComponent()}
       </View>
     </View>

@@ -26,6 +26,23 @@ class PostMediaSerializer(serializers.ModelSerializer):
         return Comments.objects.filter(post_media=obj).count()
 
 
+class PostMediaSerializerWeb(serializers.ModelSerializer):
+    like_count = serializers.SerializerMethodField()
+    comment_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PostMedia
+        fields = ['id', 'media_file', 'post', 'like_count','comment_count']
+    
+    def get_like_count(self, obj):
+        return Likes.objects.filter(post_media=obj).count()
+
+   
+
+    def get_comment_count(self, obj):
+        return Comments.objects.filter(post_media=obj).count()
+
+
 
 
 class PostsSerializer(serializers.ModelSerializer):
@@ -33,6 +50,7 @@ class PostsSerializer(serializers.ModelSerializer):
     uploaded_files = serializers.ListField(child=serializers.FileField(max_length=100000, allow_empty_file=True), required=False)
 
     display_name = serializers.CharField(source='user.userprofile.display_name', read_only=True)
+    primary_interest = serializers.CharField(source='user.userprofile.primary_interest', read_only=True)
     profile_pic = serializers.SerializerMethodField()
     user_id = serializers.IntegerField(source='user.id', read_only=True)
 
@@ -43,7 +61,7 @@ class PostsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'user', 'user_id', 'display_name', 'profile_pic', 'text', 'created_at', 'media_files', 'uploaded_files','like_count','is_liked','comment_count','content_type']
+        fields = ['id', 'user', 'user_id', 'display_name', 'primary_interest', 'profile_pic', 'text', 'created_at', 'media_files', 'uploaded_files','like_count','is_liked','comment_count','content_type']
 
 
     def get_profile_pic(self, obj):
@@ -76,6 +94,43 @@ class PostsSerializer(serializers.ModelSerializer):
                 PostMedia.objects.create(post=post, media_file=file)
         
         return post
+
+class PostsSerializerWeb(serializers.ModelSerializer):
+    media_files =  PostMediaSerializerWeb(many=True, read_only=True)
+    uploaded_files = serializers.ListField(child=serializers.FileField(max_length=100000, allow_empty_file=True), required=False)
+
+    display_name = serializers.CharField(source='user.userprofile.display_name', read_only=True)
+    primary_interest = serializers.CharField(source='user.userprofile.primary_interest', read_only=True)
+    profile_pic = serializers.SerializerMethodField()
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+
+    like_count = serializers.SerializerMethodField()
+    comment_count = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = ['id', 'user', 'user_id', 'display_name', 'primary_interest', 'profile_pic', 'text', 'created_at', 'media_files', 'uploaded_files','like_count','comment_count','content_type']
+
+
+    def get_profile_pic(self, obj):
+        request = self.context.get('request')
+        profile_pic_url = obj.user.userprofile.profile_pic.url
+        return request.build_absolute_uri(profile_pic_url)
+
+    def get_like_count(self, obj):
+        return Likes.objects.filter(post=obj).count()
+    
+    
+
+    def get_comment_count(self, obj):
+        return Comments.objects.filter(post=obj).count()
+
+    def get_content_type(self, obj):
+        return "post"
+
+
+    
 
         
 class LikeSerializer(serializers.ModelSerializer):

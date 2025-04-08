@@ -140,6 +140,30 @@ export const unfollow = createAsyncThunk(
   }
 );
 
+export const removeFollower = createAsyncThunk(
+  "userConnections/removeFollower",
+  async ({ userId }, { rejectWithValue }) => {
+    try {
+      const response = await instance.delete(
+        `/connections/remove-follower/${userId}/`,
+        null,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const userConnectionsSlice = createSlice({
   name: "userConnection",
   initialState,
@@ -195,6 +219,37 @@ const userConnectionsSlice = createSlice({
         // state.unFollowError = null;
       })
       .addCase(unfollow.rejected, (state, action) => {
+        // state.unFollowStatus = "failed";
+        // state.unFollowError = action.error.message;
+        // console.log("UnFollow Error:", state.unFollowError);
+      })
+
+      .addCase(removeFollower.pending, (state, action) => {
+        // state.unFollowStatus = "loading";
+      })
+      .addCase(removeFollower.fulfilled, (state, action) => {
+        // state.unFollowStatus = "succeeded";
+        // userConnectionsAdapter.setOne(state, action.payload);
+        // console.log(
+        //   "Following list from adapter:",
+        //   userConnectionsAdapter.getSelectors().selectAll(state)
+        // );
+        // state.unFollowError = null;
+        const { userId } = action.meta.arg; // Extract userId
+        // console.log("I am in remove follower fulfilled: ", userId);
+        // console.log(
+        //   "Follower list from adapter:",
+        //   state.userFollowers.entities
+        // );
+        const entityId = Object.keys(state.userFollowers.entities).find(
+          (key) => state.userFollowers.entities[key].user_id === userId
+        );
+
+        if (entityId) {
+          userFollowersAdapter.removeOne(state.userFollowers, entityId);
+        }
+      })
+      .addCase(removeFollower.rejected, (state, action) => {
         // state.unFollowStatus = "failed";
         // state.unFollowError = action.error.message;
         // console.log("UnFollow Error:", state.unFollowError);

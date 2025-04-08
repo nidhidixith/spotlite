@@ -21,14 +21,14 @@ const Toolbar = () => {
             setactive(!active);
           }}
         >
-          <FontAwesome name="plus-square" size={22} color="black" />
+          <FontAwesome name="plus-square" size={22} color="#333333" />
         </TouchableOpacity>
 
         <TouchableOpacity
           className="px-3"
           onPress={() => router.push("(app)/(menu)/menu")}
         >
-          <FontAwesome name="bars" size={22} color="black" />
+          <FontAwesome name="bars" size={22} color="#333333" />
         </TouchableOpacity>
       </View>
 
@@ -49,8 +49,19 @@ const Toolbar = () => {
               }}
               className="flex flex-row px-4 py-2 items-center"
             >
-              <MaterialIcons name="post-add" marginRight={10} size={26} />
-              <Text className="flex-1 text-lg">Post</Text>
+              {/* <MaterialIcons
+                name="post-add"
+                marginRight={10}
+                color="#333333"
+                size={22}
+              /> */}
+              <FontAwesome
+                name="edit"
+                size={20}
+                color="#333333"
+                marginRight={12}
+              />
+              <Text className="text-base">Post</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
@@ -59,17 +70,40 @@ const Toolbar = () => {
               }}
               className="flex flex-row px-4 py-2 items-center"
             >
-              <MaterialIcons name="event" marginRight={10} size={24} />
-              <Text className="text-lg">Event</Text>
+              {/* <MaterialIcons
+                name="event"
+                marginRight={10}
+                color="#333333"
+                size={22}
+              /> */}
+              <FontAwesome
+                name="calendar"
+                size={20}
+                color="#333333"
+                marginRight={12}
+              />
+
+              <Text className="text-base">Event</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="border-t-2 border-gray-200 flex flex-row px-4 py-2 items-center"
+              className="border-t-2 border-gray-200 flex flex-row px-4 py-2 items-center self-center"
               onPress={() => {
                 setactive(!active);
               }}
             >
-              <AntDesign name="close" size={16} marginRight={10} color="red" />
-              <Text className="self-center  text-red-500">Close</Text>
+              <AntDesign
+                name="close"
+                size={14}
+                marginRight={12}
+                color="#ef4444"
+              />
+              {/* <FontAwesome
+                name="close"
+                size={20}
+                color="#ef4444"
+                marginRight={12}
+              /> */}
+              <Text className=" text-sm text-red-500">Close</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -93,8 +127,8 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: "black",
+    // alignItems: "center",
+    // justifyContent: "center",
+    // borderColor: "black",
   },
 });

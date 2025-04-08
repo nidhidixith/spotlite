@@ -9,7 +9,7 @@ import {
   selectAllSpecificPosts,
 } from "../../../slices/postsSlice";
 
-import GeneralPostExcerpt from "../../../components/Posts/GeneralPostExcerpt";
+import GeneralUserPostExcerpt from "../../../components/Posts/GeneralUserPostExcerpt";
 import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
 import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 
@@ -52,7 +52,7 @@ const PostDetails = () => {
     return <ErrorDisplayComponent />;
   }
 
-  return <GeneralPostExcerpt post={userPost} />;
+  return <GeneralUserPostExcerpt post={userPost} />;
 };
 
 export default PostDetails;

@@ -3,7 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 
 const instance = axios.create({
-  baseURL: "http://192.168.1.35:8000/api",
+  baseURL: "http://192.168.1.33:8000/api",
 });
 
 const logoutUser = async () => {
@@ -58,7 +58,7 @@ instance.interceptors.response.use(
       if (refreshToken) {
         try {
           const response = await axios.post(
-            "http://192.168.1.35:8000/api/token/refresh/",
+            "http://192.168.1.33:8000/api/token/refresh/",
             { refresh: refreshToken }
           );
 

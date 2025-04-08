@@ -75,8 +75,10 @@ const EditBio = () => {
         backgroundColor: "white",
       }}
     >
-      <View className="mb-6">
-        <Text className="text-lg font-bold mb-4">Bio/Description *</Text>
+      <View className="">
+        <Text className="text-gray-600 font-semibold text-base mb-2">
+          Bio/Description *
+        </Text>
 
         <Controller
           control={control}
@@ -92,7 +94,7 @@ const EditBio = () => {
             <TextInput
               multiline
               numberOfLines={8}
-              className="border border-gray-200 px-2 rounded-lg"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -101,18 +103,18 @@ const EditBio = () => {
           name="bio"
         />
         {errors.bio && (
-          <Text className="text-red-500 mb-2">{errors.bio.message}</Text>
+          <Text className="text-red-500 mt-1">{errors.bio.message}</Text>
         )}
       </View>
 
       <TouchableOpacity
-        className={`bg-sky-600 py-1 rounded-lg mt-6 ${
+        className={`border border-sky-600 bg-sky-600 rounded-lg p-1 mt-6 ${
           isDirty ? "" : "opacity-50"
         }`}
         onPress={handleSubmit(onSubmit)}
         disabled={!isDirty}
       >
-        <Text className="text-white text-lg self-center font-semibold">
+        <Text className="text-base text-white self-center font-medium">
           Save
         </Text>
       </TouchableOpacity>

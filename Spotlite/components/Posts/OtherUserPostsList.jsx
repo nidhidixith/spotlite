@@ -82,7 +82,13 @@ const OtherUserPostsList = ({ userId }) => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.type}-${item.id}`}
         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
-        ListEmptyComponent={<EmptyState message="No posts yet!" />}
+        ListEmptyComponent={
+          <EmptyState
+            message="No Posts to Show"
+            details="This user hasn’t shared any posts yet. Check back later!"
+            icon="file-text"
+          />
+        }
         contentContainerStyle={
           posts.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
         }

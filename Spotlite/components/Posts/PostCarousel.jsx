@@ -35,6 +35,7 @@ const PostCarousel = ({ mediaFiles }) => {
     return (
       <TouchableOpacity
         activeOpacity={0.8}
+        className=""
         onPress={() => {
           router.push({
             pathname: "(app)/(full-media-view)/post-full-view",

@@ -26,6 +26,7 @@ class AdditionalLinkSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+    user_id = serializers.CharField(source='user.id', read_only=True)
     profile_pic = serializers.ImageField(use_url=True, required=False)
     social_links = SocialLinkSerializer(many=True, read_only=True)
     additional_links = AdditionalLinkSerializer(many=True, read_only=True)
@@ -41,7 +42,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id','user','username', 'first_name', 'last_name', 'display_name', 'date_of_birth', 'location','bio','social_links','additional_links','primary_interest', 'areas_of_interest', 'profile_pic','no_of_posts','follower_count','following_count','is_following','questions_and_answers']
+        fields = ['id','user','user_id','username', 'first_name', 'last_name', 'display_name', 'date_of_birth', 'location','bio','social_links','additional_links','primary_interest', 'areas_of_interest', 'profile_pic','no_of_posts','follower_count','following_count','is_following','questions_and_answers']
 
     def get_profile_pic(self, obj):
         request = self.context.get('request')
@@ -66,6 +67,62 @@ class UserProfileSerializer(serializers.ModelSerializer):
             current_user = request.user
             return UserRelation.objects.filter(follower=current_user, following=obj.user).exists()
         return False
+
+    def get_questions_and_answers(self, obj):
+        answers = Answer.objects.filter(user_profile=obj).select_related('question')
+        # return [
+        #     {
+        #         "question": QuestionSerializer(answer.question).data,
+        #         "answer": AnswerSerializer(answer).data
+        #     }
+        #     for answer in answers
+        # ]
+        return [
+        {
+            "question_id": answer.question.id,
+            "question_text": answer.question.text,  # Displaying the question text
+            "answer_text": answer.answer  # Displaying the answer
+        }
+        for answer in answers
+    ]
+
+
+class UserProfileSerializerForWeb(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    user_id = serializers.CharField(source='user.id', read_only=True)
+    profile_pic = serializers.ImageField(use_url=True, required=False)
+    social_links = SocialLinkSerializer(many=True, read_only=True)
+    additional_links = AdditionalLinkSerializer(many=True, read_only=True)
+    areas_of_interest = serializers.ListField(child=serializers.CharField(), required=False)
+
+    no_of_posts = serializers.SerializerMethodField()
+    
+    follower_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    questions_and_answers = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = ['id','user','user_id','username', 'first_name', 'last_name', 'display_name', 'date_of_birth', 'location','bio','social_links','additional_links','primary_interest', 'areas_of_interest', 'profile_pic','no_of_posts','follower_count','following_count','questions_and_answers']
+
+    def get_profile_pic(self, obj):
+        request = self.context.get('request')
+        if obj.profile_pic:
+            profile_pic_url = obj.profile_pic.url
+            return request.build_absolute_uri(profile_pic_url)
+        return None
+
+    def get_no_of_posts(self, obj):
+        # Counting posts for the user associated with this profile
+        return Post.objects.filter(user=obj.user).count()
+
+    def get_follower_count(self, obj):
+        return UserRelation.objects.filter(following=obj.user).count()
+
+    def get_following_count(self, obj):
+        return UserRelation.objects.filter(follower=obj.user).count()
+
+    
 
     def get_questions_and_answers(self, obj):
         answers = Answer.objects.filter(user_profile=obj).select_related('question')

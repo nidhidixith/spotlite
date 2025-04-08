@@ -11,6 +11,7 @@ import {
 import GeneralEventDetail from "../../../components/Events/GeneralEventDetail";
 import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
 import LoadingIndicator from "../../../components/Others/LoadingIndicator";
+import GeneralUserEventDetail from "../../../components/Events/GeneralUserEventDetail";
 
 const EventDetails = () => {
   let { eventId } = useLocalSearchParams();
@@ -53,7 +54,7 @@ const EventDetails = () => {
     return <ErrorDisplayComponent />;
   }
 
-  return <GeneralEventDetail event={userEvent} />;
+  return <GeneralUserEventDetail event={userEvent} />;
 };
 
 export default EventDetails;

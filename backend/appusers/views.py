@@ -16,7 +16,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from .models import UserProfile, SocialLink, AdditionalLink, Question, Answer
-from .serializers import UserProfileSerializer, SocialLinkSerializer, AdditionalLinkSerializer,QuestionSerializer, AnswerSerializer
+from .serializers import UserProfileSerializer, SocialLinkSerializer, AdditionalLinkSerializer,QuestionSerializer, AnswerSerializer, UserProfileSerializerForWeb
 
 
 @api_view(['POST'])
@@ -205,6 +205,15 @@ def get_user_profile(request):
 def get_other_user_profile(request, userId):
     user_profile = get_object_or_404(UserProfile, user__id=userId)
     serializer = UserProfileSerializer(user_profile,context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_profile(request, userId):
+    user_profile = get_object_or_404(UserProfile, user__id=userId)
+    serializer = UserProfileSerializerForWeb(user_profile,context={'request': request})
+    print("Get profile data: ",serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

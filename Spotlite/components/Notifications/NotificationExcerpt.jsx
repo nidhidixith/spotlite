@@ -85,10 +85,10 @@ const NotificationExcerpt = React.memo(({ notificationId }) => {
           resizeMode="cover"
         />
         <View className="flex-1">
-          <Text className="text-[14px]">
-            <Text className="font-semibold">{notification?.sender_name} </Text>
+          <Text className="text-sm text-gray-800">
+            <Text className="font-medium">{notification?.sender_name} </Text>
             {notification?.message}.{" "}
-            <Text className="text-[12px] italic text-gray-600">
+            <Text className="text-xs italic text-gray-500">
               <TimeAgo timestamp={notification?.created_at} />
             </Text>
           </Text>

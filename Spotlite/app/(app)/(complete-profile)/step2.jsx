@@ -78,12 +78,14 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
 
   return (
     <>
-      <Text className="text-2xl font-semibold text-center mb-5">
+      <Text className="text-2xl text-gray-800 font-semibold text-center mb-5">
         Basic Details
       </Text>
 
       <View className="mb-3">
-        <Text className="mb-2 font-semibold text-[16px]">First Name *</Text>
+        <Text className="mb-2 font-semibold text-sm text-gray-600">
+          First Name *
+        </Text>
         <Controller
           control={control}
           rules={{
@@ -95,22 +97,25 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              className="rounded-xl border border-gray-200 px-2 py-2"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               placeholder="John"
+              placeholderTextColor="#9CA3AF"
             />
           )}
           name="firstName"
         />
         {errors.firstName && (
-          <Text className="text-red-500 mb-2">{errors.firstName.message}</Text>
+          <Text className="text-red-500 mt-1">{errors.firstName.message}</Text>
         )}
       </View>
 
       <View className="mb-3">
-        <Text className="mb-2 font-semibold text-[16px]">Last Name *</Text>
+        <Text className="mb-2 font-semibold text-sm text-gray-600">
+          Last Name *
+        </Text>
         <Controller
           control={control}
           rules={{
@@ -122,22 +127,25 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              className="rounded-xl border border-gray-200 px-2 py-2"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               placeholder="Doe"
+              placeholderTextColor="#9CA3AF"
             />
           )}
           name="lastName"
         />
         {errors.lastName && (
-          <Text className="text-red-500 mb-2">{errors.lastName.message}</Text>
+          <Text className="text-red-500 mt-1">{errors.lastName.message}</Text>
         )}
       </View>
 
       <View className="mb-3">
-        <Text className="mb-2 font-semibold text-[16px]">Display Name *</Text>
+        <Text className="mb-2 font-semibold text-sm text-gray-600">
+          Display Name *
+        </Text>
         <Controller
           control={control}
           rules={{
@@ -149,24 +157,27 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              className="rounded-xl border border-gray-200 px-2 py-2"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               placeholder="John Doe"
+              placeholderTextColor="#9CA3AF"
             />
           )}
           name="displayName"
         />
         {errors.displayName && (
-          <Text className="text-red-500 mb-2">
+          <Text className="text-red-500 mt-1">
             {errors.displayName.message}
           </Text>
         )}
       </View>
 
       <View className="mb-3">
-        <Text className="mb-2 font-semibold text-[16px]">Date of birth *</Text>
+        <Text className="mb-2 font-semibold text-sm text-gray-600">
+          Date of birth *
+        </Text>
         <Controller
           control={control}
           name="dob"
@@ -190,10 +201,19 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           render={({ field: { onChange, value } }) => (
             <>
               <TouchableOpacity
-                className="flex flex-row items-center border border-gray-200 rounded-xl px-2 py-3"
+                className="flex flex-row items-center border border-gray-200 rounded-lg px-3 py-3 focus:border-sky-500"
+                // className="rounded-lg border border-gray-200 px-2 py-2 text-gray-900 text-[16px] focus:border-sky-500"
                 onPress={showDatepickerHandler}
               >
-                <Text className="flex-1">
+                {/* <Text className="text-[16px] text-gray-900 flex-1">
+                  {value ? new Date(value).toLocaleDateString() : "Select Date"}
+                </Text> */}
+
+                <Text
+                  className={`text-sm flex-1 ${
+                    value ? "text-gray-900" : "text-gray-400"
+                  }`}
+                >
                   {value ? new Date(value).toLocaleDateString() : "Select Date"}
                 </Text>
                 <AntDesign name="calendar" size={16} color="black" />
@@ -228,12 +248,12 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           )}
         />
         {errors.dob && (
-          <Text className="text-red-500 mb-2">{errors.dob.message}</Text>
+          <Text className="text-red-500 mt-1">{errors.dob.message}</Text>
         )}
       </View>
 
       <View className="mb-3">
-        <Text className="mb-2 font-semibold text-[16px]">
+        <Text className="mb-2 font-semibold text-sm text-gray-600">
           Location (Optional)
         </Text>
         <Controller
@@ -246,22 +266,23 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              className="rounded-xl border border-gray-200 px-2 py-2"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               placeholder="Your location"
+              placeholderTextColor="#9CA3AF"
             />
           )}
           name="location"
         />
         {errors.location && (
-          <Text className="text-red-500 mb-2">{errors.location.message}</Text>
+          <Text className="text-red-500 mt-1">{errors.location.message}</Text>
         )}
       </View>
 
       <View className="mb-3">
-        <Text className="mb-2 font-semibold text-[16px]">
+        <Text className="mb-2 font-semibold text-sm text-gray-600">
           Your Profession/Passion *
         </Text>
         <Controller
@@ -275,24 +296,25 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              className="rounded-xl border border-gray-200 px-2 py-2"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              placeholder="Singer, Dancer, Chef, Painter, Photographer..."
+              placeholder="Singer, Dancer, Chef, Vlogger..."
+              placeholderTextColor="#9CA3AF"
             />
           )}
           name="primary_interest"
         />
         {errors.primary_interest && (
-          <Text className="text-red-500 mb-2">
+          <Text className="text-red-500 mt-1">
             {errors.primary_interest.message}
           </Text>
         )}
       </View>
 
       <View className="mb-3">
-        <Text className="mb-2 font-semibold text-[16px]">
+        <Text className="mb-2 font-semibold text-sm text-gray-600">
           Bio/Description *
         </Text>
         <Controller
@@ -308,34 +330,40 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
             <TextInput
               multiline
               numberOfLines={8}
-              className="rounded-xl border border-gray-200 px-2 py-2"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
+              placeholder="Your bio"
+              placeholderTextColor="#9CA3AF"
             />
           )}
           name="bio"
         />
         {errors.bio && (
-          <Text className="text-red-500 mb-2">{errors.bio.message}</Text>
+          <Text className="text-red-500 mt-1">{errors.bio.message}</Text>
         )}
       </View>
 
-      <Text className="font-semibold">* Mandatory fields</Text>
+      <Text className="text-sm italic text-sky-600">* Mandatory fields</Text>
 
       <View className="flex flex-row justify-between gap-x-4 mt-5">
         <TouchableOpacity
-          className="bg-sky-600 rounded-lg p-2 flex-1"
+          className="border border-sky-600 rounded-lg p-2 flex-1"
           onPress={handlePrevStep}
         >
-          <Text className="text-white text-lg self-center">Prev</Text>
+          <Text className="text-sky-600 text-lg font-medium self-center">
+            Prev
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="bg-sky-600 rounded-lg p-2 flex-1"
           onPress={handleSubmit(onSubmit)}
         >
-          <Text className="text-white text-lg self-center">Next</Text>
+          <Text className="text-white text-lg font-medium self-center">
+            Next
+          </Text>
         </TouchableOpacity>
       </View>
     </>

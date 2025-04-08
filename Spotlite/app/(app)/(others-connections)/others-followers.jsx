@@ -55,7 +55,13 @@ const MyFollowers = () => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.id}`}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        ListEmptyComponent={<EmptyState message="No followers yet!" />}
+        ListEmptyComponent={
+          <EmptyState
+            message="No Followers Yet"
+            details="Be the first to follow!"
+            icon="users"
+          />
+        }
         contentContainerStyle={
           userFollowers.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
         }

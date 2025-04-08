@@ -14,9 +14,12 @@ import Step3 from "./step3";
 import Step4 from "./step4";
 import Step5 from "./step5";
 import Step6 from "./step6";
+import { useToast } from "../../../contexts/ToastContext";
 
 const CompleteProfile = () => {
   const dispatch = useDispatch();
+
+  const { showToast } = useToast();
 
   const [formData, setFormData] = useState({});
   const [currentStep, setCurrentStep] = useState(1);
@@ -154,7 +157,8 @@ const CompleteProfile = () => {
         completeUserProfile(profileData)
       ).unwrap();
       if (response) {
-        Alert.alert("Profile Completion successful");
+        // Alert.alert("Profile Completion successful");
+        showToast("Profile completion successful", "success");
         router.push("/(app)/(tabs)/home");
       }
     } catch (err) {

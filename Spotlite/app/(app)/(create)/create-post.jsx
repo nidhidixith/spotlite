@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addNewPost } from "../../../slices/postsSlice";
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useToast } from "../../../contexts/ToastContext";
 
 const CreatePost = () => {
   const {
@@ -28,6 +29,8 @@ const CreatePost = () => {
   } = useForm();
 
   const dispatch = useDispatch();
+
+  const { showToast } = useToast();
 
   const [addRequestStatus, setAddRequestStatus] = useState("idle");
 
@@ -70,8 +73,9 @@ const CreatePost = () => {
         const response = await dispatch(addNewPost(formData)).unwrap();
         setText("");
         setMediaFiles({});
-        Alert.alert("Post successful");
-        // router.push("(app)/(tabs)/home");
+        // Alert.alert("Post successful");
+        showToast("Post created successfully!", "success");
+        router.push("(app)/(display-posts)/display-user-posts");
       } catch (err) {
         // console.error("Failed to save the post: ", err);
         // Alert.alert("Failed to create post");
@@ -146,8 +150,8 @@ const CreatePost = () => {
         <View className="flex-1">
           <TextInput
             multiline
-            className="p-2 flex-1 text-base"
-            placeholder="What's on your mind?"
+            className="p-2 flex-1  text-gray-900 text-sm"
+            placeholder="Share your thoughts?"
             scrollEnabled
             style={{ textAlignVertical: "top" }}
             name="text"
@@ -163,24 +167,24 @@ const CreatePost = () => {
         activeOpacity={0.6}
       >
         <View className="mr-1 px-1">
-          <MaterialIcons name="photo-library" size={24} color="#2AAA8A" />
+          <MaterialIcons name="photo-library" size={22} color="#2AAA8A" />
         </View>
-        <Text className={`text-base mr-2`}>Photo/Video</Text>
+        <Text className={`text-base text-gray-800 mr-2`}>Photo/Video</Text>
         {Object.keys(mediaFiles).length > 0 && (
-          <Text className="text-button-primary">
+          <Text className="text-sky-600 text-sm">
             {Object.keys(mediaFiles).length} files selected
           </Text>
         )}
       </TouchableOpacity>
 
       <TouchableOpacity
-        className={`bg-sky-600 self-end px-3 py-2 m-2 rounded-lg ${
+        className={`bg-sky-600  self-end px-4 py-2 m-2 rounded-lg ${
           canSave ? "" : "opacity-50"
         }`}
         onPress={onSavePostClicked}
         disabled={!canSave}
       >
-        <Text className="text-white font-regular">Post</Text>
+        <Text className=" text-white text-sm font-medium">Post</Text>
       </TouchableOpacity>
     </View>
   );

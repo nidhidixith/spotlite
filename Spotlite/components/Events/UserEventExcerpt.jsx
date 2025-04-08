@@ -51,35 +51,47 @@ const UserEventExcerpt = React.memo(({ eventId }) => {
         >
           {event?.media_files.length != 0 && firstImage != null ? (
             <Image
-              className="w-[70px] h-[70px] rounded-xl mr-4"
+              className="w-[70px] h-[70px] rounded-xl mr-3"
               source={{ uri: firstImage }}
               resizeMode="cover"
             />
           ) : (
             <Image
-              className="w-[70px] h-[70px] rounded-xl mr-4"
+              className="w-[70px] h-[70px] rounded-xl mr-3"
               source={require("../../assets/images/default-event-image.png")}
               resizeMode="cover"
             />
           )}
           <View className="flex-1">
             <Text
-              className=" text-[16px] font-semibold"
-              numberOfLines={2}
+              className=" text-base font-medium text-gray-800"
+              numberOfLines={1}
               ellipsizeMode="tail"
             >
               {event?.event_title}
             </Text>
-            <Text className="font-rregular text-sm">
-              {event?.event_date} {event?.event_time}
-            </Text>
+
+            {event?.event_date || event?.event_time ? (
+              <Text className="text-sm text-gray-800">
+                {event?.event_date} {event?.event_time}
+              </Text>
+            ) : (
+              <Text
+                className="text-sm text-gray-800"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {event?.event_domain} event
+              </Text>
+            )}
+
             {event?.interested_count > 0 ? (
-              <Text className="font-rregular text-sm text-gray-500">
+              <Text className="text-sm text-gray-500">
                 {event?.interested_count} interested
               </Text>
             ) : (
               <Text
-                className="font-rregular text-sm text-gray-500"
+                className="text-sm text-gray-500"
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
@@ -87,8 +99,9 @@ const UserEventExcerpt = React.memo(({ eventId }) => {
               </Text>
             )}
           </View>
+
           <TouchableOpacity className="ml-auto" onPress={handleEventMenuClick}>
-            <Entypo name="dots-three-vertical" size={24} color="black" />
+            <Entypo name="dots-three-vertical" size={20} color="#1f2937" />
           </TouchableOpacity>
         </TouchableOpacity>
 

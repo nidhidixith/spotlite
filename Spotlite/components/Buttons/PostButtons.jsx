@@ -70,12 +70,19 @@ const PostButtons = ({ post }) => {
             </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={handleLike} activeOpacity={0.5}>
-              <AntDesign name="like2" size={22} color="black" marginRight={5} />
+              <AntDesign
+                name="like2"
+                size={22}
+                color="#1f2937"
+                marginRight={5}
+              />
             </TouchableOpacity>
           )}
 
           <TouchableOpacity onPress={handleGetLikes} activeOpacity={0.5}>
-            <Text>{postLikes > 0 && `${postLikes} likes`}</Text>
+            <Text className="text-gray-800 text-sm">
+              {postLikes > 0 && `${postLikes} likes`}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -84,12 +91,14 @@ const PostButtons = ({ post }) => {
             <FontAwesome
               name="comment-o"
               size={22}
-              color="black"
+              color="#1f2937"
               marginRight={5}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleGetComments} activeOpacity={0.5}>
-            <Text>{postComments > 0 && `${postComments} comments`}</Text>
+            <Text className="text-gray-800 text-sm">
+              {postComments > 0 && `${postComments} comments`}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -98,6 +98,7 @@ const DisplayProfile = () => {
 
   return (
     <ScrollView
+      className="bg-gray-100"
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }

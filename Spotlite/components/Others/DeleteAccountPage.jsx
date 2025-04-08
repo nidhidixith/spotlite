@@ -66,60 +66,62 @@ const DeleteAccountPage = () => {
 
   return (
     <View className="flex-1 p-4 bg-gray-50">
-      <Text className="font-bold text-2xl self-center mb-2">
+      <Text className="font-bold text-2xl text-center mb-1 text-gray-800">
         We're sad to see you go...
       </Text>
       <Text className="text-base text-center text-gray-700 mb-4">
         Are you sure you want to delete your Spotlite account?
       </Text>
 
-      <View className="mb-5">
-        <Text className="text-lg font-bold mb-2">
+      <View className="mb-6">
+        <Text className="text-lg font-bold mb-2 text-gray-800">
           Why not just take a break?
         </Text>
-        <Text className="text-[14px] text-gray-700 mb-4">
+        <Text className="text-sm text-gray-700 mb-4">
           Sometimes, all we need is a little time off. Instead of deleting your
           account, why not log out for a while? Your account will be here
           waiting for you when you're ready to return.
         </Text>
         <TouchableOpacity
-          className="bg-sky-600 p-2 rounded-lg items-center"
+          className="border border-sky-600  p-2 rounded-lg items-center"
           onPress={() => handleLogout(dispatch, router)}
         >
-          <Text className="text-white font-bold">Log Out Instead</Text>
+          <Text className="text-sky-600 font-semibold">Log Out Instead</Text>
         </TouchableOpacity>
       </View>
 
-      <View className="mb-5">
-        <Text className="text-lg font-bold mb-2">Here's what you'll miss</Text>
-        <Text className="text-[14px] text-gray-700 mb-1">
+      <View className="mb-4">
+        <Text className="text-lg font-bold mb-2 text-gray-800">
+          Here's what you'll miss
+        </Text>
+        <Text className="text-sm text-gray-700 mb-1">
           Your Spotlite network: Connections with creators and followers.
         </Text>
-        <Text className="text-[14px] text-gray-700 mb-1">
+        <Text className="text-sm text-gray-700 mb-1">
           Your content: All your posts, events, and comments will be permanently
           deleted.
         </Text>
-        <Text className="text-[14px] text-gray-700 mb-1">
+        <Text className="text-sm text-gray-700 mb-1">
           Your profile: A unique reflection of your identity and achievements,
           which will be permanently lost.
         </Text>
-        <Text className="text-[14px] text-gray-700 mb-1">
+        <Text className="text-sm text-gray-700 mb-1">
           Notifications: Stay updated on trending posts and events.
         </Text>
       </View>
 
       <TouchableOpacity
-        className="bg-red-500 p-2 rounded-lg items-center mb-1"
+        className="border border-red-500 p-2 rounded-lg items-center mb-3"
         onPress={handleDeleteAccount}
       >
-        <Text className="text-white font-bold">Delete My Account</Text>
+        <Text className="font-medium text-red-500">Delete My Account</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        className=" p-2 items-center"
+        className="bg-sky-600 p-2 items-center rounded-lg"
         onPress={() => router.push("(app)/(tabs)/home")}
       >
-        <Text className="text-sky-600 font-bold">Keep My Account</Text>
+        <Text className="text-white font-medium">Keep My Account</Text>
       </TouchableOpacity>
     </View>
   );

@@ -73,8 +73,9 @@ const UserPostsList = () => {
         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
         ListEmptyComponent={
           <EmptyState
-            message="No posts yet!"
-            details="Create posts to share your moments"
+            message="No posts yet"
+            details="Start posting to engage with others!"
+            icon="file-text"
           />
         }
         contentContainerStyle={

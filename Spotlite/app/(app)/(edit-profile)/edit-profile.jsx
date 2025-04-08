@@ -25,67 +25,75 @@ const EditProfile = () => {
       }}
     >
       <View className="border-b-2 border-gray-100 pb-3">
-        <View className="flex flex-row justify-between mb-4">
-          <Text className="text-xl font-bold">Profile Picture</Text>
+        <View className="flex flex-row justify-between">
+          <Text className="text-gray-800 font-semibold text-lg">
+            Profile Picture
+          </Text>
+
+          {/* <Text className="text-xl font-bold">Profile Picture</Text> */}
           <TouchableOpacity
             onPress={() =>
               router.push("(app)/(edit-profile)/edit-profile-picture")
             }
           >
-            <Text className="text-lg text-sky-600">Edit</Text>
+            <Text className="text-base text-sky-600">Edit</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <View className="border-b-2 border-gray-100  py-3">
-        <View className="flex flex-row justify-between mb-4">
-          <Text className="text-xl font-bold">Details</Text>
+        <View className="flex flex-row justify-between mb-2">
+          <Text className="text-gray-800 font-semibold text-lg">Details</Text>
+
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-details")}
           >
-            <Text className="text-lg text-sky-600">Edit</Text>
+            <Text className="text-base text-sky-600">Edit</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
           onPress={() => router.push("(app)/(edit-profile)/edit-details")}
+          className="mb-2"
         >
-          <Text className="text-lg text-gray-500 mb-2">Display name</Text>
+          <Text className="text-base text-gray-500">Display name</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => router.push("(app)/(edit-profile)/edit-details")}
+          className="mb-2"
         >
-          <Text className="text-lg text-gray-500 mb-2">
+          <Text className="text-base text-gray-500">
             Primary interest/Profession
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => router.push("(app)/(edit-profile)/edit-details")}
+          className="mb-2"
         >
-          <Text className="text-lg text-gray-500 mb-2">Location</Text>
+          <Text className="text-base text-gray-500">Location</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => router.push("(app)/(edit-profile)/edit-details")}
         >
-          <Text className="text-lg text-gray-500">Date of birth</Text>
+          <Text className="text-base text-gray-500">Date of birth</Text>
         </TouchableOpacity>
       </View>
 
       <View className="border-b-2 border-gray-100  py-3">
-        <View className="flex flex-row justify-between mb-4">
-          <Text className="text-xl font-bold">Bio</Text>
+        <View className="flex flex-row justify-between mb-2">
+          <Text className="text-gray-800 font-semibold text-lg">Bio</Text>
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-bio")}
           >
-            <Text className="text-lg text-sky-600">Edit</Text>
+            <Text className="text-base text-sky-600">Edit</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
           onPress={() => router.push("(app)/(edit-profile)/edit-bio")}
         >
-          <Text className="text-lg text-gray-500 self-center">
+          <Text className="text-base text-gray-500 self-center">
             Add/Edit your bio
           </Text>
         </TouchableOpacity>
@@ -93,46 +101,48 @@ const EditProfile = () => {
 
       <View className="border-b-2 border-gray-100 py-3">
         <View className="flex flex-row justify-between">
-          <Text className="text-xl font-bold">Social Links</Text>
+          <Text className="text-gray-800 font-semibold text-lg">
+            Social Links
+          </Text>
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-links")}
           >
-            <Text className="text-lg text-sky-600">Edit</Text>
+            <Text className="text-base text-sky-600">Edit</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <View className="border-b-2 border-gray-100 py-3">
         <View className="flex flex-row justify-between">
-          <Text className="text-xl font-bold">Website</Text>
+          <Text className="text-gray-800 font-semibold text-lg">Website</Text>
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-websites")}
           >
-            <Text className="text-lg text-sky-600">Edit</Text>
+            <Text className="text-base text-sky-600">Edit</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <View className="border-b-2 border-gray-100 py-3">
         <View className="flex flex-row justify-between ">
-          <Text className="text-xl font-bold">Interests</Text>
+          <Text className="text-gray-800 font-semibold text-lg">Interests</Text>
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-interests")}
           >
-            <Text className="text-lg text-sky-600">Edit</Text>
+            <Text className="text-base text-sky-600">Edit</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <View className="border-b-2 border-gray-100 py-3">
         <View className="flex flex-row justify-between ">
-          <Text className="text-xl font-bold">Q&As</Text>
+          <Text className="text-gray-800 font-semibold text-lg">Q&As</Text>
           <TouchableOpacity
             onPress={() =>
               router.push("(app)/(edit-profile)/edit-questions-and-answers")
             }
           >
-            <Text className="text-lg text-sky-600">Edit</Text>
+            <Text className="text-base text-sky-600">Edit</Text>
           </TouchableOpacity>
         </View>
       </View>

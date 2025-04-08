@@ -100,25 +100,25 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
 
   return (
     <>
-      <Text className="text-2xl font-semibold text-center mb-5">
+      <Text className="text-2xl text-gray-800 font-semibold text-center mb-5">
         Connect your External Profiles
       </Text>
 
       {/* <TouchableOpacity onPress={handleSubmit(onSkip)}> */}
-      <TouchableOpacity onPress={handleSkip}>
-        <Text className="self-end text-end text-sky-600 text-[16px]">Skip</Text>
+      <TouchableOpacity className="mb-2" onPress={handleSkip}>
+        <Text className="self-end text-end text-sky-600 text-sm">Skip</Text>
       </TouchableOpacity>
 
-      <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
+      <View className="flex flex-row flex-wrap justify-between items-center mb-4">
         {Object.keys(links).map((key) => (
           <TouchableOpacity
             key={key}
             activeOpacity={0.5}
             onPress={() => handleLinkNamePress(links[key].platform)}
-            className="flex flex-row items-center rounded-lg border border-gray-300 m-1 px-3 py-2"
+            className="flex flex-row items-center rounded-lg border border-gray-300 mx-1 my-2 px-2 py-1"
           >
             {links[key].icon}
-            <Text className="text-[14px] ml-1">
+            <Text className="text-sm">
               {links[key].platform.charAt(0).toUpperCase() +
                 links[key].platform.slice(1)}
             </Text>
@@ -128,11 +128,11 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
 
       {/* Section 2: Add Link */}
       {linkName && (
-        <View className="mb-6">
-          <Text className="text-[14px] mb-2 font-medium">
+        <View className="mb-4">
+          <Text className="text-sm mb-2 font-semibold text-gray-600">
             {linkName.charAt(0).toUpperCase() + linkName.slice(1)} link
           </Text>
-          <View className="flex flex-row items-center mb-4">
+          <View className="flex flex-row items-center">
             <Controller
               control={control}
               rules={
@@ -146,7 +146,7 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
               }
               render={({ field: { onChange, onBlur } }) => (
                 <TextInput
-                  className="rounded-lg border border-gray-200 px-3 py-2 flex-1"
+                  className="rounded-lg border border-gray-200 px-3 py-2 flex-1 text-gray-900 text-sm focus:border-sky-500"
                   onBlur={onBlur}
                   onChangeText={(text) => {
                     onChange(text);
@@ -154,6 +154,7 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
                   }}
                   value={linkInput}
                   placeholder={`Add ${linkName} link`}
+                  placeholderTextColor="#9CA3AF"
                 />
               )}
               name={linkName}
@@ -164,7 +165,7 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
               </Text>
             )}
             <TouchableOpacity
-              className={`ml-2 px-4 py-2 rounded-lg ${
+              className={`ml-2 px-2 py-3 rounded-lg ${
                 linkInput ? "bg-sky-500" : "bg-gray-300"
               }`}
               onPress={handleAddLink}
@@ -180,20 +181,20 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
 
       {/* {socialLinks != null && (
         <> */}
-      <Text className="text-base text-sky-600 mb-2 font-semibold">
+      <Text className="text-sm text-sky-600 mb-2 font-semibold">
         Your Links
       </Text>
-      <View className="flex flex-row flex-wrap items-center rounded-lg mb-6">
+      <View className="flex flex-row flex-wrap items-center">
         {socialLinks.map((link) => {
           const platformDetails = links[link.platform] || {};
           return (
             <TouchableOpacity
               key={link.platform}
               onPress={() => removeLink(link.platform)}
-              className="flex flex-row items-center rounded-lg border border-gray-300 m-1 px-3 py-2"
+              className="flex flex-row items-center rounded-lg border border-sky-300  mx-1 my-2 px-2 py-1"
             >
               {platformDetails.icon}
-              <Text className="text-[14px] ml-1">
+              <Text className="text-sm ">
                 {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
               </Text>
               <Text className="text-red-500 ml-2 font-bold">x</Text>
@@ -201,21 +202,24 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
           );
         })}
       </View>
-      {/* </>
-      )} */}
+
       <View className="flex flex-row justify-between gap-x-4 mt-5">
         <TouchableOpacity
-          className="bg-sky-600 rounded-lg p-2 flex-1"
+          className="border border-sky-600 rounded-lg p-2 flex-1"
           onPress={handlePrevStep}
         >
-          <Text className="text-white text-lg self-center">Prev</Text>
+          <Text className="text-sky-600 text-lg font-medium self-center">
+            Prev
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="bg-sky-600 rounded-lg p-2 flex-1"
           onPress={handleSubmit(onSubmit)}
         >
-          <Text className="text-white text-lg self-center">Next</Text>
+          <Text className="text-white text-lg font-medium self-center">
+            Next
+          </Text>
         </TouchableOpacity>
       </View>
     </>

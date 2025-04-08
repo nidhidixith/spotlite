@@ -4,21 +4,24 @@ import { router } from "expo-router";
 
 const QuestionsAndAnswers = ({ profile }) => {
   return (
-    <View className="bg-white px-4 py-3 mb-2">
-      <Text className="font-rregular font-bold text-xl mb-4 ">
+    <View className="bg-white px-4 py-3 mt-3">
+      <Text className="text-gray-800 font-semibold text-xl mb-3">
         More about me
       </Text>
 
       {profile?.questions_and_answers &&
       profile.questions_and_answers.length > 0 ? (
         profile.questions_and_answers.map((q_and_a, index) => (
-          <View key={index} className="flex-row items-start mb-4">
-            <Text className="text-xl text-gray-800 mr-2">•</Text>
+          <View key={index} className="flex-row items-start mb-3">
+            {/* <Text className="text-xl text-gray-800 mr-2">•</Text> */}
+            <Text className="font-semibold text-base text-gray-800 mr-2">
+              {index + 1}.
+            </Text>
             <View>
-              <Text className="text-[16px]  font-semibold mb-1">
+              <Text className="font-semibold text-base text-gray-800 mb-1">
                 {q_and_a.question_text}
               </Text>
-              <Text className="text-[14px] text-gray-700">
+              <Text className="text-sm text-gray-800">
                 {q_and_a.answer_text}
               </Text>
             </View>
@@ -30,7 +33,7 @@ const QuestionsAndAnswers = ({ profile }) => {
             router.push("(app)/(edit-profile)/edit-questions-and-answers")
           }
         >
-          <Text className="text-[16px] text-sky-600 self-center">
+          <Text className="text-base text-sky-600 self-center">
             Add some Q&As about you
           </Text>
         </TouchableOpacity>

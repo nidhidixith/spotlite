@@ -8,15 +8,19 @@ import {
 import instance from "../api";
 
 const eventsAdapter = createEntityAdapter({
-  sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
+  // sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
 });
 
 const userEventsAdapter = createEntityAdapter({
-  sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
+  // sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
 });
 
 const otherUserEventsAdapter = createEntityAdapter({
-  sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
+  // sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
+});
+
+const userInterestedEventsAdapter = createEntityAdapter({
+  // sortComparer: (a, b) => b.created_at.localeCompare(a.created_at),
 });
 
 const eventInterestsAdapter = createEntityAdapter();
@@ -35,6 +39,10 @@ const initialState = {
     error: null,
   }),
   otherUserEvents: otherUserEventsAdapter.getInitialState({
+    loading: false,
+    error: null,
+  }),
+  userInterestedEvents: userInterestedEventsAdapter.getInitialState({
     loading: false,
     error: null,
   }),
@@ -72,6 +80,14 @@ export const fetchOtherUserEvents = createAsyncThunk(
     const response = await instance.get(
       `/events/get-other-user-events/${userId}/`
     );
+    return response.data;
+  }
+);
+
+export const fetchUserInterestedEvents = createAsyncThunk(
+  "userInterestedEvents/fetchUserInterestedEvents",
+  async () => {
+    const response = await instance.get("/events/get-user-interested-events/");
     return response.data;
   }
 );
@@ -253,6 +269,23 @@ const eventsSlice = createSlice({
         state.otherUserEvents.error = action.error.message;
       })
 
+      // For User Interested Events
+      .addCase(fetchUserInterestedEvents.pending, (state) => {
+        state.userInterestedEvents.loading = true;
+        state.userInterestedEvents.error = null;
+      })
+      .addCase(fetchUserInterestedEvents.fulfilled, (state, action) => {
+        state.userInterestedEvents.loading = false;
+        userInterestedEventsAdapter.setAll(
+          state.userInterestedEvents,
+          action.payload
+        );
+      })
+      .addCase(fetchUserInterestedEvents.rejected, (state, action) => {
+        state.userInterestedEvents.loading = false;
+        state.userInterestedEvents.error = action.error.message;
+      })
+
       // For AddInterest
       .addCase(addInterestInEvent.pending, (state) => {
         // state.otherUserPosts.loading = true;
@@ -408,6 +441,14 @@ export const {
   selectById: selectOtherUserEventById,
   selectIds: selectOtherUserEventIds,
 } = otherUserEventsAdapter.getSelectors((state) => state.event.otherUserEvents);
+
+export const {
+  selectAll: selectAllUserInterestedEvents,
+  selectById: selectUserInterestedEventById,
+  selectIds: selectUserInterestedEventIds,
+} = userInterestedEventsAdapter.getSelectors(
+  (state) => state.event.userInterestedEvents
+);
 
 export const {
   selectAll: selectAllEventInterests,

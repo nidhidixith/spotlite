@@ -13,6 +13,10 @@ const MenuLayout = () => {
         name="display-other-user-events"
         options={{ headerTitle: "Events" }}
       />
+      <Stack.Screen
+        name="display-interested-events"
+        options={{ headerTitle: "Interested Events" }}
+      />
     </Stack>
   );
 };

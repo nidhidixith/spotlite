@@ -80,6 +80,40 @@ class EventSerializer(serializers.ModelSerializer):
         return instance
 
 
+class EventSerializerWeb(serializers.ModelSerializer):
+    media_files = EventMediaSerializer(many=True)
+    uploaded_files = serializers.ListField(child=serializers.FileField(max_length=100000, allow_empty_file=True), required=False)
+    
+    user_id = serializers.ReadOnlyField(source='user.id')
+    display_name = serializers.ReadOnlyField(source='user.userprofile.display_name')
+    profile_pic = serializers.ImageField(source='user.userprofile.profile_pic')
+
+    interested_count = serializers.SerializerMethodField()
+    content_type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Event
+        fields = ['id', 'user', 'user_id', 'display_name', 'profile_pic', 'uploaded_files','media_files', 'event_title', 'event_domain', 'event_description','event_date','event_time', 'event_location','event_link','created_at','interested_count','content_type']
+
+    
+
+    def get_profile_pic(self, obj):
+        request = self.context.get('request')
+        profile_pic_url = obj.user.userprofile.profile_pic.url
+        return request.build_absolute_uri(profile_pic_url)
+
+    
+    def get_interested_count(self, obj):
+        return EventInterest.objects.filter(event=obj).count()
+    
+    
+
+    def get_content_type(self, obj):
+        return "event"
+
+   
+
+
 
 class EventInterestSerializer(serializers.ModelSerializer):
     display_name = serializers.CharField(source='user.userprofile.display_name', read_only=True)

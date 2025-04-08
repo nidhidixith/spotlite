@@ -81,6 +81,7 @@ const EventsList = ({ filter }) => {
           <EmptyState
             message="No events to show!"
             details="Follow people, add your location, add interests to see events in the feed"
+            icon="calendar"
           />
         }
         contentContainerStyle={

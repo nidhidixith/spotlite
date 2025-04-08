@@ -18,6 +18,7 @@ import {
 } from "@expo-google-fonts/roboto";
 import { store } from "../store";
 import { Provider } from "react-redux";
+import { ToastProvider } from "../contexts/ToastContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -37,6 +38,13 @@ const RootLayout = () => {
   //   // Roboto_900Black_Italic,
   // });
 
+  // const [loaded, error] = useFonts({
+  //   "Roboto-Italic": require("../assets/fonts/Roboto-Italic.ttf"),
+  //   "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
+  //   "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
+  //   "Lato-Regular": require("../assets/fonts/Lato-Regular.ttf"),
+  // });
+
   // useEffect(() => {
   //   if (loaded || error) {
   //     SplashScreen.hideAsync();
@@ -48,11 +56,13 @@ const RootLayout = () => {
   // }
   return (
     <Provider store={store}>
-      <Stack>
-        <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
+      <ToastProvider>
+        <Stack>
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+      </ToastProvider>
     </Provider>
   );
 };

@@ -10,29 +10,27 @@ const Bio = ({ profile }) => {
   };
 
   return (
-    <View className="bg-white px-4 py-3 mb-2">
-      <Text className="font-rregular font-bold text-xl mb-3">Bio</Text>
+    <View className="bg-white px-4 py-3 mb-3">
+      <Text className="text-gray-800 font-semibold text-xl mb-3">Bio</Text>
       {profile?.bio ? (
         profile?.bio?.length > 250 ? (
-          <Text className="font-rregular text-[15px] text-justify text-gray-600">
+          <Text className="text-sm text-gray-800">
             {showMore ? profile.bio : profile.bio.substring(0, 250)}
             <Text
-              className="text-blue-700 text-base italic"
+              className="text-blue-600  italic"
               onPress={handleShowMoreLessButtonClick}
             >
               {showMore ? " Show less" : " ...Show more"}
             </Text>
           </Text>
         ) : (
-          <Text className="font-rregular text-[15px] text-justify text-gray-600">
-            {profile?.bio}
-          </Text>
+          <Text className="text-sm text-gray-800">{profile?.bio}</Text>
         )
       ) : (
         <TouchableOpacity
           onPress={() => router.push("(app)/(edit-profile)/edit-bio")}
         >
-          <Text className="text-[16px] text-sky-600 self-center">
+          <Text className="text-base text-sky-600 self-center">
             Add your bio
           </Text>
         </TouchableOpacity>

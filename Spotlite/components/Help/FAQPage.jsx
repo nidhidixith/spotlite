@@ -116,21 +116,21 @@ const AccordionItem = ({ question, answer }) => {
   };
 
   const body = (
-    <Text className="text-sm p-3 bg-gray-50 rounded-lg">{answer}</Text>
+    <Text className="text-sm p-3 bg-gray-50 rounded-lg ">{answer}</Text>
   );
 
   return (
     <View className="p-1">
       <TouchableOpacity
-        className="flex flex-row items-center justify-between bg-sky-50 p-3 rounded-lg mb-2"
+        className="flex flex-row items-center justify-between  p-2 rounded-lg mb-1"
         onPress={toggleItem}
       >
-        <Text className="text-[16px] font-semibold text-sky-600 mr-2">
+        <Text className="text-sm font-medium text-gray-700 mr-2 ">
           {question}
         </Text>
         <Icon
           name={expanded ? "chevron-up" : "chevron-down"}
-          size={12}
+          size={10}
           color="#0284c7"
         />
       </TouchableOpacity>
@@ -142,12 +142,14 @@ const AccordionItem = ({ question, answer }) => {
 const FAQsPage = () => {
   return (
     <ScrollView className="flex-1 bg-white px-4 py-2">
-      <Text className="text-2xl mt-2 mb-6 text-sky-800 font-bold">
+      <Text className="text-xl mt-4 mb-6 text-sky-600 font-bold">
         Frequently asked questions
       </Text>
 
       <View className="mb-4">
-        <Text className="text-lg mb-2 text-sky-700 font-bold">General</Text>
+        <Text className="text-base mb-2 text-sky-600 font-semibold">
+          General
+        </Text>
         {generalQuestions.map((generalQuestion) => (
           <AccordionItem
             key={generalQuestion.id}
@@ -158,7 +160,7 @@ const FAQsPage = () => {
       </View>
 
       <View className="mb-4">
-        <Text className="text-lg mb-2 text-sky-700 font-bold">
+        <Text className="text-base mb-2 text-sky-600 font-semibold">
           Profile and Account
         </Text>
         {profileAndAccountQuestions.map((profileAndAccountQuestion) => (
@@ -171,7 +173,7 @@ const FAQsPage = () => {
       </View>
 
       <View className="mb-4">
-        <Text className="text-lg mb-2 text-sky-700 font-bold">
+        <Text className="text-base mb-2 text-sky-600 font-semibold">
           Content and Interaction
         </Text>
         {contentAndInteractionQuestions.map((contentAndInteractionQuestion) => (
@@ -184,7 +186,7 @@ const FAQsPage = () => {
       </View>
 
       <View className="mb-4">
-        <Text className="text-lg mb-2 text-sky-700 font-bold">
+        <Text className="text-base mb-2 text-sky-600 font-semibold">
           Privacy and Security
         </Text>
         {privacyAndSecurityQuestions.map((privacyAndSecurityQuestion) => (
@@ -197,7 +199,7 @@ const FAQsPage = () => {
       </View>
 
       <View className="mb-4">
-        <Text className="text-lg mb-2 text-sky-700 font-bold">
+        <Text className="text-base mb-2 text-sky-600 font-semibold">
           Technical Issues
         </Text>
         {technicalIssuesQuestions.map((technicalIssuesQuestion) => (
@@ -210,7 +212,7 @@ const FAQsPage = () => {
       </View>
 
       <View className="mb-4">
-        <Text className="text-lg mb-2 text-sky-700 font-bold">
+        <Text className="text-base mb-2 text-sky-600 font-semibold">
           Community and Support
         </Text>
         {communityAndSupportQuestions.map((communityAndSupportQuestion) => (

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   fetchUserFollowersList,
+  removeFollower,
   selectAllUserFollowers,
 } from "../../../slices/userConnectionsSlice";
 
@@ -37,8 +38,20 @@ const MyFollowers = () => {
     return <ErrorDisplayComponent />;
   }
 
+  const handleRemoveUserFollower = (userId) => {
+    console.log("UserId from remove user follower: ", userId);
+    dispatch(removeFollower({ userId: userId }));
+  };
+
   const renderItem = ({ item }) => {
-    return <NameProfilePic obj={item} index={item.id} key={item.id} />;
+    return (
+      <NameProfilePic
+        obj={item}
+        index={item.id}
+        key={item.id}
+        removeUserFollower={handleRemoveUserFollower}
+      />
+    );
   };
 
   return (
@@ -48,7 +61,13 @@ const MyFollowers = () => {
         renderItem={renderItem}
         keyExtractor={(item) => `${item.id}`}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        ListEmptyComponent={<EmptyState message="No followers yet!" />}
+        ListEmptyComponent={
+          <EmptyState
+            message="No Followers Yet"
+            details="Keep engaging and sharing content!"
+            icon="users"
+          />
+        }
         contentContainerStyle={
           userFollowers.length === 0 ? { flex: 1 } : {} // Ensures centering when the list is empty
         }

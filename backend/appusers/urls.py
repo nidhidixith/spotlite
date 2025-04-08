@@ -16,6 +16,8 @@ urlpatterns=[
   path('create-or-update-answers/', views.create_or_update_answers, name='create_or_update_answers'),
   
 
+  path('profile/<int:userId>/', views.get_profile, name='get_profile'),
+
   path('get-user-profile/', views.get_user_profile, name='get_user_profile'),
   path('get-other-user-profile/<int:userId>/', views.get_other_user_profile, name='get_other_user_profile'),
   path('edit-profile/', views.edit_profile, name='edit_profile'),

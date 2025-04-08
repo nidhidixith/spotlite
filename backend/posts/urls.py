@@ -6,6 +6,7 @@ urlpatterns=[
   path('get-post/<int:postId>/',views.get_post,name="get-post"),
   path('get-user-posts/',views.get_user_posts,name="get-user-posts"),
   path('get-other-user-posts/<int:userId>/',views.get_other_user_posts,name="get-other-user-posts"),
+  path('latest-post/<int:userId>/',views.get_latest_post,name="get-latest-post"),
 
   path('add-post/',views.add_post,name="add-post"),
   path('delete-post/<int:postId>/',views.delete_post,name="delete-post"),

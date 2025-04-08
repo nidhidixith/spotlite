@@ -5,6 +5,7 @@ import { links } from "../../utilities/links";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Entypo from "@expo/vector-icons/Entypo";
+import { Ionicons } from "@expo/vector-icons";
 
 const SocialLinks = ({ profile }) => {
   const hasSocialLinks = [
@@ -16,10 +17,9 @@ const SocialLinks = ({ profile }) => {
         profile.additional_links[0] !== ""),
   ].some(Boolean);
 
-  console.log("Social links of this user: ", profile?.social_links);
   return (
-    <View className="bg-white px-4 py-3 mb-2">
-      <Text className="font-rregular font-bold text-xl mb-4">
+    <View className="bg-white px-4 py-3 mb-3">
+      <Text className="text-gray-800 font-semibold text-xl mb-3">
         Social Presence
       </Text>
 
@@ -29,23 +29,34 @@ const SocialLinks = ({ profile }) => {
             const platformDetails = links[link.platform.toLowerCase()] || {};
 
             return (
-              <View key={index} className="flex flex-row py-2 items-center">
+              <View
+                key={index}
+                className="flex flex-row px-2 py-3 items-center"
+              >
                 {platformDetails.icon || (
-                  <AntDesign
-                    name="questioncircle"
-                    size={20}
-                    color="#999"
+                  <Ionicons
+                    name="help-circle"
+                    size={18}
+                    color="#4b5563"
                     marginRight={8}
                   />
                 )}
-                <Link
-                  href={link.url}
-                  className="font-rregular text-[16px] text-sky-600"
-                >
-                  {link.platform.charAt(0).toUpperCase() +
-                    link.platform.slice(1)}
-                </Link>
-                {/* <Text className="font-rregular font-bold text-[14px] ml-auto rounded-lg">
+                <View>
+                  <Link href={link.url} className=" text-sm text-sky-600 ml-1">
+                    {link.platform.charAt(0).toUpperCase() +
+                      link.platform.slice(1)}
+                  </Link>
+                  {/* <Text className="text-xs text-gray-600 ml-1">@testuser</Text> */}
+                </View>
+                <View className="ml-auto">
+                  <Ionicons
+                    name="chevron-forward"
+                    size={14}
+                    color="#9ca3af"
+                    marginRight={8}
+                  />
+                </View>
+                {/* <Text className=" font-bold text-[14px] ml-auto rounded-lg">
               100K Subscribers
             </Text> */}
               </View>
@@ -54,19 +65,29 @@ const SocialLinks = ({ profile }) => {
 
           {profile?.additional_links.map((link, index) => {
             return (
-              <View key={index} className="flex flex-row py-2 items-center">
-                <Entypo name="link" size={20} color="black" marginRight={8} />
+              <View
+                key={index}
+                className="flex flex-row px-2  py-3 items-center"
+              >
+                <Ionicons
+                  name="link"
+                  size={18}
+                  color="#4b5563"
+                  marginRight={8}
+                />
 
-                <Link
-                  href={link.url}
-                  className="font-rregular text-[16px] text-sky-600"
-                >
+                <Link href={link.url} className=" text-sm text-sky-600 ml-1">
                   {link.description.charAt(0).toUpperCase() +
                     link.description.slice(1)}
                 </Link>
-                {/* <Text className="font-rregular font-bold text-[14px] ml-auto rounded-lg">
-              100K Subscribers
-            </Text> */}
+                <View className="ml-auto">
+                  <Ionicons
+                    name="chevron-forward"
+                    size={14}
+                    color="#9ca3af"
+                    marginRight={8}
+                  />
+                </View>
               </View>
             );
           })}
@@ -76,14 +97,14 @@ const SocialLinks = ({ profile }) => {
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-links")}
           >
-            <Text className="text-[16px] text-sky-600">
+            <Text className="text-base text-sky-600">
               Add your Social links/
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => router.push("(app)/(edit-profile)/edit-websites")}
           >
-            <Text className="text-[16px] text-sky-600">Add your Webistes</Text>
+            <Text className="text-base text-sky-600">Add your Webistes</Text>
           </TouchableOpacity>
         </View>
       )}
