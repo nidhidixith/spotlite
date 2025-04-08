@@ -8,6 +8,8 @@ import {
   Alert,
 } from "react-native";
 import React, { useState } from "react";
+import * as Linking from "expo-linking";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useForm, Controller } from "react-hook-form";
 import { Link, router } from "expo-router";
@@ -128,7 +130,7 @@ const SignUp = () => {
           )}
         </View>
 
-        <View className="mb-8">
+        <View className="">
           <Text className="text-base text-gray-800 font-semibold mb-2">
             Password
           </Text>
@@ -184,6 +186,28 @@ const SignUp = () => {
               {errors.password.message}
             </Text>
           )}
+        </View>
+
+        <View className="mt-4 mb-4">
+          <Text className="text-xs text-gray-500 text-center">
+            By signing up, you agree to our{" "}
+            <Text
+              className="underline text-sky-600"
+              onPress={() => Linking.openURL("http://192.168.1.33:3000/terms")}
+            >
+              Terms
+            </Text>{" "}
+            and{" "}
+            <Text
+              className="underline text-sky-600"
+              onPress={() =>
+                Linking.openURL("http://192.168.1.33:3000/privacy")
+              }
+            >
+              Privacy Policy
+            </Text>
+            .
+          </Text>
         </View>
 
         <TouchableOpacity

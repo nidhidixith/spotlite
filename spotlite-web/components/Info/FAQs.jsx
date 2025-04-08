@@ -23,6 +23,22 @@ const faqCategories = [
         question: "Is Spotlite free to use?",
         answer: "Yes, Spotlite is completely free to use.",
       },
+      {
+        id: 4,
+        question: "Where can I learn more about Spotlite?",
+        answer: (
+          <>
+            You can learn more about our mission and vision by visiting our{" "}
+            <a
+              href="/about"
+              className="text-blue-600 underline hover:text-blue-500"
+            >
+              About Us
+            </a>{" "}
+            page.
+          </>
+        ),
+      },
     ],
   },
   {
@@ -77,8 +93,19 @@ const faqCategories = [
       {
         id: 1,
         question: "How is my data protected on Spotlite?",
-        answer:
-          "Spotlite takes your privacy seriously. We use advanced security measures to protect your data and never share it without your consent.",
+        answer: (
+          <>
+            Spotlite takes your{" "}
+            <a
+              href="/privacy"
+              className="text-blue-600 underline hover:text-blue-500"
+            >
+              privacy
+            </a>{" "}
+            seriously. We use advanced security measures to protect your data
+            and never share it without your consent.
+          </>
+        ),
       },
     ],
   },
@@ -122,6 +149,35 @@ const faqCategories = [
       },
     ],
   },
+  {
+    title: "Legal & Policies",
+    questions: [
+      {
+        id: 1,
+        question: "Where can I find Spotlite’s Terms and Privacy Policy?",
+        answer: (
+          <>
+            You can read our{" "}
+            <a
+              href="/terms"
+              className="text-blue-600 underline hover:text-blue-500"
+            >
+              Terms & Conditions
+            </a>{" "}
+            and{" "}
+            <a
+              href="/privacy"
+              className="text-blue-600 underline hover:text-blue-500"
+            >
+              Privacy Policy
+            </a>{" "}
+            to understand how your data is handled and what you agree to when
+            using Spotlite.
+          </>
+        ),
+      },
+    ],
+  },
 ];
 
 const AccordionItem = ({ question, answer }) => {
@@ -138,9 +194,9 @@ const AccordionItem = ({ question, answer }) => {
           {question}
         </p>
         {expanded ? (
-          <IoChevronUp size={18} className="text-sky-600" />
+          <IoChevronUp size={18} className="text-gray-600" />
         ) : (
-          <IoChevronDown size={18} className="text-sky-600" />
+          <IoChevronDown size={18} className="text-gray-600" />
         )}
       </button>
       {expanded && (
@@ -154,13 +210,13 @@ const AccordionItem = ({ question, answer }) => {
 
 const FAQs = () => {
   return (
-    <div className="max-w-3xl mx-auto px-6 md:px-12 lg:px-16 py-10">
-      <h1 className="text-2xl md:text-3xl font-bold text-sky-600 mb-6">
+    <div className="max-w-3xl mx-auto px-6 md:px-12 lg:px-16 py-4">
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
         Frequently Asked Questions
       </h1>
       {faqCategories.map((category) => (
         <div key={category.title} className="mb-6">
-          <h2 className="text-lg md:text-xl text-sky-600 font-semibold mb-4">
+          <h2 className="text-lg md:text-xl text-gray-800 font-semibold mb-4">
             {category.title}
           </h2>
           <div className="space-y-4">

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 import React from "react";
+import * as Linking from "expo-linking";
 
 import { handleLogout } from "../../../utilities/handleLogout";
 import {
@@ -144,7 +145,7 @@ const Menu = () => {
 
         <TouchableOpacity
           className="flex flex-row  px-2 py-4 items-center"
-          onPress={() => router.push("(app)/(menu)/about")}
+          onPress={() => Linking.openURL("http://192.168.1.33:3000/about")}
         >
           {/* <Entypo
             name="info-with-circle"
@@ -169,7 +170,7 @@ const Menu = () => {
 
         <TouchableOpacity
           className="flex flex-row px-2 py-4 items-center"
-          onPress={() => router.push("(app)/(menu)/faqs")}
+          onPress={() => Linking.openURL("http://192.168.1.33:3000/faqs")}
         >
           {/* <Entypo name="help" size={20} color="#FF6F61" marginRight={12} /> */}
           {/* <Ionicons

@@ -143,13 +143,25 @@ const About = () => {
           </a>
         </p>
 
-        {/* FAQ Link */}
-        <div className="mt-4">
+        {/* FAQ + Legal Links */}
+        <div className="mt-4 space-y-1">
           <Link
             href="/faqs"
-            className="text-blue-400 underline hover:text-blue-300"
+            className="text-blue-400 underline hover:text-blue-300 block"
           >
             Read our FAQs
+          </Link>
+          <Link
+            href="/terms"
+            className="text-blue-400 underline hover:text-blue-300 block"
+          >
+            Terms & Conditions
+          </Link>
+          <Link
+            href="/privacy"
+            className="text-blue-400 underline hover:text-blue-300 block"
+          >
+            Privacy Policy
           </Link>
         </div>
 
