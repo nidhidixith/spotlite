@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  Image,
-  Alert,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, Image, Alert, TouchableOpacity } from "react-native";
 import React, { useEffect } from "react";
 import { Link, router } from "expo-router";
 import { useSelector, useDispatch } from "react-redux";

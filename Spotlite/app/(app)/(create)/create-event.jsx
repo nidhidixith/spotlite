@@ -72,10 +72,6 @@ const CreateEvent = () => {
 
   const addEventStatus = useSelector((state) => state.event.addEventStatus);
 
-  // const fetchProfileError = useSelector(
-  //   (state) => state.userProfile.fetchProfileError
-  // );
-
   if (addEventStatus === "loading") {
     // Show Activity Indicator while loading
     return (
@@ -95,18 +91,6 @@ const CreateEvent = () => {
     if (data.event_date) {
       eventData.append("event_date", data.event_date);
     }
-
-    // if (eventDate) {
-    //   const formattedEventDate = eventDate
-    //     ? `${eventDate.getFullYear()}-${(eventDate.getMonth() + 1)
-    //         .toString()
-    //         .padStart(2, "0")}-${eventDate
-    //         .getDate()
-    //         .toString()
-    //         .padStart(2, "0")}`
-    //     : "";
-    //   eventData.append("event_date", formattedEventDate);
-    // }
 
     if (eventTime) {
       const formattedEventTime = eventTime
@@ -148,7 +132,6 @@ const CreateEvent = () => {
       setValue("event_location", "");
       setValue("event_link", "");
       setValue("event_date", "");
-      // setEventDate(null);
       setEventTime(null);
       setMediaFiles({});
 
@@ -332,23 +315,6 @@ const CreateEvent = () => {
             <Text className="mb-2 font-semibold text-sm text-gray-600">
               Event Date
             </Text>
-            {/* <View className="flex flex-row justify-between">
-              <View className="flex flex-row items-center flex-1">
-                <View className="flex-1">
-                  <TouchableOpacity
-                    className="flex flex-row items-center border border-gray-200 rounded-lg px-3 py-3 focus:border-sky-500"
-                    onPress={showDatepickerHandler}
-                  >
-                    <Text className="flex-1">
-                      {eventDate
-                        ? eventDate.toLocaleDateString()
-                        : "Select Date"}
-                    </Text>
-                    <AntDesign name="calendar" size={16} color="black" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View> */}
 
             <Controller
               control={control}
@@ -532,17 +498,6 @@ const CreateEvent = () => {
             </Text>
           )}
         </TouchableOpacity>
-
-        {/* Date picker */}
-        {/* {showDatePicker && (
-          <DateTimePicker
-            testID="datePicker"
-            value={eventDate ? new Date(eventDate) : new Date()}
-            mode="date"
-            display="default"
-            onChange={onEventDateChange}
-          />
-        )} */}
 
         {/* Time picker */}
         {showTimePicker && (

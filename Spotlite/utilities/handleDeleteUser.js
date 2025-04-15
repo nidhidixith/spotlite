@@ -12,6 +12,7 @@ import {
   resetNotifications,
 } from "../slices/notificationsSlice";
 import { resetUserConnections } from "../slices/userConnectionsSlice";
+import { clearSearches } from "../slices/searchSlice";
 
 export const handleDeleteUser = async (dispatch, router) => {
   try {
@@ -37,6 +38,7 @@ export const handleDeleteUser = async (dispatch, router) => {
       dispatch(resetEvents()),
       dispatch(resetNotifications()),
       dispatch(resetNewNotificationCount()),
+      dispatch(clearSearches()),
     ]);
 
     // Remove tokens

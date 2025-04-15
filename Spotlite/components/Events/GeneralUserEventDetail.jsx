@@ -13,9 +13,6 @@ import InterestedModal from "../../components/Modals/InterestedModal";
 import CustomBottomSheetModal from "../../components/Modals/CustomBottomSheetModal";
 import EventCarousel from "../../components/Events/EventCarousel";
 
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Entypo from "@expo/vector-icons/Entypo";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -142,60 +139,6 @@ const GeneralUserEventDetail = ({ event }) => {
             </TouchableOpacity>
           )}
         </View>
-
-        {/* <View className="mb-4">
-          {(event?.event_date || event?.event_time) && (
-            <View className="flex flex-row items-center mb-1 ">
-              <FontAwesome
-                name="calendar"
-                size={12}
-                color="#374151"
-                marginRight={6}
-              />
-              <Text className="text-sm text-gray-700">
-                {event?.event_date} {event?.event_time}
-              </Text>
-            </View>
-          )}
-
-          {event?.event_location && (
-            <View className="flex flex-row items-center mb-1">
-              <Ionicons
-                name="location-sharp"
-                size={14}
-                color="black"
-                marginRight={6}
-              />
-              <Text className="text-sm text-gray-700">
-                {event?.event_location}
-              </Text>
-            </View>
-          )}
-
-          {event?.event_link && (
-            <View className="flex flex-row items-center mb-1 ">
-              <Entypo name="link" size={14} color="#374151" marginRight={6} />
-              <Text className="text-sm text-gray-700">{event?.event_link}</Text>
-            </View>
-          )}
-
-          {eventInterestsCount > 0 && (
-            <TouchableOpacity
-              className="flex flex-row items-center mb-1"
-              onPress={handleGetInterests}
-            >
-              <AntDesign
-                name="heart"
-                size={12}
-                color="#374151"
-                marginRight={6}
-              />
-              <Text className=" text-sm text-sky-600">
-                {eventInterestsCount} interested
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View> */}
 
         <View className="my-4">
           {isInterested ? (

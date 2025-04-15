@@ -29,7 +29,6 @@ const EditLinks = () => {
   const dispatch = useDispatch();
 
   const profile = useSelector(selectUserProfile);
-  // console.log("User profile from backend: ", profile);
 
   console.log("Social links from backend: ", profile[0]?.social_links);
 

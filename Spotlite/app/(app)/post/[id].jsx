@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, Text, ActivityIndicator } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -40,7 +39,6 @@ const PostDetails = () => {
   }, [dispatch, postId]);
 
   let userPost = useSelector(selectAllSpecificPosts);
-  console.log("Specific post: ", userPost);
   userPost = userPost[0];
   const fetchPostError = useSelector((state) => state.post.specificPost.error);
 

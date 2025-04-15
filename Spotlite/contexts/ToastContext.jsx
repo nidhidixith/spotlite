@@ -50,51 +50,54 @@ export const ToastProvider = ({ children }) => {
             top: 50,
             left: 10,
             right: 10,
-
-            borderLeftColor: toast.type === "success" ? "green" : "red",
-            borderRightColor: "#e5e7eb",
+            borderLeftColor: toast.type === "success" ? "#10b981" : "#ef4444", // green-500 or red-500
+            borderRightColor: "#e5e7eb", // gray-200
             borderTopColor: "#e5e7eb",
             borderBottomColor: "#e5e7eb",
             borderWidth: 1,
             borderLeftWidth: 5,
-            backgroundColor: "white",
+            backgroundColor: toast.type === "success" ? "#ecfdf5" : "#fef2f2", // green-50 or red-50
             padding: 10,
-
             borderRadius: 5,
-            // zIndex: 9999,
-            opacity: fadeAnim, // Animation now works
-            // alignItems: "center",
+            opacity: fadeAnim,
             justifyContent: "center",
-
-            // shadowColor: "#000",
-            // shadowOffset: { width: 0, height: 2 },
-            // shadowOpacity: 0.2,
-            // shadowRadius: 4,
-            // elevation: 5, // For Android shadow
             display: toast.message ? "flex" : "none",
+            // Optional shadows
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 4,
           }}
         >
           <View className="flex flex-row">
             <MaterialIcons
               name={toast.type === "success" ? "check-circle" : "error"}
               size={18}
-              color={toast.type === "success" ? "green" : "red"}
-              marginRight={8}
-              marginTop={4}
+              color={toast.type === "success" ? "#10b981" : "#ef4444"} // icon color
+              style={{ marginRight: 8, marginTop: 4 }}
             />
 
-            <View className="">
-              <Text className="text-base font-semibold text-gray-800">
-                {toast.type === "success" ? "Success" : "Error"}
-              </Text>
-              <Text className="text-sm text-gray-500">{toast.message}</Text>
+            <View className="flex-1">
+              <View className="flex flex-row">
+                <Text
+                  className={`text-base font-semibold ${
+                    toast.type === "success" ? "text-green-800" : "text-red-800"
+                  }`}
+                >
+                  {toast.type === "success" ? "Success" : "Error"}
+                </Text>
+
+                <TouchableOpacity
+                  className="self-center ml-auto p-1"
+                  onPress={handleToastClose}
+                >
+                  <MaterialIcons name="close" size={18} color="#9ca3af" />
+                </TouchableOpacity>
+              </View>
+
+              <Text className="text-sm text-gray-700">{toast.message}</Text>
             </View>
-            <TouchableOpacity
-              className="self-center ml-auto p-1"
-              onPress={handleToastClose}
-            >
-              <MaterialIcons name="close" size={18} color="gray" />
-            </TouchableOpacity>
           </View>
         </Animated.View>
       )}

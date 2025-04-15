@@ -5,8 +5,6 @@ import { useDispatch } from "react-redux";
 
 import { follow, unfollow } from "../../slices/userConnectionsSlice";
 
-import Entypo from "@expo/vector-icons/Entypo";
-
 const OthersBasicDetails = ({ profile }) => {
   // State initialization
   const [followerCount, setFollowerCount] = useState(

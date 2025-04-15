@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 
 import React from "react";
 
-const MenuLayout = () => {
+const DisplayEventsLayout = () => {
   return (
     <Stack>
       <Stack.Screen
@@ -21,4 +21,4 @@ const MenuLayout = () => {
   );
 };
 
-export default MenuLayout;
+export default DisplayEventsLayout;

@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 

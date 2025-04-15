@@ -28,6 +28,7 @@ import { resetUserConnections } from "../../slices/userConnectionsSlice";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useToast } from "../../contexts/ToastContext";
+import { clearSearches } from "../../slices/searchSlice";
 
 const SignUp = () => {
   const {
@@ -63,6 +64,7 @@ const SignUp = () => {
           dispatch(resetPosts()),
           dispatch(resetEvents()),
           dispatch(resetNotifications()),
+          dispatch(clearSearches()),
           // dispatch(resetNewNotificationCount()),
         ]);
 
@@ -76,7 +78,7 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white px-8">
+    <SafeAreaView className="flex-1 bg-white px-8 py-4">
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
       >

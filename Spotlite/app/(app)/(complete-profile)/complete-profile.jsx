@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { View, Text, TextInput, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 
 import { completeUserProfile } from "../../../slices/userProfileSlice";
 import { handleDeleteUser } from "../../../utilities/handleDeleteUser";
@@ -65,14 +65,7 @@ const CompleteProfile = () => {
       location,
       primary_interest,
       bio,
-      // instagramLink,
-      // facebookLink,
-      // youtubeLink,
-      // tiktokLink,
-      // pinterestLink,
-      // twitterLink,
-      // threadsLink,
-      // linkedInLink,
+
       socialLinks,
       additionalLinks,
       tags,
@@ -86,14 +79,7 @@ const CompleteProfile = () => {
       dob,
       location,
       bio,
-      // instagramLink,
-      // facebookLink,
-      // youtubeLink,
-      // tiktokLink,
-      // pinterestLink,
-      // twitterLink,
-      // threadsLink,
-      // linkedInLink,
+
       socialLinks,
       additionalLinks,
       primary_interest,
@@ -112,31 +98,6 @@ const CompleteProfile = () => {
     }
     profileData.append("primary_interest", extractedData.primary_interest);
     profileData.append("bio", extractedData.bio);
-
-    // if (extractedData.instagramLink) {
-    //   profileData.append("instagram_link", extractedData.instagramLink);
-    // }
-    // if (extractedData.facebookLink) {
-    //   profileData.append("facebook_link", extractedData.facebookLink);
-    // }
-    // if (extractedData.youtubeLink) {
-    //   profileData.append("youtube_link", extractedData.youtubeLink);
-    // }
-    // if (extractedData.tiktokLink) {
-    //   profileData.append("tiktok_link", extractedData.tiktokLink);
-    // }
-    // if (extractedData.pinterestLink) {
-    //   profileData.append("pinterest_link", extractedData.pinterestLink);
-    // }
-    // if (extractedData.twitterLink) {
-    //   profileData.append("twitter_link", extractedData.twitterLink);
-    // }
-    // if (extractedData.threadsLink) {
-    //   profileData.append("threads_link", extractedData.threadsLink);
-    // }
-    // if (extractedData.linkedInLink) {
-    //   profileData.append("linkedin_link", extractedData.linkedInLink);
-    // }
 
     if (extractedData.socialLinks) {
       profileData.append("social_links", extractedData.socialLinks);

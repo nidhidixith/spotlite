@@ -61,7 +61,6 @@ const Step6 = ({ handlePrevStep, handleNextStep }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      // allowsMultipleSelection: true,
       aspect: [1, 1],
       quality: 1,
     });

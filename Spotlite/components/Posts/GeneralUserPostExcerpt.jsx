@@ -10,6 +10,8 @@ import { TimeAgo } from "../../components/TimeAgo";
 import Entypo from "@expo/vector-icons/Entypo";
 
 const GeneralUserPostExcerpt = ({ post }) => {
+  const uniqueKey = `post-${post?.id}`;
+
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ["12%"], []);
   const [modalContent, setModalContent] = useState(null);
@@ -28,7 +30,7 @@ const GeneralUserPostExcerpt = ({ post }) => {
   };
 
   return (
-    <>
+    <View key={uniqueKey}>
       <View className="bg-white px-4 py-2">
         <View className="flex flex-row items-center">
           {post?.profile_pic && (
@@ -87,7 +89,7 @@ const GeneralUserPostExcerpt = ({ post }) => {
       <CustomBottomSheetModal snapPoints={snapPoints} ref={bottomSheetRef}>
         {modalContent}
       </CustomBottomSheetModal>
-    </>
+    </View>
   );
 };
 

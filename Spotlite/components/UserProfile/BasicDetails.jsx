@@ -2,8 +2,6 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 
-import Entypo from "@expo/vector-icons/Entypo";
-
 const BasicDetails = ({ profile }) => {
   return (
     <View className="bg-white px-4 py-3 mb-3">

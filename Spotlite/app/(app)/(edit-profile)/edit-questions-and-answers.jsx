@@ -5,9 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  FlatList,
-  Platform,
-  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";

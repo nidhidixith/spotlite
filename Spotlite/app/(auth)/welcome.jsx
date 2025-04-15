@@ -22,7 +22,7 @@ const Welcome = () => {
           <TouchableOpacity
             className="p-1 mr-2"
             onPress={() => {
-              Linking.openURL("http://192.168.1.34:3000/about");
+              Linking.openURL("http://192.168.1.33:3000/about");
             }}
           >
             <Text className="text-sm text-sky-600">About us</Text>
@@ -30,7 +30,7 @@ const Welcome = () => {
           <TouchableOpacity
             className="p-1"
             onPress={() => {
-              Linking.openURL("http://192.168.1.34:3000/faqs");
+              Linking.openURL("http://192.168.1.33:3000/faqs");
             }}
           >
             <Text className="text-sm text-sky-600">FAQs</Text>
@@ -72,38 +72,6 @@ const Welcome = () => {
               Sign Up
             </Text>
           </TouchableOpacity>
-
-          {/* <View className="mt-4">
-            <Text className="text-xs text-gray-500 text-center">
-              By continuing, you agree to our{" "}
-              <Text
-                className="underline text-sky-600"
-                onPress={() =>
-                  Linking.openURL("http://192.168.1.33:3000/terms")
-                }
-              >
-                Terms
-              </Text>{" "}
-              and{" "}
-              <Text
-                className="underline text-sky-600"
-                onPress={() =>
-                  Linking.openURL("http://192.168.1.33:3000/privacy")
-                }
-              >
-                Privacy Policy
-              </Text>
-              .
-            </Text>
-          </View> */}
-          {/* <View className="flex flex-row  justify-center p-1 px-2 mt-auto">
-            <TouchableOpacity className="p-1 mr-2">
-              <Text className="text-sm text-sky-600">About us</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="p-1">
-              <Text className="text-sm text-sky-600">FAQs</Text>
-            </TouchableOpacity>
-          </View> */}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -8,7 +8,6 @@ import {
   selectNotificationById,
 } from "../../slices/notificationsSlice";
 
-import { fetchSpecificPost, fetchUserPosts } from "../../slices/postsSlice";
 import { fetchUserEvents } from "../../slices/eventsSlice";
 import { fetchOtherUserProfile } from "../../slices/userProfileSlice";
 

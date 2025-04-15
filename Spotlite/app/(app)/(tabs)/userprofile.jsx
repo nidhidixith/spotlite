@@ -1,12 +1,4 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
-  TouchableOpacity,
-  Button,
-} from "react-native";
+import { ScrollView, RefreshControl } from "react-native";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import React from "react";
@@ -28,14 +20,11 @@ import Bio from "../../../components/UserProfile/Bio";
 import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
 import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 import QuestionsAndAnswers from "../../../components/UserProfile/QuestionsAndAnswers";
-import { useToast } from "../../../contexts/ToastContext";
 import SocialStats from "../../../components/UserProfile/SocialStats";
 
 const UserProfile = () => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing
-
-  const { showToast } = useToast();
 
   const fetchData = async () => {
     try {

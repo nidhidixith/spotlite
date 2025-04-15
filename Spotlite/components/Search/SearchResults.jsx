@@ -1,17 +1,8 @@
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, router } from "expo-router";
+import { View, Text, FlatList } from "react-native";
+import React from "react";
+import { useSelector } from "react-redux";
 
-import { performSearch, selectAllSearches } from "../../slices/searchSlice";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { selectAllSearches } from "../../slices/searchSlice";
 
 import NameProfilePic from "../NameProfilePic";
 import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
@@ -34,10 +25,6 @@ const SearchResults = ({ filter, hasSearched }) => {
   if (fetchSearchError) {
     return <ErrorDisplayComponent />;
   }
-
-  // if (results.length === 0) {
-  //   return <Text className="self-center">No results found!</Text>;
-  // }
 
   const renderItem = ({ item }) => {
     if (filter === "people") {
@@ -79,7 +66,6 @@ const SearchResults = ({ filter, hasSearched }) => {
               ? "No results found"
               : "Type a keyword to search"
           }
-          // details="Follow people to see their posts in the feed"
           icon="search"
         />
       }

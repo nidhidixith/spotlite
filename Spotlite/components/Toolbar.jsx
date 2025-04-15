@@ -5,7 +5,6 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 import { router } from "expo-router";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import AppName from "./AppName";
 
@@ -49,12 +48,6 @@ const Toolbar = () => {
               }}
               className="flex flex-row px-4 py-2 items-center"
             >
-              {/* <MaterialIcons
-                name="post-add"
-                marginRight={10}
-                color="#333333"
-                size={22}
-              /> */}
               <FontAwesome
                 name="edit"
                 size={20}
@@ -70,12 +63,6 @@ const Toolbar = () => {
               }}
               className="flex flex-row px-4 py-2 items-center"
             >
-              {/* <MaterialIcons
-                name="event"
-                marginRight={10}
-                color="#333333"
-                size={22}
-              /> */}
               <FontAwesome
                 name="calendar"
                 size={20}
@@ -97,12 +84,7 @@ const Toolbar = () => {
                 marginRight={12}
                 color="#ef4444"
               />
-              {/* <FontAwesome
-                name="close"
-                size={20}
-                color="#ef4444"
-                marginRight={12}
-              /> */}
+
               <Text className=" text-sm text-red-500">Close</Text>
             </TouchableOpacity>
           </View>
@@ -127,8 +109,5 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 8,
-    // alignItems: "center",
-    // justifyContent: "center",
-    // borderColor: "black",
   },
 });

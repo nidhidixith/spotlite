@@ -172,10 +172,7 @@ const OthersActivity = ({ userId }) => {
         </View>
       </View>
 
-      <View className="border-t-2 border-gray-50">
-        {/* <View className="border-t-2 border-gray-50 py-2"> */}
-        {renderComponent()}
-      </View>
+      <View className="border-t-2 border-gray-50">{renderComponent()}</View>
     </View>
   );
 };

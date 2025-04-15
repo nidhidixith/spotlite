@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { View, FlatList, ActivityIndicator } from "react-native";
 import { useEffect, useCallback, useState } from "react";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,8 +25,6 @@ const Notifications = () => {
   const newNotificationsAvailable = useSelector(
     (state) => state.notification.newNotificationsAvailable
   );
-
-  // console.log("New Notification available: ", newNotificationsAvailable);
 
   const fetchData = async () => {
     setLoading(true); // Start loading

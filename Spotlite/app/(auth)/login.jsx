@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useForm, Controller } from "react-hook-form";
@@ -24,8 +25,8 @@ import {
 import { resetUserConnections } from "../../slices/userConnectionsSlice";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import Entypo from "@expo/vector-icons/Entypo";
 import { useToast } from "../../contexts/ToastContext";
+import { clearSearches } from "../../slices/searchSlice";
 
 const Login = () => {
   const {
@@ -58,6 +59,7 @@ const Login = () => {
           dispatch(resetPosts()),
           dispatch(resetEvents()),
           dispatch(resetNotifications()),
+          dispatch(clearSearches()),
           // dispatch(resetNewNotificationCount()),
         ]);
         router.replace("/(app)/(tabs)/home");
@@ -71,7 +73,7 @@ const Login = () => {
     }
   };
   return (
-    <SafeAreaView className="flex-1 bg-white px-8">
+    <SafeAreaView className="flex-1 bg-white px-8 py-4">
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
       >
@@ -130,7 +132,6 @@ const Login = () => {
             Password
           </Text>
           <View className="flex-row items-center rounded-lg border border-gray-200 px-4 focus:border-sky-500">
-            {/* <Entypo name="lock" size={20} color="black" marginRight={5} /> */}
             <FontAwesome
               name="lock"
               size={22}
@@ -183,6 +184,7 @@ const Login = () => {
             Login
           </Text>
         </TouchableOpacity>
+
         {loginError && (
           <Text className=" text-red-500 mt-2 self-center">
             {loginError || loginError.detail}

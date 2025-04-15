@@ -1,0 +1,21 @@
+# Python
+__pycache__/         # compiled Python cache files
+*.py[cod]            # more compiled Python files
+*.sqlite3            # if you're using SQLite for dev, avoid committing DB
+*.log                # general logs
+
+# Django
+*.pyc                # duplicate, but safe
+*.pyo
+*.pyd
+*.db                 # any other DB files
+*.sqlite3            # duplicate, okay
+*.bak                # backup files
+media/               # uploaded user files (can grow large, often dynamic)
+staticfiles/         # collected static files (should be re-generated, not committed)
+.env                 # the sensitive config file
+.env.*               # covers `.env.dev`, `.env.local`, etc.
+
+# VSCode or other editor junk
+.vscode/
+.idea/

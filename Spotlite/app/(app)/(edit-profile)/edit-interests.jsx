@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -42,29 +41,6 @@ const EditInterests = () => {
   const maxInterests = 10;
   const [modified, setModified] = useState(false);
   const [error, setError] = useState(null);
-
-  // const availableInterests = [
-  //   "painting",
-  //   "singing",
-  //   "dance",
-  //   "acting",
-  //   "writing",
-  //   "poetry",
-  //   "blogging",
-  //   "design",
-  //   "vlogging",
-  //   "photography",
-  //   "cinematography",
-  //   "travel",
-  //   "animation",
-  //   "health",
-  //   "fashion",
-  //   "fitness",
-  //   "cooking",
-  //   "podcasting",
-  //   "sports",
-  //   "gaming",
-  // ];
 
   const [tagInput, setTagInput] = useState("");
   const [selectedInterest, setSelectedInterest] = useState(null);
@@ -184,7 +160,6 @@ const EditInterests = () => {
         {Object.entries(availableInterests).map(([interest]) => (
           <TouchableOpacity
             key={interest}
-            // className="flex flex-row bg-gray-100 border border-gray-200 p-1 m-1 justify-center items-center rounded-lg"
             className={`flex flex-row px-2 py-1 m-1 justify-center items-center rounded-lg border border-sky-200 ${
               tags.includes(interest) ? "bg-sky-50 " : ""
             }`}

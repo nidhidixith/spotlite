@@ -245,7 +245,7 @@ def get_comments(request, postId):
     except Post.DoesNotExist:
         return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    comments = Comments.objects.filter(post=post)
+    comments = Comments.objects.filter(post=post).order_by('-created_at')
     
     if comments:    
         serializer = CommentSerializer(comments, many=True,context={'request': request})

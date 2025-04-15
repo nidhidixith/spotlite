@@ -9,6 +9,8 @@ import instance from "../api";
 import { jwtDecode } from "jwt-decode";
 import * as SecureStore from "expo-secure-store";
 
+const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+
 const usersAdapter = createEntityAdapter();
 
 const initialState = usersAdapter.getInitialState({
@@ -61,7 +63,8 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.33:8000/api/register/",
+        `${apiBaseUrl}/api/register/`,
+        // "http://192.168.1.33:8000/api/register/",
         userData,
         {
           headers: {
@@ -86,7 +89,8 @@ export const loginUser = createAsyncThunk(
     console.log("I am inside Login");
     try {
       const response = await axios.post(
-        "http://192.168.1.33:8000/api/token/",
+        `${apiBaseUrl}/api/token/`,
+        // "http://192.168.1.33:8000/api/token/",
         userData,
         {
           headers: {

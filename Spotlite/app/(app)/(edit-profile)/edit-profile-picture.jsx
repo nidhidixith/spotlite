@@ -6,7 +6,6 @@ import {
   Platform,
   ScrollView,
   Alert,
-  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

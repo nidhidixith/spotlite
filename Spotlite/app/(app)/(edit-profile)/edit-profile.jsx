@@ -1,20 +1,8 @@
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { router } from "expo-router";
 
-import { selectUserProfile } from "../../../slices/userProfileSlice";
-
 const EditProfile = () => {
-  const profile = useSelector(selectUserProfile);
-
   return (
     <ScrollView
       contentContainerStyle={{
@@ -30,7 +18,6 @@ const EditProfile = () => {
             Profile Picture
           </Text>
 
-          {/* <Text className="text-xl font-bold">Profile Picture</Text> */}
           <TouchableOpacity
             onPress={() =>
               router.push("(app)/(edit-profile)/edit-profile-picture")

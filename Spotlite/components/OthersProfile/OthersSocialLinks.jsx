@@ -1,10 +1,6 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Link } from "expo-router";
-import Entypo from "@expo/vector-icons/Entypo";
 import { Ionicons } from "@expo/vector-icons";
 
 import { links } from "../../utilities/links";
@@ -44,9 +40,6 @@ const OthersSocialLinks = ({ profile }) => {
                   {link.platform.charAt(0).toUpperCase() +
                     link.platform.slice(1)}
                 </Link>
-                {/* <Text className="font-rregular font-bold text-[14px] ml-auto rounded-lg">
-              100K Subscribers
-            </Text> */}
               </View>
             );
           })}
@@ -65,9 +58,6 @@ const OthersSocialLinks = ({ profile }) => {
                   {link.description.charAt(0).toUpperCase() +
                     link.description.slice(1)}
                 </Link>
-                {/* <Text className="font-rregular font-bold text-[14px] ml-auto rounded-lg">
-              100K Subscribers
-            </Text> */}
               </View>
             );
           })}

@@ -1,6 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { View, Text } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 
 const EmptyState = ({ message = null, details = null, icon = null }) => {

@@ -14,6 +14,7 @@ import {
 } from "../slices/notificationsSlice";
 import { resetUserConnections } from "../slices/userConnectionsSlice";
 import { setupNotifications } from "./notificationListeners";
+import { clearSearches } from "../slices/searchSlice";
 
 export const handleLogout = async (dispatch, router) => {
   // const dispatch = useDispatch();
@@ -51,6 +52,7 @@ export const handleLogout = async (dispatch, router) => {
       dispatch(resetPosts()),
       dispatch(resetEvents()),
       dispatch(resetNotifications()),
+      dispatch(clearSearches()),
       // dispatch(resetNewNotificationCount()),
     ]);
 

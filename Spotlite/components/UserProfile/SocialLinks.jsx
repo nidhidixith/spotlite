@@ -3,8 +3,6 @@ import React from "react";
 import { Link, router } from "expo-router";
 import { links } from "../../utilities/links";
 
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Entypo from "@expo/vector-icons/Entypo";
 import { Ionicons } from "@expo/vector-icons";
 
 const SocialLinks = ({ profile }) => {
@@ -46,7 +44,6 @@ const SocialLinks = ({ profile }) => {
                     {link.platform.charAt(0).toUpperCase() +
                       link.platform.slice(1)}
                   </Link>
-                  {/* <Text className="text-xs text-gray-600 ml-1">@testuser</Text> */}
                 </View>
                 <View className="ml-auto">
                   <Ionicons
@@ -56,9 +53,6 @@ const SocialLinks = ({ profile }) => {
                     marginRight={8}
                   />
                 </View>
-                {/* <Text className=" font-bold text-[14px] ml-auto rounded-lg">
-              100K Subscribers
-            </Text> */}
               </View>
             );
           })}

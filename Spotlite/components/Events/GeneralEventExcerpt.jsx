@@ -17,7 +17,6 @@ const GeneralEventExcerpt = React.memo(({ event }) => {
   const uniqueKey = `event-${event?.id}`;
   return (
     <>
-      {/* <View className="bg-white px-4 py-2"> */}
       <TouchableOpacity
         className="flex flex-row items-center"
         onPress={() => {
@@ -78,7 +77,6 @@ const GeneralEventExcerpt = React.memo(({ event }) => {
           )}
         </View>
       </TouchableOpacity>
-      {/* </View> */}
     </>
   );
 });

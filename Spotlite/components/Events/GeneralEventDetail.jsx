@@ -9,13 +9,8 @@ import {
   selectUserEventById,
 } from "../../slices/eventsSlice";
 
-import InterestedModal from "../../components/Modals/InterestedModal";
-import CustomBottomSheetModal from "../../components/Modals/CustomBottomSheetModal";
 import EventCarousel from "../../components/Events/EventCarousel";
 
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Entypo from "@expo/vector-icons/Entypo";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";

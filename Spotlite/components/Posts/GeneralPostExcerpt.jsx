@@ -5,7 +5,6 @@ import PostCarousel from "../../components/Posts/PostCarousel";
 import { Link } from "expo-router";
 import { TimeAgo } from "../../components/TimeAgo";
 
-import Entypo from "@expo/vector-icons/Entypo";
 import PostButtons from "../Buttons/PostButtons";
 
 const GeneralPostExcerpt = ({ post }) => {
@@ -68,7 +67,7 @@ const GeneralPostExcerpt = ({ post }) => {
                 </Text>
               </Text>
             ) : (
-              <Text lassName="text-sm text-gray-800 text-justify">
+              <Text className="text-sm text-gray-800 text-justify">
                 {post?.text}
               </Text>
             )}

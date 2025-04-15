@@ -13,21 +13,27 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env file
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_6@cs_5jh9zj+5^mfiuj&6=(v#l0yqhv1ub4e6tmd+ujdmow9a'
+# SECRET_KEY = 'django-insecure-_6@cs_5jh9zj+5^mfiuj&6=(v#l0yqhv1ub4e6tmd+ujdmow9a'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -147,12 +153,20 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'spotlite',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'spotlite',
+    #     'USER': 'postgres',
+    #     'PASSWORD': '1234',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
 
@@ -198,38 +212,41 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '192.168.1.33',
-    '192.168.1.35',
-    '192.168.1.36',
-    '192.168.1.34',
-    '192.168.1.37'
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+# ALLOWED_HOSTS = [
+#     'localhost',
+#     '127.0.0.1',
+#     '192.168.1.33',
+#     '192.168.1.35',
+#     '192.168.1.36',
+#     '192.168.1.34',
+#     '192.168.1.37'
     
-]
+# ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:19000",
-    "http://127.0.0.1:19000",
-    "http://192.168.1.33:8081",
-    "http://192.168.1.33:8000",
-    "http://192.168.1.35:8081",
-    "http://192.168.1.35:8000",
-    "http://10.0.2.2:8081",
-    "http://192.168.1.34:3000",
-    "http://192.168.1.35:3000",
-    "http://192.168.1.33:3000",
-]
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+#     "http://127.0.0.1:5173",
+#     "http://localhost:19000",
+#     "http://127.0.0.1:19000",
+#     "http://192.168.1.33:8081",
+#     "http://192.168.1.33:8000",
+#     "http://192.168.1.35:8081",
+#     "http://192.168.1.35:8000",
+#     "http://10.0.2.2:8081",
+#     "http://192.168.1.34:3000",
+#     "http://192.168.1.35:3000",
+#     "http://192.168.1.33:3000",
+# ]
 
-CORS_ALLOW_ALL_ORIGINS: True
+# CORS_ALLOW_ALL_ORIGINS: True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-SITE_URL = 'http://localhost:8000'  # Replace with your site URL
+SITE_URL = os.getenv("SITE_URL")  # Replace with your site URL
+# SITE_URL = 'http://localhost:8000'  # Replace with your site URL
 
 
 # CHANNEL_LAYERS = {

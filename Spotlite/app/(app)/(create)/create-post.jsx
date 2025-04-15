@@ -124,7 +124,6 @@ const CreatePost = () => {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      // allowsEditing: true,
       allowsMultipleSelection: true,
       selectionLimit: 5,
       aspect: [1, 1],

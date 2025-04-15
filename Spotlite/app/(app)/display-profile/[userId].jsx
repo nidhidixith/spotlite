@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ScrollView, RefreshControl } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -51,7 +44,6 @@ const DisplayProfile = () => {
     if (loggedInUserId === userId) {
       router.replace("(app)/(tabs)/userprofile");
     } else if (userId) {
-      // dispatch(fetchOtherUserProfile(userId));
       fetchData();
     }
 

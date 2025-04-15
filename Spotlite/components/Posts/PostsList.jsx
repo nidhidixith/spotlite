@@ -67,34 +67,10 @@ const PostsList = () => {
   };
 
   if (loading) {
-    // // Show Activity Indicator while loading
-    // return (
-    //   <View className="flex-1 justify-center items-center bg-white">
-    //     <ActivityIndicator size="large" color="#0284c7" />
-    //   </View>
-    // );
     return <LoadingIndicator />;
   }
 
   if (fetchPostsError) {
-    // return (
-    //   <View className="flex-1 justify-center items-center bg-white px-4">
-    //     <Text className="text-red-600 text-lg font-bold mb-4">
-    //       Oops! Something went wrong.
-    //     </Text>
-    //     <Text className="text-gray-600 text-center mb-4">
-    //       Please check your connection or try again later.
-    //     </Text>
-
-    //     {/* Retry Button */}
-    //     <TouchableOpacity
-    //       className="bg-sky-600 py-2 px-6 rounded-full"
-    //       onPress={handleRetry}
-    //     >
-    //       <Text className="text-white font-medium">Retry</Text>
-    //     </TouchableOpacity>
-    //   </View>
-    // );
     return <ErrorDisplayComponent onRetry={handleRetry} />;
   }
 
@@ -144,26 +120,6 @@ const PostsList = () => {
             <ListEndComponent message="You've reached the end!" />
           ) : null
         }
-        // ListFooterComponent={
-        //   loadingMore ? (
-        //     <ActivityIndicator size="large" color="#0284c7" />
-        //   ) : nextPage === null ? (
-        //     <View className="p-2 bg-white">
-        //       <Text className="text-lg font-semibold text-sky-600 self-center">
-        //         You are all caught up...
-        //       </Text>
-        //     </View>
-        //   ) : (
-        //     <TouchableOpacity className="p-2 bg-white">
-        //       <Text
-        //         className="text-xl font-bold text-sky-600 self-center"
-        //         onPress={handleLoadMore}
-        //       >
-        //         Load more...
-        //       </Text>
-        //     </TouchableOpacity>
-        //   )
-        // }
       />
     </SafeAreaView>
   );

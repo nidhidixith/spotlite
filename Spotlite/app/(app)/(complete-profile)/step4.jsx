@@ -2,10 +2,6 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import AntDesign from "@expo/vector-icons/AntDesign";
-
 import { links } from "../../../utilities/links";
 
 const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
@@ -87,8 +83,6 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
     }));
 
     const obj = { socialLinks: JSON.stringify(formattedSocialLinks) };
-
-    // profileData.append("social_links", JSON.stringify(formattedSocialLinks));
 
     handleNextStep(obj);
   };
@@ -179,8 +173,6 @@ const Step4 = ({ handlePrevStep, handleNextStep, handleSkip }) => {
 
       {/* Section 3: Your Links */}
 
-      {/* {socialLinks != null && (
-        <> */}
       <Text className="text-sm text-sky-600 mb-2 font-semibold">
         Your Links
       </Text>

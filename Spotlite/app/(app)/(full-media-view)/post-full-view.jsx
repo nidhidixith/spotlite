@@ -21,7 +21,6 @@ const PostFullView = () => {
 
   const [activeIndex, setActiveIndex] = useState(parseInt(index));
 
-  console.log("Media files:", mediaFiles);
   const parsedMediaFiles = JSON.parse(mediaFiles);
 
   const [sound, setSound] = useState(null); // Added sound state

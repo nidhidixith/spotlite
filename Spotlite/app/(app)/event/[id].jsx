@@ -1,4 +1,3 @@
-import { ActivityIndicator, View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +7,7 @@ import {
   fetchSpecificEvent,
   selectAllSpecificEvents,
 } from "../../../slices/eventsSlice";
-import GeneralEventDetail from "../../../components/Events/GeneralEventDetail";
+
 import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayComponent";
 import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 import GeneralUserEventDetail from "../../../components/Events/GeneralUserEventDetail";
@@ -40,7 +39,6 @@ const EventDetails = () => {
   }, [dispatch, eventId]);
 
   let userEvent = useSelector(selectAllSpecificEvents);
-  console.log("Specific event: ", userEvent);
   userEvent = userEvent[0];
   const fetchEventError = useSelector(
     (state) => state.event.specificEvent.error

@@ -15,15 +15,15 @@ const Step1 = ({ handleNextStep }) => {
         connections.
       </Text>
       <Text className="mb-3 text-justify text-sm">
-        Your profile is your canvas – a space to showcase your talents,
+        Your profile is your canvas – a space to showcase you-your art, talents,
         passions, and creativity. By completing your profile, you not only
         enhance your visibility but also connect with like-minded individuals,
         potential collaborators, and fans who appreciate your unique skills.
       </Text>
 
       <Text className="mb-3 text-justify text-sm">
-        Let's get started! Click 'Next' to begin shaping your artistic presence
-        on Artists-Central. Your creative community awaits!
+        Let's get started! Click 'Next' to begin shaping your presence on
+        Spotlite. Your creative community awaits!
       </Text>
 
       <TouchableOpacity

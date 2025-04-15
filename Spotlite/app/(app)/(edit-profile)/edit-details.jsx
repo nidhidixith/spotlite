@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -66,7 +65,6 @@ const EditDetails = () => {
   }
 
   const onSubmit = async (data) => {
-    console.log(data);
     const profileData = new FormData();
 
     profileData.append("first_name", data.firstName);

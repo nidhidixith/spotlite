@@ -13,7 +13,6 @@ const QuestionsAndAnswers = ({ profile }) => {
       profile.questions_and_answers.length > 0 ? (
         profile.questions_and_answers.map((q_and_a, index) => (
           <View key={index} className="flex-row items-start mb-3">
-            {/* <Text className="text-xl text-gray-800 mr-2">•</Text> */}
             <Text className="font-semibold text-base text-gray-800 mr-2">
               {index + 1}.
             </Text>

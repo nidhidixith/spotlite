@@ -14,28 +14,6 @@ const Step3 = ({ handlePrevStep, handleNextStep }) => {
   const maxInterests = 10;
   const [error, setError] = useState(null);
   const [selectedInterest, setSelectedInterest] = useState(null);
-  // const availableInterests = [
-  //   "painting",
-  //   "singing",
-  //   "dance",
-  //   "acting",
-  //   "writing",
-  //   "poetry",
-  //   "blogging",
-  //   "design",
-  //   "vlogging",
-  //   "photography",
-  //   "cinematography",
-  //   "travel",
-  //   "animation",
-  //   "health",
-  //   "fashion",
-  //   "fitness",
-  //   "cooking",
-  //   "podcasting",
-  //   "sports",
-  //   "gaming",
-  // ];
 
   const [tagInput, setTagInput] = useState("");
 
@@ -110,11 +88,6 @@ const Step3 = ({ handlePrevStep, handleNextStep }) => {
         {Object.entries(availableInterests).map(([interest]) => (
           <TouchableOpacity
             key={interest}
-            // className={`flex flex-row p-1 m-1 justify-center items-center rounded-lg ${
-            //   tags.includes(interest)
-            //     ? "bg-sky-50 border border-sky-200"
-            //     : "bg-gray-100 border border-gray-200"
-            // }`}
             className={`flex flex-row px-2 py-1 m-1 justify-center items-center rounded-lg border border-sky-200 ${
               tags.includes(interest) ? "bg-sky-50 " : ""
             }`}
@@ -169,7 +142,6 @@ const Step3 = ({ handlePrevStep, handleNextStep }) => {
         />
 
         <TouchableOpacity
-          // className="ml-2 bg-sky-500 px-2 py-3 rounded-lg"
           className={`ml-2 px-2 py-3 rounded-lg ${
             tagInput ? "bg-sky-500" : "bg-gray-300"
           }`}
