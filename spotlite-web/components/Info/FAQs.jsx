@@ -219,7 +219,7 @@ const FAQs = () => {
           <h2 className="text-lg md:text-xl text-gray-800 font-semibold mb-4">
             {category.title}
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-4 ">
             {category.questions.map((q) => (
               <AccordionItem
                 key={q.id}

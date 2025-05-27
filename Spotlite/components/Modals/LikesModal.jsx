@@ -12,6 +12,7 @@ import NameProfilePic from "../NameProfilePic";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import LoadingIndicator from "../Others/LoadingIndicator";
 import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
+import EmptyState from "../Others/EmptyState";
 
 const LikesModal = ({ postId, bottomSheetRef }) => {
   const dispatch = useDispatch();
@@ -55,6 +56,9 @@ const LikesModal = ({ postId, bottomSheetRef }) => {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        ListEmptyComponent={
+          <EmptyState message="No likes yet" details="Be the first to like" />
+        }
       />
     </View>
   );

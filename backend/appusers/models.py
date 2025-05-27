@@ -2,6 +2,8 @@ from django.db import models
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from django.core.validators import FileExtensionValidator
+
 
 # Create your models here.
 class UserProfile(models.Model):
@@ -14,10 +16,15 @@ class UserProfile(models.Model):
     primary_interest = models.CharField(max_length=50, blank=True)
     bio = models.TextField(max_length=500, blank=True)
     areas_of_interest = ArrayField(models.CharField(max_length=100), blank=True, default=list)
-    profile_pic = models.ImageField(default='def.webp', upload_to='profile_pics', null=True, blank=True)
+    profile_pic = models.ImageField(
+        default='def.webp',
+        upload_to='profile_pics',
+        null=True,
+        blank=True,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'webp'])]
+    )
     is_primary_profile_complete = models.BooleanField(default=False)
     is_full_profile_complete = models.BooleanField(default=False)
-
 
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -58,6 +65,7 @@ class UserProfile(models.Model):
 
     def save(self, *args, **kwargs):
         """Override the save method to update is_profile_complete."""
+        self.full_clean()  # This enforces field validators
         if not self.profile_pic:
             self.profile_pic = 'def.webp'
         self.is_primary_profile_complete = self.check_primary_profile_completion()

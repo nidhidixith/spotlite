@@ -10,9 +10,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Toolbar from "../../../components/Toolbar";
 import EventsList from "../../../components/Events/EventsList";
+import { getUserLocation } from "../../../utilities/location";
 
 const Events = () => {
   const [activeTab, setActiveTab] = useState("for-you");
+  const [userLocation, setUserLocation] = useState(null);
+  console.log("Active tab: ", activeTab);
+  console.log("User location from events is: ", userLocation);
   return (
     <SafeAreaView className="flex-1">
       <Toolbar />
@@ -41,7 +45,14 @@ const Events = () => {
             className={`py-1 px-3 mr-4 rounded-2xl bg-gray-200 ${
               activeTab === "nearby" && "bg-sky-600"
             }`}
-            onPress={() => setActiveTab("nearby")}
+            // onPress={() => setActiveTab("nearby")}
+            onPress={async () => {
+              const coords = await getUserLocation();
+              if (!coords) return;
+
+              setUserLocation(coords);
+              setActiveTab("nearby");
+            }}
           >
             <Text
               className={`font-semibold text-sm ${
@@ -98,7 +109,12 @@ const Events = () => {
           </TouchableOpacity>
         </ScrollView>
       </View>
-      <EventsList filter={activeTab} />
+      {/* <EventsList filter={activeTab} /> */}
+      {/* <EventsList filter={activeTab} userLocation={userLocation} /> */}
+      <EventsList
+        filter={activeTab}
+        userLocation={activeTab === "nearby" ? userLocation : null}
+      />
     </SafeAreaView>
   );
 };

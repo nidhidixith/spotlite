@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
+# from django.contrib.gis.db import models as geomodels
+
 
 def upload_to(instance, filename):
     if instance.media_file:
@@ -31,7 +33,10 @@ class Event(models.Model):
   event_date = models.DateField(null=True, blank=True)
   event_time = models.TimeField(null=True, blank=True)
   
-  event_location = models.CharField(max_length=200, null=True, blank=True)
+  event_location = models.CharField(max_length=255, null=True, blank=True)
+  event_location_latitude = models.FloatField(null=True, blank=True)
+  event_location_longitude = models.FloatField(null=True, blank=True)
+#   event_location_point = geomodels.PointField(geography=True, null=True, blank=True)
   event_link = models.URLField(max_length=200, blank=True, null=True)
 
   created_at = models.DateTimeField(auto_now_add=True,db_index=True)
@@ -54,4 +59,11 @@ class EventInterest(models.Model):
     class Meta:
         unique_together = ('user', 'event')
 
+
+class EventComments(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, db_index=True)
+    event_media = models.ForeignKey(EventMedia, on_delete=models.CASCADE, null=True, blank=True)
+    text = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
     

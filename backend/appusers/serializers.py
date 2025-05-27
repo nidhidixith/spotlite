@@ -44,6 +44,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ['id','user','user_id','username', 'first_name', 'last_name', 'display_name', 'date_of_birth', 'location','bio','social_links','additional_links','primary_interest', 'areas_of_interest', 'profile_pic','no_of_posts','follower_count','following_count','is_following','questions_and_answers']
 
+    def validate_date_of_birth(self, value):
+        # Check if the date_of_birth is not in the future
+        if value and value > timezone.now().date():
+            raise serializers.ValidationError("Date of birth cannot be in the future.")
+        return value
+
     def get_profile_pic(self, obj):
         request = self.context.get('request')
         if obj.profile_pic:

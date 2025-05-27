@@ -28,7 +28,10 @@ const NotificationExcerpt = React.memo(({ notificationId }) => {
   const bgColor = isRead ? "bg-white" : "bg-gray-100";
 
   const handleNotificationClick = () => {
-    if (notification?.type === "like" || notification?.type === "comment") {
+    if (
+      notification?.type === "post_like" ||
+      notification?.type === "post_comment"
+    ) {
       // dispatch(fetchSpecificPost({ postId: notification?.post }));
       setisRead(true);
       if (!notification?.is_read) {
@@ -41,7 +44,10 @@ const NotificationExcerpt = React.memo(({ notificationId }) => {
           postId: notification?.post,
         },
       });
-    } else if (notification?.type === "interested") {
+    } else if (
+      notification?.type === "event_interest" ||
+      notification?.type === "event_comment"
+    ) {
       dispatch(fetchUserEvents());
       setisRead(true);
       if (!notification?.is_read) {
@@ -53,7 +59,7 @@ const NotificationExcerpt = React.memo(({ notificationId }) => {
           eventId: notification?.event,
         },
       });
-    } else if (notification?.type === "follow") {
+    } else if (notification?.type === "user_follow") {
       console.log("Follow type notification");
       dispatch(fetchOtherUserProfile(notification.follower_id));
       setisRead(true);

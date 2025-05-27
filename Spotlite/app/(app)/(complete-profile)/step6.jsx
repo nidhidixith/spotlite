@@ -19,6 +19,30 @@ const Step6 = ({ handlePrevStep, handleNextStep }) => {
 
   const onSubmit = () => {
     if (image) {
+      const fileExtension = fileName?.split(".").pop().toLowerCase();
+
+      // Validate MIME type
+      if (
+        fileType !== "image/jpg" &&
+        fileType !== "image/jpeg" &&
+        fileType !== "image/png" &&
+        fileType !== "image/webp"
+      ) {
+        alert(
+          `${fileExtension} file type not supported. Please check the Supported file types tip.`
+        );
+        return;
+      }
+
+      // Validate file extension
+      const allowedExtensions = ["jpg", "jpeg", "png", "webp"];
+
+      if (!allowedExtensions.includes(fileExtension)) {
+        alert(
+          `${fileExtension} file type not supported. Check the Supported file types tip.`
+        );
+        return;
+      }
       const obj = {
         profile_pic: { uri: image, name: fileName, type: fileType },
       };
@@ -89,9 +113,13 @@ const Step6 = ({ handlePrevStep, handleNextStep }) => {
         <Text className="text-sky-600 font-medium mr-2 p-1">Choose Photo</Text>
         {image ? <Text>{fileName}</Text> : <Text>No file chosen</Text>}
       </TouchableOpacity>
-      <Text className="text-sm text-gray-500 italic mt-1">
-        Choose an engaging photo that represents you well.
+      {/* Supported file types tip */}
+      <Text className="text-xs text-gray-500 px-3 pt-1">
+        Supported types: JPG, JPEG, PNG, WEBP
       </Text>
+      {/* <Text className="text-sm text-gray-500 italic mt-1">
+        Choose an engaging photo that represents you well.
+      </Text> */}
       {image && <Image source={{ uri: image }} style={styles.image} />}
 
       <View className="flex flex-row justify-between gap-x-4 mt-5">

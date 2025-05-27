@@ -137,7 +137,8 @@ export const deleteUser = createAsyncThunk(
     console.log("RefreshToken from delete user slice: ", refreshToken); // Add this line
     try {
       const response = await instance.delete(
-        "/delete-user/",
+        "/users/me/",
+        // "/delete-user/",
         // "http://192.168.1.36:8000/api/delete-user/",
         {
           data: { refresh_token: refreshToken }, // Pass refresh_token inside 'data' field
@@ -206,7 +207,8 @@ const usersSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loginStatus = "failed";
-        state.loginError = action.payload;
+        // state.loginError = action.payload.error;
+        state.loginError = action.payload?.detail || "Login failed";
       })
 
       .addCase(logoutUser.pending, (state) => {

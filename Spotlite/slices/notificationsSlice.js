@@ -30,9 +30,10 @@ export const fetchUndeliveredNotificationCount = createAsyncThunk(
   "notifications/fetchUndeliveredNotificationCount",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await instance.get(
-        "/notifications/undelivered-notifications-count/"
-      );
+      // const response = await instance.get(
+      //   "/notifications/undelivered-notifications-count/"
+      // );
+      const response = await instance.get("/notifications/undelivered/");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -44,9 +45,10 @@ export const fetchNotifications = createAsyncThunk(
   "notifications/fetchNotifications",
   async ({ page = 1 }, { rejectWithValue }) => {
     // const response = await instance.get("/notifications/get-notifications/");
-    const response = await instance.get(
-      `/notifications/get-notifications/?page=${page}`
-    );
+    // const response = await instance.get(
+    //   `/notifications/get-notifications/?page=${page}`
+    // );
+    const response = await instance.get(`/notifications/?page=${page}`);
     return response.data;
   }
 );
@@ -55,13 +57,22 @@ export const savePushToken = createAsyncThunk(
   "notifications/savePushToken",
   async ({ pushToken }, { rejectWithValue }) => {
     console.log("I am inside save push token");
+    // const response = await instance.post(
+    //   "/notifications/save-push-token/",
+    //   { pushToken },
+    //   {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   }
+    // );
     const response = await instance.post(
-      "/notifications/save-push-token/",
+      "/notifications/push-tokens/",
       { pushToken },
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
       }
     );
 
@@ -78,9 +89,9 @@ export const unregisterPushToken = createAsyncThunk(
       "/notifications/unregister-push-token/",
       { pushToken },
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
       }
     );
 
@@ -92,13 +103,22 @@ export const markAsRead = createAsyncThunk(
   "notifications/markAsRead",
   async ({ notificationId }, { rejectWithValue }) => {
     try {
+      // const response = await instance.patch(
+      //   `/notifications/mark-as-read/${notificationId}/`,
+      //   null,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
       const response = await instance.patch(
-        `/notifications/mark-as-read/${notificationId}/`,
+        `/notifications/${notificationId}/`,
         null,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
         }
       );
 

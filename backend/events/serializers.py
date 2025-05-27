@@ -1,8 +1,10 @@
 from rest_framework import serializers
-from .models import Event, EventMedia, EventInterest
+from .models import Event, EventMedia, EventInterest, EventComments
 from appusers.models import UserProfile
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -35,7 +37,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ['id', 'user', 'user_id', 'display_name', 'profile_pic', 'uploaded_files','media_files', 'event_title', 'event_domain', 'event_description','event_date','event_time', 'event_location','event_link','created_at','interested_count','is_interested','content_type']
+        fields = ['id', 'user', 'user_id', 'display_name', 'profile_pic', 'uploaded_files','media_files', 'event_title', 'event_domain', 'event_description','event_date','event_time', 'event_location','event_location_latitude', 'event_location_longitude', 'event_link','created_at','interested_count','is_interested','content_type']
 
     def create(self, validated_data):
         uploaded_files = validated_data.pop("uploaded_files", None)
@@ -46,6 +48,11 @@ class EventSerializer(serializers.ModelSerializer):
                 EventMedia.objects.create(event=event, media_file=file)
         
         return event
+
+    def validate_event_date(self, value):
+        if value and value < timezone.now().date():
+            raise serializers.ValidationError("Event date cannot be in the past.")
+        return value
 
     def get_profile_pic(self, obj):
         request = self.context.get('request')
@@ -124,6 +131,23 @@ class EventInterestSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventInterest
         fields = ['id','user_id','user','display_name','profile_pic','primary_interest','event']
+
+    def get_profile_pic(self, obj):
+        request = self.context.get('request')
+        profile_pic_url = obj.user.userprofile.profile_pic.url
+        return request.build_absolute_uri(profile_pic_url)
+
+
+class EventCommentSerializer(serializers.ModelSerializer):
+    display_name = serializers.CharField(source='user.userprofile.display_name', read_only=True)
+    profile_pic = serializers.SerializerMethodField()
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+    event_owner_id = serializers.IntegerField(source='event.user.id', read_only=True)
+    primary_interest = serializers.CharField(source='user.userprofile.primary_interest', read_only=True)
+
+    class Meta:
+        model = EventComments
+        fields = ['id','user_id','event_owner_id','user','display_name','event','event_media','profile_pic','text','primary_interest','created_at']
 
     def get_profile_pic(self, obj):
         request = self.context.get('request')

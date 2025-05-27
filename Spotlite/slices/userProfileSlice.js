@@ -46,7 +46,8 @@ export const fetchUserProfile = createAsyncThunk(
   "userProfile/fetchUserProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await instance.get("/get-user-profile/");
+      // const response = await instance.get("/get-user-profile/");
+      const response = await instance.get("/profile/me/");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -58,7 +59,8 @@ export const fetchOtherUserProfile = createAsyncThunk(
   "otherUserProfile/fetchOtherUserProfile",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await instance.get(`/get-other-user-profile/${userId}/`);
+      // const response = await instance.get(`/get-other-user-profile/${userId}/`);
+      const response = await instance.get(`/users/${userId}/profile/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -70,7 +72,12 @@ export const completeUserProfile = createAsyncThunk(
   "userProfile/completeUserProfile",
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await instance.post("/complete-profile/", profileData, {
+      // const response = await instance.post("/complete-profile/", profileData, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
+      const response = await instance.post("/profile/complete/", profileData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -87,7 +94,8 @@ export const fetchQuestions = createAsyncThunk(
   "questions/fetchQuestions",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await instance.get("/get-questions/");
+      // const response = await instance.get("/get-questions/");
+      const response = await instance.get("/questions/");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -99,15 +107,20 @@ export const createOrUpdateAnswers = createAsyncThunk(
   "answers/createOrUpdateAnswers  ",
   async (answerData, { rejectWithValue }) => {
     try {
-      const response = await instance.post(
-        "/create-or-update-answers/",
-        answerData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      // const response = await instance.post(
+      //   "/create-or-update-answers/",
+      //   answerData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
+      const response = await instance.post("/answers/", answerData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       return response.data;
     } catch (error) {
@@ -120,7 +133,12 @@ export const editProfile = createAsyncThunk(
   "userProfile/editProfile",
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await instance.put("/edit-profile/", profileData, {
+      // const response = await instance.put("/edit-profile/", profileData, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
+      const response = await instance.put("/profile/", profileData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

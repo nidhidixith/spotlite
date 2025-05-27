@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { likePost, unLikePost, selectPostById } from "../../slices/postsSlice";
@@ -12,29 +12,70 @@ import CommentBox from "./CommentBox";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
+import { debounce } from "../../utilities/debounce";
+
+const DEBOUNCE_DELAY = 2000; // or 400 if you prefer a bit more cushion
+
 const PostButtons = ({ post }) => {
   const dispatch = useDispatch();
-
-  // const post = useSelector((state) => selectPostById(state, postId));
-  let [postLikes, setPostLikes] = useState(post?.like_count);
-  let [postComments, setPostComments] = useState(post?.comment_count);
-  let [isPostLiked, setIsPostLiked] = useState(post?.is_liked);
+  const [postLikes, setPostLikes] = useState(post?.like_count);
+  const [postComments, setPostComments] = useState(post?.comment_count);
+  const [isPostLiked, setIsPostLiked] = useState(post?.is_liked);
   const [showCommentBox, setShowCommentBox] = useState(false);
+  // const [isButtonDisabled, setIsButtonDisabled] = useState(false); // optional: disable button briefly
 
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ["50%", "75%"], []);
   const [modalContent, setModalContent] = useState(null);
 
+  // debounced like handler
+  // const debouncedLike = useCallback(
+  //   debounce(() => {
+  //     dispatch(likePost({ postId: post.id }));
+  //     // setIsButtonDisabled(false);
+  //   }, DEBOUNCE_DELAY),
+  //   []
+  // );
+
+  // const debouncedUnLike = useCallback(
+  //   debounce(() => {
+  //     dispatch(unLikePost({ postId: post.id }));
+  //     // setIsButtonDisabled(false);
+  //   }, DEBOUNCE_DELAY),
+  //   []
+  // );
+  const debouncedLike = useMemo(
+    () =>
+      debounce(() => {
+        dispatch(likePost({ postId: post.id }));
+      }, DEBOUNCE_DELAY),
+    [dispatch, post?.id]
+  );
+
+  const debouncedUnLike = useMemo(
+    () =>
+      debounce(() => {
+        dispatch(unLikePost({ postId: post.id }));
+      }, DEBOUNCE_DELAY),
+    [dispatch, post?.id]
+  );
+
   const handleLike = () => {
-    setPostLikes(postLikes + 1);
+    // if (isButtonDisabled) return;
+    // setIsButtonDisabled(true);
+    debouncedUnLike.cancel();
+    setPostLikes((prev) => prev + 1);
     setIsPostLiked(true);
-    dispatch(likePost({ postId: post.id }));
+    debouncedLike();
   };
 
   const handleUnLike = () => {
-    setPostLikes(postLikes - 1);
+    // if (isButtonDisabled) return;
+    // setIsButtonDisabled(true);
+    debouncedLike.cancel();
+    setPostLikes((prev) => prev - 1);
     setIsPostLiked(false);
-    dispatch(unLikePost({ postId: post.id }));
+    debouncedUnLike();
   };
 
   const handleComment = () => {
@@ -60,7 +101,11 @@ const PostButtons = ({ post }) => {
       <View className="flex flex-row items-center">
         <View className="flex flex-row items-center mr-4">
           {isPostLiked ? (
-            <TouchableOpacity onPress={handleUnLike} activeOpacity={0.5}>
+            <TouchableOpacity
+              onPress={handleUnLike}
+              activeOpacity={0.5}
+              // disabled={isButtonDisabled}
+            >
               <AntDesign
                 name="like1"
                 size={22}
@@ -69,7 +114,11 @@ const PostButtons = ({ post }) => {
               />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={handleLike} activeOpacity={0.5}>
+            <TouchableOpacity
+              onPress={handleLike}
+              activeOpacity={0.5}
+              // disabled={isButtonDisabled}
+            >
               <AntDesign
                 name="like2"
                 size={22}
@@ -78,7 +127,6 @@ const PostButtons = ({ post }) => {
               />
             </TouchableOpacity>
           )}
-
           <TouchableOpacity onPress={handleGetLikes} activeOpacity={0.5}>
             <Text className="text-gray-800 text-sm">
               {postLikes > 0 && `${postLikes} likes`}

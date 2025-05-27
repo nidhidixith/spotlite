@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,10 @@ import { addNewEvent } from "../../../slices/eventsSlice";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useToast } from "../../../contexts/ToastContext";
+import axios from "axios";
+import { debounce } from "../../../utilities/debounce";
+import { locationAutocomplete } from "../../../utilities/locationAutocomplete";
+const MY_API_KEY = process.env.EXPO_PUBLIC_LOCATIONIQ_API_KEY;
 
 const CreateEvent = () => {
   const {
@@ -45,6 +49,38 @@ const CreateEvent = () => {
   // State for time picker
   const [eventTime, setEventTime] = useState(null);
   const [showTimePicker, setShowTimePicker] = useState(false);
+
+  // const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [selectedCoords, setSelectedCoords] = useState({
+    lat: null,
+    lon: null,
+  });
+  const [isSuggestionSelected, setIsSuggestionSelected] = useState(false);
+
+  const fetchSuggestions = async (text) => {
+    const fetchedSuggestions = await locationAutocomplete(text);
+    setSuggestions(fetchedSuggestions);
+  };
+
+  const debouncedFetchSuggestions = useCallback(
+    debounce((text) => {
+      fetchSuggestions(text);
+    }, 500),
+    []
+  );
+
+  // useEffect(() => {
+  //   return () => {
+  //     debouncedFetchSuggestions.cancel?.();
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedFetchSuggestions.cancel?.();
+    };
+  }, [debouncedFetchSuggestions]); // <-- Add dependency
 
   // Function to handle date change
   const onEventDateChange = (event, selectedEventDate) => {
@@ -105,8 +141,21 @@ const CreateEvent = () => {
       eventData.append("event_time", formattedEventTime);
     }
 
+    // if (data.event_location) {
+    //   eventData.append("event_location", data.event_location);
+    // }
     if (data.event_location) {
       eventData.append("event_location", data.event_location);
+      if (isSuggestionSelected && selectedCoords) {
+        eventData.append(
+          "event_location_latitude",
+          parseFloat(selectedCoords.lat)
+        );
+        eventData.append(
+          "event_location_longitude",
+          parseFloat(selectedCoords.lon)
+        );
+      }
     }
     if (data.event_link) {
       eventData.append("event_link", data.event_link);
@@ -117,6 +166,7 @@ const CreateEvent = () => {
         eventData.append("uploaded_files", file);
       });
     }
+    console.log("Event data from front end is: ", eventData);
 
     try {
       const response = await dispatch(addNewEvent(eventData)).unwrap();
@@ -130,6 +180,8 @@ const CreateEvent = () => {
       setValue("event_domain", "");
       setValue("event_description", "");
       setValue("event_location", "");
+      setValue("event_location_latitude", "");
+      setValue("event_location_longitude", "");
       setValue("event_link", "");
       setValue("event_date", "");
       setEventTime(null);
@@ -189,15 +241,55 @@ const CreateEvent = () => {
       quality: 1,
     });
 
-    if (!result.canceled) {
-      const selectedImages = result.assets.map((asset) => ({
-        uri: asset.uri,
-        name: asset.uri.split("/").pop(),
-        type: asset.mimeType,
-      }));
+    // if (!result.canceled) {
+    //   const selectedImages = result.assets.map((asset) => ({
+    //     uri: asset.uri,
+    //     name: asset.uri.split("/").pop(),
+    //     type: asset.mimeType,
+    //   }));
 
-      console.log("Images:", selectedImages);
-      setMediaFiles(selectedImages);
+    //   console.log("Images:", selectedImages);
+    //   setMediaFiles(selectedImages);
+    // }
+    if (!result.canceled) {
+      const selectedImages = result.assets.map((asset) => {
+        const fileExtension = asset.uri.split(".").pop().toLowerCase();
+        // const fileExtension = fileName?.split(".").pop().toLowerCase();
+
+        const allowedExtensions = [
+          "jpg",
+          "jpeg",
+          "png",
+          "webp",
+          "mp4",
+          "mov",
+          "avi",
+          "webm",
+          "mkv",
+        ];
+
+        // Validate extension
+        if (!allowedExtensions.includes(fileExtension)) {
+          alert(
+            "Unsupported file type. Please check the Supported file types tip"
+          );
+          return null; // Return null to avoid adding invalid files to mediaFiles
+        }
+
+        return {
+          uri: asset.uri,
+          name: asset.uri.split("/").pop(),
+          type: asset.mimeType,
+        };
+      });
+      const validFiles = selectedImages.filter((file) => file !== null);
+
+      if (validFiles.length > 0) {
+        console.log("Valid Images/Videos:", validFiles);
+        setMediaFiles(validFiles);
+      } else {
+        console.log("No valid files selected.");
+      }
     }
   };
 
@@ -213,8 +305,11 @@ const CreateEvent = () => {
         <View className="px-4 py-2">
           <View className="mb-3">
             <Text className="mb-2 font-semibold text-sm text-gray-600">
-              Event Title *
+              Event Title{" "}
+              <Text className="italic text-gray-500">(Max 150 characters)</Text>{" "}
+              *
             </Text>
+
             <Controller
               control={control}
               rules={{
@@ -245,7 +340,9 @@ const CreateEvent = () => {
 
           <View className="mb-3">
             <Text className="mb-2 font-semibold text-sm text-gray-600">
-              Event Domain *
+              Event Domain{" "}
+              <Text className="italic text-gray-500">(Max 100 characters)</Text>{" "}
+              *
             </Text>
             <Controller
               control={control}
@@ -277,7 +374,11 @@ const CreateEvent = () => {
 
           <View className="mb-3">
             <Text className="mb-2 font-semibold text-sm text-gray-600">
-              Event Description *
+              Event Description{" "}
+              <Text className="italic text-gray-500">
+                (Max 5000 characters)
+              </Text>{" "}
+              *
             </Text>
             <Controller
               control={control}
@@ -394,7 +495,6 @@ const CreateEvent = () => {
 
             <View className="flex flex-row justify-between gap-4">
               <View className="flex flex-row items-center flex-1">
-                {/* <Text className="text-[14px] mr-2">From</Text> */}
                 <View className="flex-1">
                   <TouchableOpacity
                     className="flex flex-row items-center border border-gray-200 rounded-lg px-3 py-3 focus:border-sky-500"
@@ -424,22 +524,58 @@ const CreateEvent = () => {
               control={control}
               rules={{
                 maxLength: {
-                  value: 200,
-                  message: "Maximum 200 characters allowed",
+                  value: 255,
+                  message: "Maximum 255 characters allowed",
                 },
               }}
               render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder="Add event location"
-                  placeholderTextColor="#9CA3AF"
-                />
+                // <TextInput
+                //   className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
+                //   onBlur={onBlur}
+                //   onChangeText={onChange}
+                //   value={value}
+                //   placeholder="Add event location"
+                //   placeholderTextColor="#9CA3AF"
+                // />
+                <View>
+                  <TextInput
+                    className="rounded-lg border border-gray-200 px-3 py-2 text-gray-900 text-sm focus:border-sky-500"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      // fetchSuggestions(text);
+                      setIsSuggestionSelected(false); // reset selection flag
+                      debouncedFetchSuggestions(text);
+                    }}
+                    value={value}
+                    placeholder="Add event location"
+                    placeholderTextColor="#9CA3AF"
+                  />
+                  {suggestions.length > 0 && (
+                    <View className="bg-white border border-gray-300 rounded-md mt-1">
+                      {suggestions.map((item, index) => (
+                        <TouchableOpacity
+                          key={index}
+                          className="px-3 py-2 border-b border-gray-100"
+                          onPress={() => {
+                            onChange(item.display_name);
+                            setSelectedCoords({ lat: item.lat, lon: item.lon });
+                            setIsSuggestionSelected(true);
+                            setSuggestions([]); // hide dropdown
+                          }}
+                        >
+                          <Text className="text-sm text-gray-700">
+                            {item.display_name}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </View>
               )}
               name="event_location"
             />
+
             {errors.event_location && (
               <Text className="text-red-500 mb-2">
                 {errors.event_location.message}
@@ -510,6 +646,11 @@ const CreateEvent = () => {
             onChange={onEventTimeChange}
           />
         )}
+
+        {/* Supported file types tip */}
+        <Text className="text-xs text-gray-500 px-3 pt-1">
+          Supported types: JPG, JPEG, PNG, WEBP, MP4, MOV, AVI, WEBM, MKV
+        </Text>
 
         <TouchableOpacity
           className={`bg-sky-600  self-end px-4 py-2 m-2 rounded-lg ${

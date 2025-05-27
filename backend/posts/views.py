@@ -24,7 +24,7 @@ class StandardResultsPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 50
 
-@api_view(['GET'])
+# @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_posts(request):
     current_user = request.user
@@ -101,7 +101,7 @@ def get_latest_post(request, userId):
         return Response({'detail': 'No posts found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['POST'])
+# @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @parser_classes([MultiPartParser, FormParser])
 def add_post(request):
@@ -149,12 +149,20 @@ def like_post(request, postId):
 
 
         # Create notification only if the user is not the post owner
+        # if current_user != post.user:
+        #     notification = Notification.objects.create(
+        #         user=post.user,
+        #         sender=current_user,
+        #         message="liked your post",
+        #         type="like",
+        #         post=post,
+        #     )
         if current_user != post.user:
             notification = Notification.objects.create(
                 user=post.user,
                 sender=current_user,
                 message="liked your post",
-                type="like",
+                type=Notification.NotificationType.POST_LIKE,
                 post=post,
             )
         
@@ -176,11 +184,28 @@ def like_post(request, postId):
 
 
 
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_likes(request, postId):
+#     likes = None  # Initialize likes variable
+    
+#     # Get the post
+#     try:
+#         post = Post.objects.get(id=postId)
+#     except Post.DoesNotExist:
+#         return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+#     likes = Likes.objects.filter(post=post)
+    
+#     if likes is not None:    
+#         serializer = LikeSerializer(likes, many=True ,context={'request': request})
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+#     return Response({"error": "Error fetching likes."},status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_likes(request, postId):
-    likes = None  # Initialize likes variable
-    
     # Get the post
     try:
         post = Post.objects.get(id=postId)
@@ -189,14 +214,11 @@ def get_likes(request, postId):
 
     likes = Likes.objects.filter(post=post)
     
-    if likes is not None:    
-        serializer = LikeSerializer(likes, many=True ,context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    return Response({"error": "Error fetching likes."},status=status.HTTP_400_BAD_REQUEST)
+    serializer = LikeSerializer(likes, many=True ,context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-@api_view(['POST'])
+# @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_comment(request, postId):
     current_user = request.user
@@ -217,13 +239,22 @@ def add_comment(request, postId):
                 post_serializer = PostsSerializer(post, context={'request': request})
 
                  # Create notification only if the user is not the post owner
+                # if current_user != post.user:
+                #     notification = Notification.objects.create(
+                #         user=post.user,
+                #         sender=current_user,
+                #         # message=f"{current_user.userprofile.display_name} liked your post",
+                #         message="commented on your post",
+                #         type="comment",
+                #         post=post,
+                #     )
                 if current_user != post.user:
                     notification = Notification.objects.create(
                         user=post.user,
                         sender=current_user,
                         # message=f"{current_user.userprofile.display_name} liked your post",
                         message="commented on your post",
-                        type="comment",
+                        type=Notification.NotificationType.POST_COMMENT,
                         post=post,
                     )
                 return Response(post_serializer.data, status=status.HTTP_201_CREATED)
@@ -235,26 +266,42 @@ def add_comment(request, postId):
     return Response({"error": "Invalid request method."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-@api_view(['GET'])
+# # @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def get_comments(request, postId):
+#     comments = None
+
+#     try:
+#         post = Post.objects.get(id=postId)
+#     except Post.DoesNotExist:
+#         return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+#     comments = Comments.objects.filter(post=post).order_by('-created_at')
+    
+#     if comments:    
+#         serializer = CommentSerializer(comments, many=True,context={'request': request})
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+#     return Response({"error": "Error fetching comments."},status=status.HTTP_400_BAD_REQUEST)
+
+
+# @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_comments(request, postId):
-    comments = None
-
     try:
         post = Post.objects.get(id=postId)
     except Post.DoesNotExist:
         return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
 
     comments = Comments.objects.filter(post=post).order_by('-created_at')
+    serializer = CommentSerializer(comments, many=True,context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
     
-    if comments:    
-        serializer = CommentSerializer(comments, many=True,context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    return Response({"error": "Error fetching comments."},status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+
+
+# @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_post(request, postId):
     try:
@@ -268,7 +315,7 @@ def get_post(request, postId):
 
 
 
-@api_view(['DELETE'])
+# @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_post(request, postId):
     try:
@@ -289,9 +336,9 @@ def delete_post(request, postId):
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def delete_post_comment(request):
-    postId = request.query_params.get('postId')
-    commentId = request.query_params.get('commentId')
+def delete_post_comment(request, postId, commentId):
+    # postId = request.query_params.get('postId')
+    # commentId = request.query_params.get('commentId')
     try:
         # Fetch the post to ensure it exists
         post = Post.objects.get(id=postId)
@@ -313,3 +360,25 @@ def delete_post_comment(request):
     return Response({"message": "Comment deleted successfully."}, status=status.HTTP_200_OK)
 
 
+# Grouping the views to follow RESTful practices.
+
+@api_view(['GET', 'POST'])
+def post_list_create_view(request):
+    if request.method == 'GET':
+        return get_posts(request)
+    elif request.method == 'POST':
+        return add_post(request)
+
+@api_view(['GET', 'DELETE'])
+def post_detail_view(request, postId):
+    if request.method == 'GET':
+        return get_post(request, postId)
+    elif request.method == 'DELETE':
+        return delete_post(request, postId)
+
+@api_view(['GET', 'POST'])
+def post_comments_view(request, postId):
+    if request.method == 'GET':
+        return get_comments(request, postId)
+    elif request.method == 'POST':
+        return add_comment(request, postId)

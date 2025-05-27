@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import {
@@ -7,6 +7,10 @@ import {
   unLikePost,
   selectUserPostById,
 } from "../../slices/postsSlice";
+
+import { debounce } from "../../utilities/debounce";
+
+const DEBOUNCE_DELAY = 2000; // or 400 if you prefer a bit more cushion
 
 import CustomBottomSheetModal from "../Modals/CustomBottomSheetModal";
 import LikesModal from "../Modals/LikesModal";
@@ -25,21 +29,59 @@ const PostButtons = ({ post }) => {
   let [postComments, setPostComments] = useState(post?.comment_count);
   let [isPostLiked, setIsPostLiked] = useState(post?.is_liked);
   const [showCommentBox, setShowCommentBox] = useState(false);
+  // const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ["50%", "75%"], []);
   const [modalContent, setModalContent] = useState(null);
 
+  // const debouncedLike = useCallback(
+  //   debounce(() => {
+  //     dispatch(likePost({ postId: post.id }));
+  //     // setIsButtonDisabled(false);
+  //   }, DEBOUNCE_DELAY),
+  //   []
+  // );
+
+  // const debouncedUnLike = useCallback(
+  //   debounce(() => {
+  //     dispatch(unLikePost({ postId: post.id }));
+  //     // setIsButtonDisabled(false);
+  //   }, DEBOUNCE_DELAY),
+  //   []
+  // );
+  const debouncedLike = useMemo(
+    () =>
+      debounce(() => {
+        dispatch(likePost({ postId: post.id }));
+      }, DEBOUNCE_DELAY),
+    [dispatch, post?.id]
+  );
+
+  const debouncedUnLike = useMemo(
+    () =>
+      debounce(() => {
+        dispatch(unLikePost({ postId: post.id }));
+      }, DEBOUNCE_DELAY),
+    [dispatch, post?.id]
+  );
+
   const handleLike = () => {
-    setPostLikes(postLikes + 1);
+    // if (isButtonDisabled) return;
+    // setIsButtonDisabled(true);
+    debouncedUnLike.cancel();
+    setPostLikes((prev) => prev + 1);
     setIsPostLiked(true);
-    dispatch(likePost({ postId: post.id }));
+    debouncedLike();
   };
 
   const handleUnLike = () => {
-    setPostLikes(postLikes - 1);
+    // if (isButtonDisabled) return;
+    // setIsButtonDisabled(true);
+    debouncedLike.cancel();
+    setPostLikes((prev) => prev - 1);
     setIsPostLiked(false);
-    dispatch(unLikePost({ postId: post.id }));
+    debouncedUnLike();
   };
 
   const handleComment = () => {
@@ -65,7 +107,11 @@ const PostButtons = ({ post }) => {
       <View className="flex flex-row items-center">
         <View className="flex flex-row items-center mr-4">
           {isPostLiked ? (
-            <TouchableOpacity onPress={handleUnLike} activeOpacity={0.5}>
+            <TouchableOpacity
+              onPress={handleUnLike}
+              activeOpacity={0.5}
+              // disabled={isButtonDisabled}
+            >
               <AntDesign
                 name="like1"
                 size={22}
@@ -74,7 +120,11 @@ const PostButtons = ({ post }) => {
               />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={handleLike} activeOpacity={0.5}>
+            <TouchableOpacity
+              onPress={handleLike}
+              activeOpacity={0.5}
+              // disabled={isButtonDisabled}
+            >
               <AntDesign
                 name="like2"
                 size={22}

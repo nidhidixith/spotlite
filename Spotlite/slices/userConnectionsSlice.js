@@ -43,7 +43,8 @@ export const fetchUserFollowersList = createAsyncThunk(
   "userFollowers/fetchUserFollowersList",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await instance.get(`/connections/get-followers-list/`);
+      // const response = await instance.get(`/connections/get-followers-list/`);
+      const response = await instance.get(`/connections/users/me/followers/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -55,7 +56,8 @@ export const fetchUserFollowingList = createAsyncThunk(
   "userFollowing/fetchUserFollowingList",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await instance.get(`/connections/get-following-list/`);
+      // const response = await instance.get(`/connections/get-following-list/`);
+      const response = await instance.get(`/connections/users/me/following/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -67,8 +69,11 @@ export const fetchOtherUserFollowersList = createAsyncThunk(
   "otherUserFollowers/fetchOtherUserFollowersList",
   async ({ userId }, { rejectWithValue }) => {
     try {
+      // const response = await instance.get(
+      //   `/connections/get-others-followers-list/${userId}/`
+      // );
       const response = await instance.get(
-        `/connections/get-others-followers-list/${userId}/`
+        `/connections/users/${userId}/followers/`
       );
 
       return response.data;
@@ -82,8 +87,11 @@ export const fetchOtherUserFollowingList = createAsyncThunk(
   "otherUserFollowing/fetchOtherUserFollowingList",
   async ({ userId }, { rejectWithValue }) => {
     try {
+      // const response = await instance.get(
+      //   `/connections/get-others-following-list/${userId}/`
+      // );
       const response = await instance.get(
-        `/connections/get-others-following-list/${userId}/`
+        `/connections/users/${userId}/following/`
       );
       return response.data;
     } catch (error) {
@@ -96,13 +104,22 @@ export const follow = createAsyncThunk(
   "userConnections/follow",
   async ({ userId }, { rejectWithValue }) => {
     try {
+      // const response = await instance.post(
+      //   `/connections/follow/${userId}/`,
+      //   null,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
       const response = await instance.post(
-        `/connections/follow/${userId}/`,
+        `/connections/users/${userId}/follow/`,
         null,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
         }
       );
 
@@ -120,13 +137,22 @@ export const unfollow = createAsyncThunk(
   "userConnections/unfollow",
   async ({ userId }, { rejectWithValue }) => {
     try {
+      // const response = await instance.delete(
+      //   `/connections/unfollow/${userId}/`,
+      //   null,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
       const response = await instance.delete(
-        `/connections/unfollow/${userId}/`,
+        `/connections/users/${userId}/unfollow/`,
         null,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
         }
       );
 
@@ -144,13 +170,22 @@ export const removeFollower = createAsyncThunk(
   "userConnections/removeFollower",
   async ({ userId }, { rejectWithValue }) => {
     try {
+      // const response = await instance.delete(
+      //   `/connections/remove-follower/${userId}/`,
+      //   null,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
       const response = await instance.delete(
-        `/connections/remove-follower/${userId}/`,
+        `/connections/users/${userId}/remove-follower/`,
         null,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
         }
       );
 

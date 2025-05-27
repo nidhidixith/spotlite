@@ -59,7 +59,8 @@ const About = () => {
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-10 px-6">
+      {/* <section className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-10 px-6"> */}
+      <section className="bg-violet-500 text-white text-center py-10 px-6">
         <h1 className="text-4xl font-bold">
           Spotlite - Shine Bright, Connect & Inspire
         </h1>
@@ -86,8 +87,8 @@ const About = () => {
         </p>
         <p className="mt-2 max-w-3xl mx-auto text-gray-700">
           At Spotlite, we believe in empowering creators to take center stage
-          because your art deserves to be seen , your voice deserves to be
-          heard, and your journey deserves to be celebrated.
+          because your art deserves to be seen, your voice deserves to be heard,
+          and your journey deserves to be celebrated.
         </p>
       </section>
 

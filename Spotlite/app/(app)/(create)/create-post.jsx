@@ -130,15 +130,55 @@ const CreatePost = () => {
       quality: 1,
     });
 
-    if (!result.canceled) {
-      const selectedImages = result.assets.map((asset) => ({
-        uri: asset.uri,
-        name: asset.uri.split("/").pop(),
-        type: asset.mimeType,
-      }));
+    // if (!result.canceled) {
+    //   const selectedImages = result.assets.map((asset) => ({
+    //     uri: asset.uri,
+    //     name: asset.uri.split("/").pop(),
+    //     type: asset.mimeType,
+    //   }));
 
-      console.log("Images:", selectedImages);
-      setMediaFiles(selectedImages);
+    //   console.log("Images:", selectedImages);
+    //   setMediaFiles(selectedImages);
+    // }
+    if (!result.canceled) {
+      const selectedImages = result.assets.map((asset) => {
+        const fileExtension = asset.uri.split(".").pop().toLowerCase();
+        // const fileExtension = fileName?.split(".").pop().toLowerCase();
+
+        const allowedExtensions = [
+          "jpg",
+          "jpeg",
+          "png",
+          "webp",
+          "mp4",
+          "mov",
+          "avi",
+          "webm",
+          "mkv",
+        ];
+
+        // Validate extension
+        if (!allowedExtensions.includes(fileExtension)) {
+          alert(
+            "Unsupported file type. Please check the Supported file types tip"
+          );
+          return null; // Return null to avoid adding invalid files to mediaFiles
+        }
+
+        return {
+          uri: asset.uri,
+          name: asset.uri.split("/").pop(),
+          type: asset.mimeType,
+        };
+      });
+      const validFiles = selectedImages.filter((file) => file !== null);
+
+      if (validFiles.length > 0) {
+        console.log("Valid Images/Videos:", validFiles);
+        setMediaFiles(validFiles);
+      } else {
+        console.log("No valid files selected.");
+      }
     }
   };
   return (
@@ -158,6 +198,10 @@ const CreatePost = () => {
             onChangeText={setText}
             maxLength={5000}
           />
+          {/* Character limit tip */}
+          <Text className="text-xs text-gray-500 text-right pr-2">
+            Max 5000 characters
+          </Text>
         </View>
       </ScrollView>
       <TouchableOpacity
@@ -175,6 +219,11 @@ const CreatePost = () => {
           </Text>
         )}
       </TouchableOpacity>
+
+      {/* Supported file types tip */}
+      <Text className="text-xs text-gray-500 px-3 pt-1">
+        Supported types: JPG, JPEG, PNG, WEBP, MP4, MOV, AVI, WEBM, MKV
+      </Text>
 
       <TouchableOpacity
         className={`bg-sky-600  self-end px-4 py-2 m-2 rounded-lg ${

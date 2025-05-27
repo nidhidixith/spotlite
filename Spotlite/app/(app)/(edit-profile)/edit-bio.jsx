@@ -75,8 +75,16 @@ const EditBio = () => {
       }}
     >
       <View className="">
-        <Text className="text-gray-600 font-semibold text-base mb-2">
+        {/* <Text className="text-gray-600 font-semibold text-base mb-2">
           Bio/Description *
+        </Text> */}
+
+        <Text className="mb-2 font-semibold text-base text-gray-600">
+          Bio/Description{" "}
+          <Text className="italic text-gray-500 text-sm">
+            (Max 500 characters)
+          </Text>{" "}
+          *
         </Text>
 
         <Controller

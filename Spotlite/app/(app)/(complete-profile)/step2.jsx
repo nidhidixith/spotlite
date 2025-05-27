@@ -316,7 +316,7 @@ const Step2 = ({ handlePrevStep, handleNextStep }) => {
       <View className="mb-3">
         <Text className="mb-2 font-semibold text-sm text-gray-600">
           Bio/Description{" "}
-          <Text className="italic text-gray-500">(Max 500 characters)*</Text>
+          <Text className="italic text-gray-500">(Max 500 characters)</Text> *
         </Text>
         <Controller
           control={control}

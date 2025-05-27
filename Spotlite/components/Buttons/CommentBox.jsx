@@ -11,6 +11,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 
 import { addComment } from "../../slices/postsSlice";
+import LoadingIndicator from "../Others/LoadingIndicator";
 
 const CommentBox = ({ postId, postComments, setPostComments }) => {
   const dispatch = useDispatch();
@@ -29,12 +30,7 @@ const CommentBox = ({ postId, postComments, setPostComments }) => {
   // );
 
   if (addCommentStatus === "loading") {
-    // Show Activity Indicator while loading
-    return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#0284c7" />
-      </View>
-    );
+    <LoadingIndicator />;
   }
 
   const onSubmit = (data) => {
@@ -66,7 +62,7 @@ const CommentBox = ({ postId, postComments, setPostComments }) => {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              placeholder="Add comment"
+              placeholder="Add a comment"
               placeholderTextColor="#9CA3AF"
             />
           )}

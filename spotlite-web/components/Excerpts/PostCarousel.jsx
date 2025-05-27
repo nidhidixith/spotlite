@@ -21,9 +21,9 @@ const PostCarousel = ({ mediaFiles }) => {
         <Image
           src={firstImage}
           alt="Post Image"
-          layout="responsive" // ✅ Makes it responsive
-          width={100} // ✅ Controls aspect ratio
-          height={100} // ✅ Controls aspect ratio
+          // layout="responsive" // ✅ Makes it responsive
+          width={400} // ✅ Controls aspect ratio
+          height={400} // ✅ Controls aspect ratio
           className="rounded-sm cursor-pointer"
           onClick={() => setIsModalOpen(true)}
         />

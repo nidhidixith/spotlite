@@ -85,6 +85,30 @@ const EditProfilePicture = () => {
   const onSubmit = async () => {
     const profileData = new FormData();
     if (image !== defaultImage) {
+      const fileExtension = fileName?.split(".").pop().toLowerCase();
+
+      // Validate MIME type
+      if (
+        fileType !== "image/jpg" &&
+        fileType !== "image/jpeg" &&
+        fileType !== "image/png" &&
+        fileType !== "image/webp"
+      ) {
+        alert(
+          `${fileExtension} file type not supported. Check the Supported file types tip.`
+        );
+        return;
+      }
+
+      // Validate file extension
+      const allowedExtensions = ["jpg", "jpeg", "png", "webp"];
+
+      if (!allowedExtensions.includes(fileExtension)) {
+        alert(
+          `${fileExtension} file type not supported. Please check the Supported file types tip.`
+        );
+        return;
+      }
       profileData.append("profile_pic", {
         uri: image,
         name: fileName,
@@ -127,10 +151,12 @@ const EditProfilePicture = () => {
         <Text className="text-gray-800 font-semibold text-lg">
           Profile Picture
         </Text>
+
         <TouchableOpacity onPress={pickImage}>
           <Text className="text-base text-sky-600">Edit</Text>
         </TouchableOpacity>
       </View>
+
       {image ? (
         <Image
           className="w-[120px] h-[120px] rounded-full self-center mb-4"
@@ -144,6 +170,10 @@ const EditProfilePicture = () => {
           resizeMode="cover"
         />
       )}
+
+      <Text className="text-xs text-gray-500 mb-2">
+        Supported types: JPG, JPEG, PNG, WEBP
+      </Text>
 
       <TouchableOpacity
         className="flex flex-row items-center"

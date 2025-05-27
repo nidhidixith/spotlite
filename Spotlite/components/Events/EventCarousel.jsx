@@ -47,7 +47,7 @@ const EventCarousel = ({ mediaFiles }) => {
       >
         {isVideo || isAudio ? (
           <View
-            style={{ height: 400, width: screenWidth }}
+            style={{ height: 300, width: screenWidth }}
             className="bg-black justify-center items-center"
           >
             <TouchableOpacity
@@ -69,7 +69,7 @@ const EventCarousel = ({ mediaFiles }) => {
           <>
             <Image
               source={{ uri: item.media_file }}
-              style={{ height: 400, width: screenWidth }}
+              style={{ height: 300, width: screenWidth }}
               resizeMode="cover"
             />
           </>

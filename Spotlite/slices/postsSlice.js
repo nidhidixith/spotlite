@@ -79,7 +79,8 @@ export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async ({ page = 1 }, { rejectWithValue }) => {
     try {
-      const response = await instance.get(`/posts/get-posts/?page=${page}`);
+      // const response = await instance.get(`/posts/get-posts/?page=${page}`);
+      const response = await instance.get(`/posts/?page=${page}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -90,7 +91,8 @@ export const fetchPosts = createAsyncThunk(
 export const fetchUserPosts = createAsyncThunk(
   "userPosts/fetchUserPosts",
   async ({ page = 1 }, { rejectWithValue }) => {
-    const response = await instance.get(`/posts/get-user-posts/?page=${page}`);
+    // const response = await instance.get(`/posts/get-user-posts/?page=${page}`);
+    const response = await instance.get(`/posts/user/?page=${page}`);
     return response.data;
   }
 );
@@ -98,9 +100,10 @@ export const fetchUserPosts = createAsyncThunk(
 export const fetchOtherUserPosts = createAsyncThunk(
   "otherUserPosts/fetchOtherUserPosts",
   async ({ userId, page = 1 }, { rejectWithValue }) => {
-    const response = await instance.get(
-      `/posts/get-other-user-posts/${userId}/?page=${page}`
-    );
+    // const response = await instance.get(
+    //   `/posts/get-other-user-posts/${userId}/?page=${page}`
+    // );
+    const response = await instance.get(`/posts/user/${userId}/?page=${page}`);
     return response.data;
   }
 );
@@ -109,7 +112,12 @@ export const addNewPost = createAsyncThunk(
   "userPosts/addNewPost",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await instance.post("/posts/add-post/", formData, {
+      // const response = await instance.post("/posts/add-post/", formData, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
+      const response = await instance.post("/posts/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -126,15 +134,20 @@ export const likePost = createAsyncThunk(
   "postLikes/likePost",
   async ({ postId }, { rejectWithValue }) => {
     try {
-      const response = await instance.post(
-        `/posts/like-post/${postId}/`,
-        null,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      // const response = await instance.post(
+      //   `/posts/like-post/${postId}/`,
+      //   null,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
+      const response = await instance.post(`/posts/${postId}/like/`, null, {
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      });
 
       return response.data;
     } catch (error) {
@@ -151,12 +164,12 @@ export const unLikePost = createAsyncThunk(
   async ({ postId }, { rejectWithValue }) => {
     try {
       const response = await instance.delete(
-        `/posts/like-post/${postId}/`,
-
+        // `/posts/like-post/${postId}/`,
+        `/posts/${postId}/like/`,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
         }
       );
 
@@ -173,7 +186,8 @@ export const unLikePost = createAsyncThunk(
 export const fetchLikes = createAsyncThunk(
   "postLikes/fetchLikes",
   async ({ postId }, { rejectWithValue }) => {
-    const response = await instance.get(`/posts/get-likes/${postId}/`, {});
+    // const response = await instance.get(`/posts/get-likes/${postId}/`, {});
+    const response = await instance.get(`/posts/${postId}/likes/`, {});
     return response.data;
   }
 );
@@ -182,8 +196,17 @@ export const addComment = createAsyncThunk(
   "postComments/addComment",
   async ({ postId, commentData }, { rejectWithValue }) => {
     try {
+      // const response = await instance.post(
+      //   `/posts/add-comment/${postId}/`,
+      //   commentData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
       const response = await instance.post(
-        `/posts/add-comment/${postId}/`,
+        `/posts/${postId}/comments/`,
         commentData,
         {
           headers: {
@@ -205,7 +228,8 @@ export const addComment = createAsyncThunk(
 export const fetchComments = createAsyncThunk(
   "postComments/fetchComments",
   async ({ postId }, { rejectWithValue }) => {
-    const response = await instance.get(`/posts/get-comments/${postId}/`, {});
+    // const response = await instance.get(`/posts/get-comments/${postId}/`, {});
+    const response = await instance.get(`/posts/${postId}/comments/`, {});
     return response.data;
   }
 );
@@ -214,7 +238,8 @@ export const fetchSpecificPost = createAsyncThunk(
   "specificPost/fetchSpecificPost",
   async ({ postId }, { rejectWithValue }) => {
     try {
-      const response = await instance.get(`/posts/get-post/${postId}/`);
+      // const response = await instance.get(`/posts/get-post/${postId}/`);
+      const response = await instance.get(`/posts/${postId}/`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -226,10 +251,15 @@ export const deletePost = createAsyncThunk(
   "userPosts/deletePost",
   async ({ postId }, { rejectWithValue }) => {
     try {
-      const response = await instance.delete(`/posts/delete-post/${postId}/`, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      // const response = await instance.delete(`/posts/delete-post/${postId}/`, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
+      const response = await instance.delete(`/posts/${postId}/`, {
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
       });
 
       return response.data;
@@ -246,15 +276,32 @@ export const deletePostComment = createAsyncThunk(
   "comments/deletePostComment",
   async ({ postId, commentId }, { rejectWithValue }) => {
     try {
-      const response = await instance.delete("/posts/delete-post-comment/", {
-        params: {
-          postId,
-          commentId,
-        },
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // const response = await instance.delete("/posts/delete-post-comment/", {
+      //   params: {
+      //     postId,
+      //     commentId,
+      //   },
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
+      // const response = await instance.delete("/posts/comments/delete/", {
+      //   params: {
+      //     postId,
+      //     commentId,
+      //   },
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
+      const response = await instance.delete(
+        `/posts/${postId}/comments/${commentId}/`,
+        {
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
+        }
+      );
 
       return response.data;
     } catch (error) {

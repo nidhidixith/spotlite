@@ -19,6 +19,7 @@ import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
 
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import EmptyState from "../Others/EmptyState";
 
 const CommentsModal = ({ postId, bottomSheetRef }) => {
   const dispatch = useDispatch();
@@ -136,6 +137,13 @@ const CommentsModal = ({ postId, bottomSheetRef }) => {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        ListEmptyComponent={
+          <EmptyState
+            message="No comments yet"
+            details="Be the first to comment"
+            icon="file-text"
+          />
+        }
       />
     </View>
   );

@@ -21,6 +21,7 @@ import ErrorDisplayComponent from "../../../components/Others/ErrorDisplayCompon
 import LoadingIndicator from "../../../components/Others/LoadingIndicator";
 import QuestionsAndAnswers from "../../../components/UserProfile/QuestionsAndAnswers";
 import SocialStats from "../../../components/UserProfile/SocialStats";
+import SocialStats2 from "../../../components/UserProfile/SocialStats2";
 
 const UserProfile = () => {
   const dispatch = useDispatch();
@@ -85,7 +86,8 @@ const UserProfile = () => {
       <BasicDetails profile={profile[0]} />
       <Bio profile={profile[0]} />
       <SocialLinks profile={profile[0]} />
-      <SocialStats profile={profile[0]} />
+      {/* <SocialStats profile={profile[0]} /> */}
+      <SocialStats2 profile={profile[0]} />
       <Activity profile={profile[0]} />
       <Interests profile={profile[0]} />
       <UserInfo profile={profile[0]} />

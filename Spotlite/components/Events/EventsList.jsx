@@ -14,13 +14,19 @@ import EmptyState from "../Others/EmptyState";
 import ErrorDisplayComponent from "../Others/ErrorDisplayComponent";
 import LoadingIndicator from "../Others/LoadingIndicator";
 
-const EventsList = ({ filter }) => {
+const EventsList = ({ filter, userLocation = null }) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false); // State to track refreshing
+  console.log("User location from event list: ", userLocation);
+  console.log("Filter from event list is: ", filter);
 
   const fetchData = async () => {
     try {
-      await dispatch(fetchEvents(filter)).unwrap(); // Fetch events with the current filter
+      if (userLocation) {
+        await dispatch(fetchEvents({ filter, userLocation })).unwrap(); // Fetch events with the current filter
+      } else {
+        await dispatch(fetchEvents({ filter })).unwrap(); // Fetch events with the current filter
+      }
     } catch (error) {
       console.error("Failed to fetch events:", error); // Handle fetch errors
     }
@@ -28,7 +34,7 @@ const EventsList = ({ filter }) => {
 
   useEffect(() => {
     fetchData(); // Fetch events when the component mounts or filter changes
-  }, [dispatch, filter]);
+  }, [dispatch, filter, userLocation]);
 
   const events = useSelector(selectAllEvents);
 

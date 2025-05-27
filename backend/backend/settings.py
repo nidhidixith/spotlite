@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+
+# os.environ["GDAL_LIBRARY_PATH"] = r"C:\OSGeo4W\bin\gdal310.dll"
+# GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', r"C:\OSGeo4W\bin\gdal310.dll")
+
 from datetime import timedelta
 from dotenv import load_dotenv
 
@@ -35,7 +39,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,7 +54,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
-
+    # 'django.contrib.gis',
 
     'appusers',
     'posts',
@@ -153,6 +156,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.getenv("DB_NAME"),
         'USER': os.getenv("DB_USER"),
         'PASSWORD': os.getenv("DB_PASSWORD"),

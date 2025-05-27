@@ -31,19 +31,23 @@ def send_push_notification_on_creation(sender, instance, created, **kwargs):
             }
 
             # Customize data and notification message based on type
-            if instance.type == 'like':
+            if instance.type == 'post_like':
                 data["post"] = instance.post.id
                 title = "New like"
                 body = f'{instance.sender.userprofile.display_name} liked your post'
-            elif instance.type == 'comment':
+            elif instance.type == 'post_comment':
                 data["post"] = instance.post.id
                 title = "New Comment"
                 body = f'{instance.sender.userprofile.display_name} commented on your post'
-            elif instance.type == 'interested':
+            elif instance.type == 'event_interest':
                 data["event"] = instance.event.id
                 title = "New Interest"
                 body = f'{instance.sender.userprofile.display_name} is interested in your event'
-            elif instance.type == 'follow':
+            elif instance.type == 'event_comment':
+                data["event"] = instance.event.id
+                title = "New Comment"
+                body = f'{instance.sender.userprofile.display_name} commented on your event'
+            elif instance.type == 'user_follow':
                 data["follower_id"] = instance.follower_id
                 title = "New Follower"
                 body = f'{instance.sender.userprofile.display_name} started following you'

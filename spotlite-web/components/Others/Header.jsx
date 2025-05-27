@@ -36,6 +36,12 @@ const Header = () => {
         >
           FAQs
         </Link>
+        {/* <Link
+          href="/feedback"
+          className="text-base font-medium text-sky-600 hover:underline"
+        >
+          Feedback and Support
+        </Link> */}
       </div>
       <GetAppModal isOpen={isModalOpen} onClose={toggleModal} />
     </nav>

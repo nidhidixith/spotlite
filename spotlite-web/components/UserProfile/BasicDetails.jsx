@@ -7,73 +7,76 @@ import GetAppModal from "../Others/GetAppModal";
 const BasicDetails = ({ profile }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <div className="bg-white px-4 py-3 mb-4  rounded-lg  shadow-md w-full">
-      {profile?.profile_pic && (
-        <div className="flex justify-center items-center">
-          <Image
-            className="rounded-full cursor-pointer"
-            src={profile?.profile_pic}
-            width={120}
-            height={120}
-            alt="Picture of the author"
-            resizemode="cover"
-          />
+    // <div className="bg-white rounded-lg shadow-md w-full overflow-hidden mb-3">
+    <div className="bg-white mb-4 shadow-md rounded-lg w-full">
+      {/* Cover Photo */}
+
+      <div className="relative w-full h-[120px] sm:h-[160px] md:h-[200px]">
+        <Image
+          src="/images/default-cover-image.png"
+          alt="Cover"
+          fill
+          className="object-cover"
+        />
+      </div>
+
+      <div className="px-4 pb-3">
+        <div className="-mt-20 sm:-mt-24 md:-mt-28 flex flex-col">
+          <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] relative border-4 border-white rounded-full shadow-lg">
+            <Image
+              src={profile?.profile_pic}
+              alt="Profile Picture"
+              fill
+              className="rounded-full object-cover"
+            />
+          </div>
         </div>
-      )}
-      <div className="flex flex-col justify-center items-center my-2 px-6">
-        <p className="text-lg text-gray-800 font-semibold">
-          {profile?.display_name}
-        </p>
 
-        <p className="text-gray-500 text-sm">{profile?.primary_interest}</p>
+        <div className="mt-3">
+          <p className="text-xl text-gray-800 font-semibold">
+            {profile?.display_name}
+          </p>
+          {/* <p className="text-gray-500 text-sm">{profile?.primary_interest}</p> */}
+          <p className="text-gray-500 text-sm">
+            Freelance Photographer & Editor | Vlogger | Health enthusiast
+          </p>
+
+          {/* Stats */}
+          <div className="flex flex-row my-2">
+            {[
+              ["Followers", profile?.follower_count],
+              ["Following", profile?.following_count],
+              // ["Posts", profile?.no_of_posts],
+            ].map(([label, count]) => (
+              <button
+                key={label}
+                className="flex flex-row items-center gap-x-1 cursor-pointer"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <p className="font-semibold text-sm text-gray-700">{count}</p>
+                <p className="text-sm text-gray-500">{label} &nbsp;</p>
+              </button>
+            ))}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex flex-row gap-x-2">
+            <button
+              className="border border-violet-500 bg-violet-500 rounded-2xl px-4"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <p className="text-sm text-white font-medium">Follow</p>
+            </button>
+            <button
+              className="border border-violet-500 rounded-2xl px-4 py-1"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <p className="text-sm text-violet-500 font-medium">Share</p>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-row justify-between px-6 py-1 mb-4 border-t border-b border-gray-100">
-        <button
-          className="items-center gap-x-1 cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <p className=" font-bold text-base text-gray-800">
-            {profile?.follower_count}
-          </p>
-          <p className=" text-xs text-gray-500">Followers</p>
-        </button>
-        <button
-          className="items-center gap-x-1 cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <p className=" font-bold text-base text-gray-800">
-            {profile?.following_count}
-          </p>
-          <p className=" text-xs text-gray-500">Following</p>
-        </button>
-        <button
-          className="items-center gap-x-1 cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <p className=" font-bold text-base text-gray-800">
-            {profile?.no_of_posts}
-          </p>
-          <p className=" text-xs text-gray-500">Posts</p>
-        </button>
-      </div>
-
-      <div className="flex flex-row items-center justify-between  gap-x-4">
-        <button
-          className="border border-sky-600 bg-sky-600 rounded-2xl p-1 flex-1 cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <p className=" text-sm text-white self-center font-medium">Follow</p>
-        </button>
-        <button
-          className="border border-sky-600 rounded-2xl p-1 flex-1 cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <p className=" text-sm text-sky-600 self-center font-medium">
-            Share Profile
-          </p>
-        </button>
-      </div>
       <GetAppModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );

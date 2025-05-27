@@ -34,11 +34,18 @@ def follow_user(request, user_id):
     # Create the relationship
     user_relation = UserRelation.objects.create(follower=follower, following=following)
 
+    # notification = Notification.objects.create(
+    #     user=following,
+    #     sender=follower,
+    #     message="started following you",
+    #     type="follow",
+    #     follower_id=follower.id,
+    # )
     notification = Notification.objects.create(
         user=following,
         sender=follower,
         message="started following you",
-        type="follow",
+        type=Notification.NotificationType.USER_FOLLOW,
         follower_id=follower.id,
     )
     

@@ -11,18 +11,33 @@ urlpatterns=[
   path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
   path('logout/', views.logout_user, name='logout_user'),
 
-  path('complete-profile/', views.complete_user_profile, name='complete_user_profile'),
-  path('get-questions/', views.question_list, name='question-list'),
-  path('create-or-update-answers/', views.create_or_update_answers, name='create_or_update_answers'),
+  # path('complete-profile/', views.complete_user_profile, name='complete_user_profile'),
+  path('profile/complete/', views.complete_user_profile, name='complete_user_profile'),
+
+  # path('get-questions/', views.question_list, name='question-list'),
+  path('questions/', views.question_list, name='question-list'),
+
+  # path('create-or-update-answers/', views.create_or_update_answers, name='create_or_update_answers'),
+  path('answers/', views.create_or_update_answers, name='create_or_update_answers'),
   
+  # path('get-user-profile/', views.get_user_profile, name='get_user_profile'),
+  path('profile/me/', views.get_user_profile, name='get_user_profile'),
 
-  path('profile/<int:userId>/', views.get_profile, name='get_profile'),
+  # path('get-other-user-profile/<int:userId>/', views.get_other_user_profile, 
+  # name='get_other_user_profile'),
+  path('users/<int:userId>/profile/', views.get_other_user_profile, 
+  name='get_other_user_profile'),
 
-  path('get-user-profile/', views.get_user_profile, name='get_user_profile'),
-  path('get-other-user-profile/<int:userId>/', views.get_other_user_profile, name='get_other_user_profile'),
-  path('edit-profile/', views.edit_profile, name='edit_profile'),
+  # path('edit-profile/', views.edit_profile, name='edit_profile'),
+  path('profile/', views.edit_profile, name='edit_profile'),
 
-  path('delete-user/', views.delete_user, name='delete_user'),
+  # path('delete-user/', views.delete_user, name='delete_user'),
+  path('users/me/', views.delete_user, name='delete_user'),
+
+
+  # For webpage
+  # path('profile/<int:userId>/', views.get_profile, name='get_profile'),
+  path('users/web/<int:userId>/profile/', views.get_profile, name='get_profile'),
 
   path('success/', views.success, name='success'),
 

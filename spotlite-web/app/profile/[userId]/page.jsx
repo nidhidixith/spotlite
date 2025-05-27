@@ -33,13 +33,11 @@ const UserProfile = () => {
     try {
       const [profileRes, latestPostRes, latestEventRes] =
         await Promise.allSettled([
-          axios.get(`http://192.168.1.33:8000/api/profile/${userId}/`),
           axios.get(
-            `http://192.168.1.33:8000/api/posts/latest-post/${userId}/`
+            `http://192.168.1.33:8000/api/users/web/${userId}/profile/`
           ),
-          axios.get(
-            `http://192.168.1.33:8000/api/events/latest-event/${userId}/`
-          ),
+          axios.get(`http://192.168.1.33:8000/api/posts/latest/${userId}/`),
+          axios.get(`http://192.168.1.33:8000/api/events/latest/${userId}/`),
         ]);
 
       // Handle profile response
@@ -108,30 +106,30 @@ const UserProfile = () => {
     return <ErrorComponent onRetry={handleRetry} />;
   }
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 sm:px-6 md:px-12 lg:px-16">
-      {/* Left side for BasicDetails */}
-      <div className="flex flex-col items-center mt-6">
-        <BasicDetails profile={profile} />
-        <Bio profile={profile} />
-        <Interests profile={profile} />
-      </div>
+    <div className="flex justify-center px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-12 gap-6 w-full max-w-[1100px]">
+        {/* Left Spacer or Future Sidebar */}
 
-      {/* Middle content (expands on larger screens) */}
-      <div className="col-span-1 lg:col-span-2 flex flex-col items-center px-2 mt-6">
-        <SocialStats />
-        <Activity
-          profile={profile}
-          latestPost={latestPost}
-          latestEvent={latestEvent}
-        />
-      </div>
+        {/* Main Content (center) */}
+        <div className="col-span-12 lg:col-span-8 flex flex-col items-center mt-6">
+          <BasicDetails profile={profile} />
+          <Bio profile={profile} />
+          <Interests profile={profile} />
+          <SocialStats />
+          <Activity
+            profile={profile}
+            latestPost={latestPost}
+            latestEvent={latestEvent}
+          />
+        </div>
 
-      {/* Right side */}
-      <div className="flex flex-col items-center mt-6">
-        <SocialLinks profile={profile} />
-        {profile?.questions_and_answers?.length > 0 && (
-          <QuestionsAndAnswers profile={profile} />
-        )}
+        {/* Right Sidebar */}
+        <div className="col-span-12 lg:col-span-4 flex flex-col items-center mt-6">
+          <SocialLinks profile={profile} />
+          {profile?.questions_and_answers?.length > 0 && (
+            <QuestionsAndAnswers profile={profile} />
+          )}
+        </div>
       </div>
     </div>
   );
